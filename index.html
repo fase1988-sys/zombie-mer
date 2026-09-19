@@ -165,6 +165,7 @@ div:has(> #legacyOnlineMarker){display:none!important}
 .mainGameMenu{position:fixed;inset:0;z-index:2147482000;display:grid;place-items:center;padding:20px;background:radial-gradient(circle at 50% 35%,rgba(38,58,43,.55),rgba(4,7,5,.96) 68%),linear-gradient(#0b120d,#030504);backdrop-filter:blur(4px)}.mainGameMenu.hidden{display:none}.mainMenuShell{width:min(760px,95vw);padding:34px;border:1px solid #35483a;border-radius:18px;background:linear-gradient(145deg,rgba(18,27,21,.97),rgba(7,11,8,.98));box-shadow:0 35px 100px #000,0 0 80px rgba(92,122,75,.08)}.mainMenuBrand{text-align:center;margin-bottom:27px}.mainMenuBrand>span{color:#b17a24;font:900 10px system-ui;letter-spacing:.34em}.mainMenuBrand h1{margin:5px 0 4px;font:900 clamp(36px,7vw,66px) Impact,"Arial Black",sans-serif;letter-spacing:.045em;color:#eee6d5;text-shadow:0 5px 20px #000}.mainMenuBrand p{margin:0;color:#87958a;font:500 13px system-ui}.modeCards{display:grid;grid-template-columns:1fr 1fr;gap:12px}.modeCard{min-height:118px!important;display:grid!important;grid-template-columns:54px 1fr auto!important;align-items:center!important;gap:12px!important;text-align:left!important;padding:20px!important;margin:0!important;border-radius:12px!important;border:1px solid #3b5141!important;background:linear-gradient(135deg,#1a281e,#101712)!important;color:#eee!important;cursor:pointer!important;transition:.18s!important}.modeCard:hover{transform:translateY(-3px);border-color:#86a078!important;background:linear-gradient(135deg,#233428,#131d16)!important;box-shadow:0 14px 35px rgba(0,0,0,.35)}.modeCard.multi{border-color:#6c542a!important}.modeIcon{display:grid;place-items:center;width:52px;height:52px;border-radius:12px;background:#0a100c;font-size:25px}.modeCard b{display:block;font-size:17px;letter-spacing:.04em}.modeCard small{display:block;color:#819087;margin-top:5px}.modeCard i{font-style:normal;color:#d39b35;font-size:11px;font-weight:900}.multiSetup{margin-top:14px;padding:20px;border:1px solid #3b4c40;border-radius:12px;background:#0b110d}.multiTitle{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;color:#e8dfca}.multiTitle button{width:auto!important;margin:0!important;padding:6px 10px!important}.multiSetup label{display:block;color:#78867c;font-size:9px;font-weight:900;letter-spacing:.15em;margin-bottom:5px}.multiSetup input{box-sizing:border-box;width:100%;height:42px;background:#050806;border:1px solid #35463a;border-radius:7px;color:#fff;padding:0 11px}.multiActions{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;margin-top:12px}.multiActions>span{text-align:center;color:#657168;font-size:9px}.multiActions button{height:42px;margin:0!important;background:#8b6119!important;border:1px solid #c99638!important;color:#fff!important;border-radius:7px!important;font-weight:900!important}.joinBox{display:grid;grid-template-columns:1fr auto;gap:6px}.joinBox button{width:72px!important}.joinBox input{text-transform:uppercase;letter-spacing:.15em}.multiSetup #menuNetStatus{margin-top:11px;color:#7f8d83;font-size:11px;text-align:center}.mainMenuFoot{display:flex;justify-content:space-between;margin-top:22px;padding-top:14px;border-top:1px solid #263229;color:#59675e;font-size:10px;letter-spacing:.06em}.mainMenuFoot b{color:#a9792c}@media(max-width:620px){.mainMenuShell{padding:22px}.modeCards{grid-template-columns:1fr}.modeCard{min-height:92px!important}.multiActions{grid-template-columns:1fr}.multiActions>span{display:none}.mainMenuBrand h1{font-size:42px}}
 </style>
 <style id="legacyOnlineHideV49">#onlinePanel{display:none!important}</style>
+<style id="mapProgressV50Style">.mapProgress{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:18px;padding:12px 8px;border:1px solid #29372e;border-radius:9px;background:#090e0b;color:#65736a;font:700 9px system-ui;text-align:center}.mapProgress span{flex:1}.mapProgress b{display:block;margin-top:3px;color:#b9c2bb;font-size:9px}.mapProgress i{color:#8a6728;font-style:normal;font-size:18px}@media(max-width:620px){.mapProgress{gap:2px;padding:9px 3px}.mapProgress b{font-size:7px}.mapProgress i{font-size:12px}}</style>
 </head>
 <body id="artifacts-component-root-html">
 <canvas id="game" width="580" height="843" class=""></canvas><button id="adminBtn">ADMIN</button><div id="adminPanel"><div class="adminBox"><div class="adminHead"><div><span class="adminEyebrow">ZOMBIE CONTROL SYSTEM</span><h2>ADMIN COMMAND</h2><p>Oyuncu ve oyun akışını yönet</p></div><button id="adminClose" class="adminX">×</button></div><div id="adminLogin" class="adminLogin"><div class="adminLock">🔒</div><b>Yönetici erişimi</b><small>Devam etmek için şifreyi gir</small><input id="adminPass" type="password" placeholder="••••••••"><button id="adminLoginBtn">KİLİDİ AÇ</button><small id="adminLoginMsg"></small></div><div id="adminTools" hidden><div class="adminGrid"><section><div class="adminSectionTitle"><span>💰</span><div><b>EKONOMİ</b><small>Hesabına para ekle</small></div></div><div class="adminInline"><input id="adminMoney" type="number" value="1000"><button id="adminGiveMoney">+$ PARA</button></div></section><section><div class="adminSectionTitle"><span>🔫</span><div><b>CEPHANELİK</b><small>Silah envanterini yönet</small></div></div><select id="adminGun"><option value="shotgun">Pompalı tüfek</option><option value="smg">Hafif makineli</option><option value="rifle">Otomatik tüfek</option><option value="sniper">Keskin nişancı</option><option value="minigun">Minigun</option></select><div class="adminInline"><button id="adminGiveGun">SİLAH VER</button><button id="adminGiveAll">TÜMÜNÜ AÇ</button></div></section><section><div class="adminSectionTitle"><span>❤️</span><div><b>OYUNCU</b><small>Hayatta kalma kontrolleri</small></div></div><div class="adminInline"><button id="adminHeal">CAN DOLDUR</button><button id="adminGod" class="godBtn">GOD MODE: KAPALI</button></div></section><section><div class="adminSectionTitle"><span>☠️</span><div><b>BÖLÜM KONTROLÜ</b><small>İstediğin dalgaya atla</small></div></div><div class="adminInline"><input id="adminLevel" type="number" min="1" max="999" value="2" placeholder="Bölüm"><button id="adminGoLevel">BÖLÜME GEÇ</button></div></section></div><div class="adminWide">
@@ -179,7 +180,7 @@ div:has(> #legacyOnlineMarker){display:none!important}
 </div><div class="adminFooter"><span>● ADMIN ACCESS</span><span>v48 CONTROL CONSOLE</span></div></div></div></div>
 
 
-<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v49</b></div></div></div>
+<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v50</b></div></div></div>
 
 <div id="onlinePanel">
   <b><span id="legacyOnlineMarker">ONLINE CO-OP v8 · CLEAN LOBBY</span></b>
@@ -1034,6 +1035,20 @@ function levelSpec(n) {
            hp: 1 + 0.14 * (n - 1), sp: Math.min(1.5, 1 + 0.03 * (n - 1)), dm: 1 + 0.08 * (n - 1),
            interval: Math.max(0.45, 1.7 - 0.15 * (n - 1)), house: Math.min(3 + n * 2, 18) };
 }
+const MAP_REGIONS=[
+ {id:'forest',name:'ORMAN KENARI',from:1,to:5,ground:'#1e2f24',ground2:'#1b2a20',road:'#2b2e33',line:'rgba(201,162,39,.65)',accent:'#6f9b58',desc:'Terk edilmiş orman yolu'},
+ {id:'town',name:'TERK EDİLMİŞ KASABA',from:6,to:10,ground:'#34332d',ground2:'#2b2b27',road:'#24272b',line:'rgba(220,196,116,.55)',accent:'#b39a65',desc:'Sessiz sokaklar ve boş evler'},
+ {id:'hospital',name:'HASTANE BÖLGESİ',from:11,to:15,ground:'#273230',ground2:'#202a29',road:'#30373a',line:'rgba(220,235,230,.48)',accent:'#79aaa0',desc:'Enfeksiyonun merkezine yaklaş'},
+ {id:'military',name:'ASKERÎ ÜS',from:16,to:20,ground:'#343a2d',ground2:'#292f25',road:'#292d2b',line:'rgba(194,183,103,.55)',accent:'#9da36c',desc:'Son savunma hattı'},
+ {id:'city',name:'ŞEHİR MERKEZİ',from:21,to:999,ground:'#292a2b',ground2:'#202123',road:'#1e2023',line:'rgba(218,180,77,.48)',accent:'#c18a45',desc:'İstilanın kalbi'}
+];
+function mapRegion(n=level){return MAP_REGIONS.find(r=>n>=r.from&&n<=r.to)||MAP_REGIONS[MAP_REGIONS.length-1]}
+function regionIndex(n=level){return Math.max(0,MAP_REGIONS.findIndex(r=>n>=r.from&&n<=r.to))}
+let lastRegionIndex=-1;
+function regionTransition(){
+ const ri=regionIndex(level),r=mapRegion(level);
+ if(ri!==lastRegionIndex){lastRegionIndex=ri;banner={title:r.name,sub:r.desc+' · Bölüm '+level,t:5,max:5};toast('YENİ BÖLGE: '+r.name);}
+}
 const BLOCK_COST = 6, BLOCK_HP = 120, DOOR_COST = 10, DOOR_HP = 160, TURRET_HP = 220;
 
 /* Mağaza envanteri */
@@ -1444,6 +1459,7 @@ function spawnInside(type, hs) {
 function beginLevel() {
   dayPhase='night'; prepLeft=0; dawnFade=0; duskFade=1;
   spec = levelSpec(level);
+  regionTransition();
   levelKills = 0; levelMoney = 0;
   queue = [];
   for (let i = 0; i < spec.n; i++) queue.push('n');
@@ -2302,21 +2318,22 @@ function vis(x, y, w, h, m) {
 }
 
 function drawGround() {
-  ctx.fillStyle = '#1b2a20'; ctx.fillRect(cam.x - 20, cam.y - 20, W + 40, H + 40);
-  ctx.fillStyle = '#1e2f24'; ctx.fillRect(0, 0, WORLD, WORLD);
+  const rg=mapRegion();
+  ctx.fillStyle = rg.ground2; ctx.fillRect(cam.x - 20, cam.y - 20, W + 40, H + 40);
+  ctx.fillStyle = rg.ground; ctx.fillRect(0, 0, WORLD, WORLD);
   for (const p of patches) {
     if (!vis(p.x - p.rx, p.y - p.rx, p.rx * 2, p.rx * 2)) continue;
     ctx.fillStyle = p.v < 0.5 ? 'rgba(84,72,46,.22)' : 'rgba(20,40,26,.5)';
     ctx.beginPath(); ctx.ellipse(p.x, p.y, p.rx, p.ry, p.rot, 0, TAU); ctx.fill();
   }
-  ctx.fillStyle = '#2b2e33';
+  ctx.fillStyle = rg.road;
   ctx.fillRect(MID - ROAD / 2, 0, ROAD, WORLD);
   ctx.fillRect(0, MID - ROAD / 2, WORLD, ROAD);
   ctx.strokeStyle = '#3f4349'; ctx.lineWidth = 8;
   ctx.strokeRect(MID - ROAD / 2, -10, ROAD, WORLD + 20);
   ctx.strokeRect(-10, MID - ROAD / 2, WORLD + 20, ROAD);
-  ctx.fillStyle = '#2b2e33'; ctx.fillRect(MID - ROAD / 2 + 4, MID - ROAD / 2 + 4, ROAD - 8, ROAD - 8);
-  ctx.strokeStyle = 'rgba(201,162,39,.65)'; ctx.lineWidth = 4; ctx.setLineDash([32, 26]);
+  ctx.fillStyle = rg.road; ctx.fillRect(MID - ROAD / 2 + 4, MID - ROAD / 2 + 4, ROAD - 8, ROAD - 8);
+  ctx.strokeStyle = rg.line; ctx.lineWidth = 4; ctx.setLineDash([32, 26]);
   ctx.beginPath(); ctx.moveTo(MID, 0); ctx.lineTo(MID, MID - ROAD / 2); ctx.moveTo(MID, MID + ROAD / 2); ctx.lineTo(MID, WORLD);
   ctx.moveTo(0, MID); ctx.lineTo(MID - ROAD / 2, MID); ctx.moveTo(MID + ROAD / 2, MID); ctx.lineTo(WORLD, MID); ctx.stroke();
   ctx.setLineDash([]);
@@ -2327,6 +2344,14 @@ function drawGround() {
     ctx.beginPath(); ctx.moveTo(t.x, t.y); ctx.lineTo(t.x + Math.cos(t.a) * t.s, t.y - t.s);
     ctx.moveTo(t.x + 3, t.y); ctx.lineTo(t.x + 3 + Math.cos(t.a + 1) * t.s, t.y - t.s * .8); ctx.stroke();
   }
+  // Bölge kimliği: her 5 bölümde çevre görsel olarak değişir.
+  const ri=regionIndex(),rg2=mapRegion();
+  ctx.save();ctx.globalAlpha=.22;ctx.fillStyle=rg2.accent;
+  if(ri===1){for(let x=260;x<WORLD;x+=520){ctx.fillRect(x,210,150,16);ctx.fillRect(x,WORLD-226,150,16);}}
+  else if(ri===2){for(let x=220;x<WORLD;x+=620){ctx.fillStyle='rgba(205,220,215,.28)';ctx.fillRect(x,250,90,10);ctx.fillRect(x+38,210,14,90);}}
+  else if(ri===3){for(let x=180;x<WORLD;x+=440){ctx.fillStyle='rgba(115,125,90,.35)';ctx.fillRect(x,150,130,10);ctx.fillRect(x,150,8,58);ctx.fillRect(x+122,150,8,58);}}
+  else if(ri===4){for(let x=180;x<WORLD;x+=380){ctx.fillStyle='rgba(20,20,22,.34)';ctx.fillRect(x,120,180,20);ctx.fillRect(x,WORLD-140,180,20);}}
+  ctx.restore();
 }
 
 function drawDecals() {
@@ -2692,7 +2717,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v49';
+const GAME_VERSION = 'v50';
 
 function drawHUD() {
   const p = player, L = spec || levelSpec(1), narrow = W < 760;
@@ -2722,6 +2747,7 @@ function drawHUD() {
   const ty = narrow ? 118 : 32;
   ctx.fillStyle = '#ece6d6'; ctx.font = '900 22px ' + HEAD;
   ctx.fillText('Bölüm ' + level + ' · ' + L.name, W / 2, ty);
+  const rg=mapRegion();ctx.font='800 10px '+FONT;ctx.fillStyle=rg.accent;ctx.fillText(rg.name+' · '+rg.from+'-'+(rg.to===999?'∞':rg.to),W/2,ty-25);
   ctx.font = '600 14px ' + FONT; ctx.fillStyle = '#f0b429';
   if(state==='intermission'||state==='craft'){
     const sec=Math.max(0,Math.ceil(prepLeft)),mm=Math.floor(sec/60),ss=String(sec%60).padStart(2,'0');
