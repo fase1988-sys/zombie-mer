@@ -17,6 +17,22 @@ html, body, #artifacts-component-root-html {
   width: 100vw !important;
   height: 100vh !important;
 }
+
+/* Shop weapon previews: DOM-only, independent from the game canvas. */
+.gunPreview{height:72px;margin:8px 0 7px;border:1px solid #314238;border-radius:6px;background:rgba(4,12,8,.55);position:relative;overflow:hidden}
+.gunShape{position:absolute;left:50%;top:50%;width:190px;height:44px;transform:translate(-50%,-50%)}
+.gunShape:before,.gunShape:after,.gunShape i,.gunShape em,.gunShape span{content:"";position:absolute;display:block;box-sizing:border-box}
+.gunShape:before{background:#aeb8bd;border:2px solid #20272a;height:12px;top:10px;left:35px;width:110px;border-radius:2px}
+.gunShape:after{background:#505a5f;border:2px solid #20272a;width:18px;height:27px;left:66px;top:20px;transform:skew(-8deg)}
+.gunShape i{background:#c7d0d4;height:6px;left:140px;top:13px;width:42px;border-radius:0 4px 4px 0}
+.gunShape em{background:#79512d;width:45px;height:15px;left:3px;top:15px;transform:skew(-24deg)}
+.gunShape span{background:#d7b45c;width:9px;height:5px;left:27px;top:5px}
+.gun-pistol .gunShape{width:120px}.gun-pistol .gunShape:before{left:18px;width:62px;height:15px}.gun-pistol .gunShape:after{left:49px;top:22px;width:18px;height:25px}.gun-pistol .gunShape i{left:78px;width:20px}.gun-pistol .gunShape em{display:none}
+.gun-shotgun .gunShape:before{left:45px;width:125px;height:7px;top:12px}.gun-shotgun .gunShape i{left:45px;width:120px;height:5px;top:23px}.gun-shotgun .gunShape:after{left:85px;top:24px;height:18px}.gun-shotgun .gunShape em{left:3px;width:58px;top:17px}
+.gun-smg .gunShape:before{left:35px;width:95px;height:20px;top:8px}.gun-smg .gunShape i{left:126px;width:42px;top:14px}.gun-smg .gunShape:after{left:72px;top:26px;height:24px}.gun-smg .gunShape em{left:12px;width:35px;height:13px;top:18px}
+.gun-rifle .gunShape:before{left:48px;width:102px}.gun-rifle .gunShape i{left:145px;width:40px}.gun-rifle .gunShape:after{left:88px}.gun-rifle .gunShape em{left:5px;width:62px}
+.gun-sniper .gunShape:before{left:28px;width:120px;height:8px;top:17px}.gun-sniper .gunShape i{left:143px;width:46px;top:18px;height:4px}.gun-sniper .gunShape em{left:2px;width:47px;top:18px;height:12px}.gun-sniper .gunShape span{left:72px;top:4px;width:50px;height:9px;border:2px solid #20272a;border-radius:5px;background:#6d9ab5}
+.gun-minigun .gunShape:before{left:25px;width:70px;height:24px;top:9px}.gun-minigun .gunShape i{left:90px;width:94px;height:4px;top:10px;box-shadow:0 8px 0 #c7d0d4,0 16px 0 #c7d0d4}.gun-minigun .gunShape:after{left:55px;top:29px}.gun-minigun .gunShape em{width:30px;height:30px;border-radius:50%;left:10px;top:20px;transform:none;background:#505a5f}
 </style>
 
 <title>Zombi İstilası</title>
@@ -1338,12 +1354,10 @@ function renderShop() {
       card.innerHTML = `<b></b><div class="d"></div><div class="s"></div>`;
       card.children[0].textContent = it.name; card.children[1].textContent = it.desc; card.children[2].textContent = stats;
       if (it.gun) {
-        const gunCanvas = document.createElement('canvas');
-        gunCanvas.width = 260; gunCanvas.height = 78;
-        gunCanvas.style.cssText = 'display:block;width:100%;height:78px;margin:8px 0 6px;border:1px solid #314238;border-radius:6px;background:rgba(4,12,8,.55)';
-        card.insertBefore(gunCanvas, card.children[1]);
-        const gc = gunCanvas.getContext('2d');
-        drawItemIcon({k:'gun',id:it.gun}, 130, 39, 92, gc);
+        const preview=document.createElement('div');
+        preview.className='gunPreview gun-'+it.gun;
+        preview.innerHTML='<div class="gunShape"><i></i><em></em><span></span></div>';
+        card.insertBefore(preview, card.children[1]);
       }
       const b = document.createElement('button');
       b.textContent=st==='max'?'Maksimum upgrade 3/3':st==='upgrade'?'$'+GUN_UPGRADE_COST[it.gun]+' · Upgrade '+(gunLevel(it.gun)+1)+'/3':st==='poorup'?'$'+GUN_UPGRADE_COST[it.gun]+' · Upgrade için para yetersiz':st==='poor'?'$'+it.price+' · Yetersiz para':'$'+it.price+' · Satın al';
@@ -2251,50 +2265,49 @@ function bar(x, y, w, h, f, col) {
   ctx.fillStyle = col; ctx.fillRect(x, y, w * clamp(f, 0, 1), h);
   ctx.strokeStyle = 'rgba(236,230,214,.4)'; ctx.lineWidth = 1; ctx.strokeRect(x + .5, y + .5, w - 1, h - 1);
 }
-function drawItemIcon(sl, cx, cy, s, drawCtx = ctx) {
-  const gctx = drawCtx;
-  gctx.save(); gctx.translate(cx, cy);
+function drawItemIcon(sl, cx, cy, s) {
+  ctx.save(); ctx.translate(cx, cy);
   if (sl.k === 'gun') {
-    const id=sl.id; gctx.lineJoin='round'; gctx.lineCap='round';
-    if(id==='pistol'){gctx.fillStyle='#c7cdd0';gctx.fillRect(-s*.30,-s*.13,s*.48,s*.14);gctx.fillStyle='#50585d';gctx.fillRect(-s*.05,0,s*.14,s*.29);gctx.fillStyle='#e0b95b';gctx.fillRect(s*.18,-s*.10,s*.13,s*.04);}
-    else if(id==='shotgun'){gctx.fillStyle='#80562f';gctx.fillRect(-s*.40,-s*.02,s*.34,s*.13);gctx.fillStyle='#c7cdd0';gctx.fillRect(-s*.10,-s*.11,s*.52,s*.08);gctx.fillRect(-s*.10,s*.01,s*.45,s*.06);gctx.fillStyle='#80562f';gctx.fillRect(s*.02,s*.05,s*.12,s*.18);}
-    else if(id==='smg'){gctx.fillStyle='#50585d';gctx.fillRect(-s*.31,-s*.14,s*.53,s*.20);gctx.fillRect(-s*.07,s*.04,s*.13,s*.27);gctx.fillStyle='#c7cdd0';gctx.fillRect(s*.19,-s*.09,s*.20,s*.05);gctx.fillStyle='#30363a';gctx.fillRect(-s*.23,s*.03,s*.11,s*.15);}
-    else if(id==='rifle'){gctx.fillStyle='#485157';gctx.fillRect(-s*.31,-s*.11,s*.53,s*.15);gctx.fillRect(-s*.05,s*.02,s*.11,s*.25);gctx.fillStyle='#c7cdd0';gctx.fillRect(s*.18,-s*.08,s*.25,s*.05);gctx.fillStyle='#7a512d';gctx.beginPath();gctx.moveTo(-s*.30,-s*.05);gctx.lineTo(-s*.46,s*.10);gctx.lineTo(-s*.24,s*.10);gctx.closePath();gctx.fill();}
-    else if(id==='sniper'){gctx.fillStyle='#59656b';gctx.fillRect(-s*.43,-s*.06,s*.72,s*.09);gctx.fillStyle='#c7cdd0';gctx.fillRect(s*.25,-s*.04,s*.25,s*.04);gctx.fillStyle='#73a7c7';gctx.fillRect(-s*.10,-s*.21,s*.30,s*.09);gctx.beginPath();gctx.arc(-s*.02,-s*.165,s*.07,0,TAU);gctx.fill();gctx.fillStyle='#4d5559';gctx.fillRect(-s*.12,s*.01,s*.09,s*.22);}
-    else {gctx.fillStyle='#444d52';gctx.fillRect(-s*.28,-s*.12,s*.34,s*.22);gctx.beginPath();gctx.arc(-s*.18,s*.13,s*.14,0,TAU);gctx.fill();gctx.fillStyle='#c7cdd0';for(let k=-1;k<=1;k++)gctx.fillRect(s*.02,k*s*.065,s*.43,s*.03);gctx.fillStyle='#596166';gctx.fillRect(-s*.02,s*.05,s*.10,s*.23);}
+    const id=sl.id; ctx.lineJoin='round'; ctx.lineCap='round';
+    if(id==='pistol'){ctx.fillStyle='#c7cdd0';ctx.fillRect(-s*.30,-s*.13,s*.48,s*.14);ctx.fillStyle='#50585d';ctx.fillRect(-s*.05,0,s*.14,s*.29);ctx.fillStyle='#e0b95b';ctx.fillRect(s*.18,-s*.10,s*.13,s*.04);}
+    else if(id==='shotgun'){ctx.fillStyle='#80562f';ctx.fillRect(-s*.40,-s*.02,s*.34,s*.13);ctx.fillStyle='#c7cdd0';ctx.fillRect(-s*.10,-s*.11,s*.52,s*.08);ctx.fillRect(-s*.10,s*.01,s*.45,s*.06);ctx.fillStyle='#80562f';ctx.fillRect(s*.02,s*.05,s*.12,s*.18);}
+    else if(id==='smg'){ctx.fillStyle='#50585d';ctx.fillRect(-s*.31,-s*.14,s*.53,s*.20);ctx.fillRect(-s*.07,s*.04,s*.13,s*.27);ctx.fillStyle='#c7cdd0';ctx.fillRect(s*.19,-s*.09,s*.20,s*.05);ctx.fillStyle='#30363a';ctx.fillRect(-s*.23,s*.03,s*.11,s*.15);}
+    else if(id==='rifle'){ctx.fillStyle='#485157';ctx.fillRect(-s*.31,-s*.11,s*.53,s*.15);ctx.fillRect(-s*.05,s*.02,s*.11,s*.25);ctx.fillStyle='#c7cdd0';ctx.fillRect(s*.18,-s*.08,s*.25,s*.05);ctx.fillStyle='#7a512d';ctx.beginPath();ctx.moveTo(-s*.30,-s*.05);ctx.lineTo(-s*.46,s*.10);ctx.lineTo(-s*.24,s*.10);ctx.closePath();ctx.fill();}
+    else if(id==='sniper'){ctx.fillStyle='#59656b';ctx.fillRect(-s*.43,-s*.06,s*.72,s*.09);ctx.fillStyle='#c7cdd0';ctx.fillRect(s*.25,-s*.04,s*.25,s*.04);ctx.fillStyle='#73a7c7';ctx.fillRect(-s*.10,-s*.21,s*.30,s*.09);ctx.beginPath();ctx.arc(-s*.02,-s*.165,s*.07,0,TAU);ctx.fill();ctx.fillStyle='#4d5559';ctx.fillRect(-s*.12,s*.01,s*.09,s*.22);}
+    else {ctx.fillStyle='#444d52';ctx.fillRect(-s*.28,-s*.12,s*.34,s*.22);ctx.beginPath();ctx.arc(-s*.18,s*.13,s*.14,0,TAU);ctx.fill();ctx.fillStyle='#c7cdd0';for(let k=-1;k<=1;k++)ctx.fillRect(s*.02,k*s*.065,s*.43,s*.03);ctx.fillStyle='#596166';ctx.fillRect(-s*.02,s*.05,s*.10,s*.23);}
   } else if (sl.k === 'block') {
-    gctx.fillStyle = '#a9773f'; gctx.fillRect(-s * .3, -s * .3, s * .6, s * .6);
-    gctx.strokeStyle = '#5a3d1e'; gctx.lineWidth = 2; gctx.strokeRect(-s * .3, -s * .3, s * .6, s * .6);
-    for (let i = -1; i <= 1; i += 2) { gctx.beginPath(); gctx.moveTo(-s * .3, i * s * .1); gctx.lineTo(s * .3, i * s * .1); gctx.stroke(); }
+    ctx.fillStyle = '#a9773f'; ctx.fillRect(-s * .3, -s * .3, s * .6, s * .6);
+    ctx.strokeStyle = '#5a3d1e'; ctx.lineWidth = 2; ctx.strokeRect(-s * .3, -s * .3, s * .6, s * .6);
+    for (let i = -1; i <= 1; i += 2) { ctx.beginPath(); ctx.moveTo(-s * .3, i * s * .1); ctx.lineTo(s * .3, i * s * .1); ctx.stroke(); }
   } else if (sl.k === 'door') {
-    gctx.fillStyle = '#6b4528';
-    gctx.fillRect(-s * .25, -s * .34, s * .5, s * .68);
-    gctx.strokeStyle = '#b98b52';
-    gctx.lineWidth = 2;
-    gctx.strokeRect(-s * .25, -s * .34, s * .5, s * .68);
-    gctx.strokeStyle = '#8e6841';
-    gctx.lineWidth = 1;
-    gctx.strokeRect(-s * .16, -s * .25, s * .32, s * .5);
-    gctx.fillStyle = '#e0bd68';
-    gctx.beginPath();
-    gctx.arc(s * .13, 0, Math.max(2, s * .035), 0, TAU);
-    gctx.fill();
+    ctx.fillStyle = '#6b4528';
+    ctx.fillRect(-s * .25, -s * .34, s * .5, s * .68);
+    ctx.strokeStyle = '#b98b52';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(-s * .25, -s * .34, s * .5, s * .68);
+    ctx.strokeStyle = '#8e6841';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(-s * .16, -s * .25, s * .32, s * .5);
+    ctx.fillStyle = '#e0bd68';
+    ctx.beginPath();
+    ctx.arc(s * .13, 0, Math.max(2, s * .035), 0, TAU);
+    ctx.fill();
   } else if (sl.k === 'turret') {
-    gctx.fillStyle = '#2c3a44'; gctx.fillRect(-s * .3, -s * .3, s * .6, s * .6);
-    gctx.fillStyle = '#48606f'; gctx.beginPath(); gctx.arc(0, 0, s * .2, 0, TAU); gctx.fill();
-    gctx.fillStyle = '#11181d'; gctx.fillRect(0, -s * .05, s * .34, s * .1);
+    ctx.fillStyle = '#2c3a44'; ctx.fillRect(-s * .3, -s * .3, s * .6, s * .6);
+    ctx.fillStyle = '#48606f'; ctx.beginPath(); ctx.arc(0, 0, s * .2, 0, TAU); ctx.fill();
+    ctx.fillStyle = '#11181d'; ctx.fillRect(0, -s * .05, s * .34, s * .1);
   } else if (sl.k === 'bomb') {
-    gctx.fillStyle = '#1c1f22'; gctx.beginPath(); gctx.arc(0, s * .05, s * .26, 0, TAU); gctx.fill();
-    gctx.strokeStyle = '#c9a56a'; gctx.lineWidth = 2; gctx.beginPath(); gctx.moveTo(s * .1, -s * .16); gctx.lineTo(s * .22, -s * .3); gctx.stroke();
-    gctx.fillStyle = '#ffb03a'; gctx.beginPath(); gctx.arc(s * .24, -s * .32, 3, 0, TAU); gctx.fill();
+    ctx.fillStyle = '#1c1f22'; ctx.beginPath(); ctx.arc(0, s * .05, s * .26, 0, TAU); ctx.fill();
+    ctx.strokeStyle = '#c9a56a'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(s * .1, -s * .16); ctx.lineTo(s * .22, -s * .3); ctx.stroke();
+    ctx.fillStyle = '#ffb03a'; ctx.beginPath(); ctx.arc(s * .24, -s * .32, 3, 0, TAU); ctx.fill();
   } else if (sl.k === 'medkit') {
-    gctx.fillStyle = '#ece6d6'; gctx.fillRect(-s * .3, -s * .24, s * .6, s * .48);
-    gctx.fillStyle = '#c8382b'; gctx.fillRect(-s * .06, -s * .18, s * .12, s * .36); gctx.fillRect(-s * .18, -s * .06, s * .36, s * .12);
+    ctx.fillStyle = '#ece6d6'; ctx.fillRect(-s * .3, -s * .24, s * .6, s * .48);
+    ctx.fillStyle = '#c8382b'; ctx.fillRect(-s * .06, -s * .18, s * .12, s * .36); ctx.fillRect(-s * .18, -s * .06, s * .36, s * .12);
   }
-  gctx.restore();
+  ctx.restore();
 }
 
-const GAME_VERSION = 'v12';
+const GAME_VERSION = 'v13';
 
 function drawHUD() {
   const p = player, L = spec || levelSpec(1), narrow = W < 760;
