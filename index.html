@@ -137,6 +137,7 @@ div:has(> #legacyOnlineMarker){display:none!important}
 .craftInfo{display:flex;flex-direction:column;gap:4px}.craftInfo b{font-size:15px;color:#fff1ca}.craftInfo small{color:#aeb8ad;font-size:12px}.craftInfo strong{color:#f0b429;font-size:12px}
 .craftMake{font-weight:900;font-size:11px;background:#f0b429;color:#171b16;border-radius:4px;padding:8px 9px}
 @media(max-width:650px){.craftGrid{grid-template-columns:1fr}.craftCard{grid-template-columns:54px 1fr auto}.craftPic{width:50px;height:50px;font-size:29px}}
+.craftLayout{display:grid;grid-template-columns:minmax(0,1fr) 150px;gap:14px;align-items:start}.craftLayout .craftGrid{grid-template-columns:1fr;margin-top:14px}.craftStock{margin-top:14px;border:1px solid #465449;background:#111b15;border-radius:7px;padding:14px;display:flex;flex-direction:column;gap:5px;position:sticky;top:0}.craftStock>span{font-size:10px;font-weight:900;color:#9aa89c;letter-spacing:.1em}.craftStock>b{font-size:28px;color:#f0b429}.craftStock small{font-weight:800;color:#eee7d5}.craftStock em{font-style:normal;font-size:11px;line-height:1.45;color:#aeb8ad;margin-top:9px}.craftStock em strong{color:#f0b429}@media(max-width:650px){.craftLayout{grid-template-columns:1fr}.craftStock{grid-row:1;position:static}.craftLayout .craftGrid{margin-top:0}}
 </style>
 
 </head>
@@ -954,7 +955,7 @@ function levelSpec(n) {
 const BLOCK_COST = 6, BLOCK_HP = 120, DOOR_COST = 10, DOOR_HP = 160, TURRET_HP = 220;
 
 /* Mağaza envanteri */
-const inv = { block: 0, door: 0, turret: 0, bomb: 0, medkit: 0 };
+const inv = { block: 0, door: 0, turret: 0, bomb: 0, medkit: 0, logs: 0 };
 let up = { wall: 0, turret: 0, hp: 0 };
 let gunUp = Object.fromEntries(GUN_ORDER.map(id => [id, 0]));
 let metaXP=Number(localStorage.getItem('zombieMetaXP')||0), metaLevel=Math.max(1,Math.floor(metaXP/500)+1);
@@ -1131,7 +1132,7 @@ function newPlayer() {
 }
 
 const CRAFT=[
- {id:'block',name:'Tahta duvar',cost:8,desc:'1 adet inşa edilebilir duvar'},
+ {id:'block',name:'Tahta duvar',cost:0,logs:3,desc:'3 kütük ile 1 tahta duvar'},
  {id:'door',name:'Tahta kapı',cost:12,desc:'1 adet inşa edilebilir kapı'},
  {id:'turret',name:'Taret',cost:180,desc:'1 adet otomatik taret'},
  {id:'bomb',name:'Bomba',cost:55,desc:'1 adet bomba'},
@@ -1148,8 +1149,12 @@ function openWorkbench(){
  if(state!=='playing'&&state!=='intermission')return;
  const w=nearWorkbench();if(!w){toast('Çalışma tezgâhı için kamp alanına yaklaş');return;}
  const prev=state;state='craft';mouse.down=false;
- const cards=CRAFT.map(it=>'<button class="craftCard" data-craft="'+it.id+'"><span class="craftPic">'+craftIcon(it.id)+'</span><span class="craftInfo"><b>'+it.name+'</b><small>'+it.desc+'</small><strong>$'+it.cost+' · Envanter: '+(inv[it.id]||0)+'</strong></span><span class="craftMake">ÜRET</span></button>').join('');
- showOverlay({title:'ÇALIŞMA TEZGÂHI',text:'Üretmek istediğin eşyayı seç.',extra:'<div class="craftGrid">'+cards+'</div>',btn:'Kapat',onClick:()=>{state=prev;hideOverlay();}});
+ const cards=CRAFT.map(it=>{
+   const req=it.logs?('🪵 '+it.logs+' kütük'):('$'+it.cost);
+   return '<button class="craftCard" data-craft="'+it.id+'"><span class="craftPic">'+craftIcon(it.id)+'</span><span class="craftInfo"><b>'+it.name+'</b><small>'+it.desc+'</small><strong>'+req+' · Envanter: '+(inv[it.id]||0)+'</strong></span><span class="craftMake">ÜRET</span></button>';
+ }).join('');
+ const resource='<aside class="craftStock"><span>HAMMADDE</span><b>🪵 '+inv.logs+'</b><small>Kütük</small><em>Ağaçlara yaklaş ve <strong>F</strong> ile kes. Her vuruş +1 kütük.</em></aside>';
+ showOverlay({title:'ÇALIŞMA TEZGÂHI',text:'Üretmek istediğin eşyayı seç.',extra:'<div class="craftLayout"><div class="craftGrid">'+cards+'</div>'+resource+'</div>',btn:'Kapat',onClick:()=>{state=prev;hideOverlay();}});
  setTimeout(()=>{
    document.querySelectorAll('.craftCard').forEach(b=>b.onclick=()=>{
      craftItem(b.dataset.craft);
@@ -1161,8 +1166,14 @@ function openWorkbench(){
 }
 function craftItem(id){
  const it=CRAFT.find(x=>x.id===id);if(!it)return false;
- if(money<it.cost){toast('Yetersiz para');return false;}
- money-=it.cost;inv[id]=(inv[id]||0)+1;sfx('buy');toast(it.name+' üretildi');
+ if(it.logs){
+   if(inv.logs<it.logs){toast('Yeterli kütüğün yok · '+it.logs+' gerekli');return false;}
+   inv.logs-=it.logs;
+ }else{
+   if(money<it.cost){toast('Yetersiz para');return false;}
+   money-=it.cost;
+ }
+ inv[id]=(inv[id]||0)+1;sfx('buy');toast(it.name+' üretildi');
  player.sel=Math.min(player.sel,slots().length-1);return true;
 }
 /* =====================================================
@@ -1198,6 +1209,7 @@ window.addEventListener('keydown', e => {
     if (e.code === 'Escape') { openTeamMenu(); return; }
     if (e.code === 'KeyR') startReload();
     if (e.code === 'KeyE') { if(nearWorkbench()) openWorkbench(); else openChest(); }
+    if (e.code === 'KeyF') chopTree();
     if (/^Digit\d$/.test(e.code)) { const n = parseInt(e.code.slice(5), 10); selectSlot(n === 0 ? 9 : n - 1); }
     if (e.code === 'KeyP') pauseGame();
   } else if (state === 'paused' && e.code === 'KeyP') {
@@ -1283,6 +1295,7 @@ const CONTROLS = `
   <dt><kbd>1</kbd>…<kbd>0</kbd></dt><dd>Envanterden eşya seç (fare tekerleği de çalışır)</dd>
   <dt><kbd>Tab</kbd></dt><dd>Mağazayı aç: silah, taret, bomba satın al</dd>
   <dt><kbd>E</kbd></dt><dd>Sandık aç / kamp alanındaki çalışma tezgâhını kullan</dd>
+  <dt><kbd>F</kbd></dt><dd>Yakındaki ağacı kes · her vuruşta 1 kütük</dd>
   <dt><kbd>Sağ tık</kbd></dt><dd>Duvarı, kapıyı veya tareti kır/sök (yarı para iadesi)</dd>
   <dt><kbd>R</kbd><kbd>Shift</kbd></dt><dd>Şarjör yenile, koş</dd>
   <dt><kbd>P</kbd><kbd>M</kbd></dt><dd>Duraklat, sesi kapat</dd>
@@ -1317,7 +1330,7 @@ function restoreSnap() {
 
 function newGame() {
   money = 100; score = 0; kills = 0; level = 1;
-  up = { wall: 0, turret: 0, hp: 0 }; gunUp=Object.fromEntries(GUN_ORDER.map(id=>[id,0])); perks={damage:0,speed:0,crit:0,lifesteal:0,mag:0,fire:0,fortify:0}; rareLoot=[]; inv.block=0; inv.door=0; inv.turret=0; inv.bomb=0; inv.medkit=0;
+  up = { wall: 0, turret: 0, hp: 0 }; gunUp=Object.fromEntries(GUN_ORDER.map(id=>[id,0])); perks={damage:0,speed:0,crit:0,lifesteal:0,mag:0,fire:0,fortify:0}; rareLoot=[]; inv.block=0; inv.door=0; inv.turret=0; inv.bomb=0; inv.medkit=0; inv.logs=0;
   player = newPlayer(); built = [
     // Başlangıç kampı ana yol kavşağının tam merkezinde; oyuncunun doğduğu noktadan ayrı.
     {t:'campfire',x:MID-22,y:MID-22,w:44,h:44,hp:9999,max:9999,sb:false,utility:true},
@@ -2297,6 +2310,24 @@ function drawBuilt() {
     ctx.shadowBlur = 0; ctx.textBaseline = 'alphabetic';
   }
 }
+function nearestTree(){
+ let best=null,bd=92;
+ for(const o of obs){
+  if(o.t!=='t')continue;
+  const d=distToRect(player.x,player.y,o);
+  if(d<bd){bd=d;best=o;}
+ }
+ return best;
+}
+function chopTree(){
+ const o=nearestTree();if(!o){toast('Kesmek için bir ağaca yaklaş');return false;}
+ o.woodHits=(o.woodHits||0)+1;inv.logs++;sfx('hit');floatText(o.x+o.w/2,o.y-10,'+1 KÜTÜK','#d6a45d');
+ if(o.woodHits>=3){
+  const i=obs.indexOf(o);if(i>=0)obs.splice(i,1);
+  rebuildGrid();toast('Ağaç kesildi · 3 kütük toplandı');
+ }
+ return true;
+}
 function drawTrees() {
   const greens = [['#1f4a2a', '#2b6136'], ['#24502e', '#34703f'], ['#1b4226', '#276137']];
   for (const o of obs) {
@@ -2526,7 +2557,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v30';
+const GAME_VERSION = 'v31';
 
 function drawHUD() {
   const p = player, L = spec || levelSpec(1), narrow = W < 760;
