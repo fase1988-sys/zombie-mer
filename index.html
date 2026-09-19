@@ -1432,9 +1432,9 @@ function gameOver() {
   state = 'over';
   showOverlay({
     title: 'Zombilere yenildin',
-    text: 'Bölüm ' + level + ' sırasında düştün. Bölümü baştan deneyebilir (para, silah ve üssün bölümün başındaki hâline döner) ya da sıfırdan başlayabilirsin.',
+    text: 'Tüm takım öldü. Bu koşu sona erdi; yeniden başlamak için oyuna sıfırdan başlamalısın.',
     extra: `<div class="stats"><div><b>${kills}</b>Toplam öldürülen</div><div><b>${score}</b>Puan</div><div><b>${level}</b>Ulaşılan bölüm</div></div>`,
-    btn: 'Bölümü tekrar dene', onClick: retryLevel, btn2: 'Baştan başla', onClick2: newGame
+    btn: 'Baştan başla', onClick: newGame
   });
 }
 
@@ -2610,7 +2610,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v39';
+const GAME_VERSION = 'v40';
 
 function drawHUD() {
   const p = player, L = spec || levelSpec(1), narrow = W < 760;
@@ -2806,14 +2806,14 @@ function draw() {
     const g = ctx.createRadialGradient(W / 2, H / 2, Math.min(W, H) * .3, W / 2, H / 2, Math.hypot(W, H) * .62);
     g.addColorStop(0,'rgba(4,8,14,0)');
     const dayCycleState=(state==='intermission'||state==='craft');
-    const darkAlpha=dayCycleState?(dayPhase==='dawn'?(.68-.50*dawnFade):(dayPhase==='dusk'?(.18+.50*duskFade):.18)):.68;
+    const darkAlpha=dayCycleState?(dayPhase==='dawn'?(.68-.38*dawnFade):(dayPhase==='dusk'?(.30+.38*duskFade):.30)):.68;
     g.addColorStop(1,'rgba(4,8,14,'+darkAlpha+')');
     ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
     if(dayCycleState){
       const dayMix=dayPhase==='dawn'?dawnFade:(dayPhase==='dusk'?(1-duskFade):1);
       const nightMix=1-dayMix;
-      ctx.fillStyle='rgba(255,224,150,'+(0.16*dayMix)+')';ctx.fillRect(0,0,W,H);
-      ctx.fillStyle='rgba(10,20,40,'+(0.16*nightMix)+')';ctx.fillRect(0,0,W,H);
+      ctx.fillStyle='rgba(150,170,145,'+(0.055*dayMix)+')';ctx.fillRect(0,0,W,H);
+      ctx.fillStyle='rgba(8,16,28,'+(0.14*nightMix)+')';ctx.fillRect(0,0,W,H);
     }else{
       ctx.fillStyle='rgba(10,20,40,.16)';ctx.fillRect(0,0,W,H);
     }
