@@ -228,7 +228,8 @@ function worldSnapshot(){
   return {
     level, score, kills, money, queue:[...queue],
     zombies:zombies.map(z=>({type:z.type,x:z.x,y:z.y,hp:z.hp,max:z.max,dead:z.dead,hi:z.hi,sleep:z.sleep,a:z.a,boss:z.boss,atk:z.atk,dmg:z.dmg,r:z.r,spd:z.spd,ph:z.ph,flash:z.flash,stuck:z.stuck,detour:z.detour,dd:z.dd,dashT:z.dashT,skillT:z.skillT,tele:z.tele})),
-    built:built.map(o=>({...o}))
+    built:built.map(o=>({...o})),
+    chests:chests.map(c=>({id:c.netId,open:!!c.open}))
   };
 }
 function applyWorld(w){
@@ -237,6 +238,7 @@ function applyWorld(w){
   queue=Array.isArray(w.queue)?w.queue:[];
   if(Array.isArray(w.zombies)) zombies=w.zombies.map(q=>Object.assign(makeZombie(q.type,q.x,q.y),q));
   if(Array.isArray(w.built)){ built=w.built.map(o=>({...o})); rebuildGrid(); }
+  if(Array.isArray(w.chests)) for(const q of w.chests){ const c=chests[q.id]; if(c) c.open=!!q.open; }
   spec=levelSpec(level);
 }
 async function leaveRoom(){
@@ -323,6 +325,18 @@ async function connectRoom(code, asHost){
     // Misafir atışını host dünyasında gerçek mermiye çevir.
     const a=payload.ang, sp=payload.sp||1300;
     bullets.push({x:payload.x,y:payload.y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:payload.life||0.6,dmg:payload.dmg||18,pierce:payload.pierce||1,hit:null});
+  });
+  ch.on('broadcast',{event:'chest_request'},({payload})=>{
+    if(!net.host || !payload) return;
+    const c=chests[payload.id];
+    if(!c || c.open) return;
+    openChestById(payload.id, true);
+  });
+  ch.on('broadcast',{event:'money_delta'},({payload})=>{
+    if(!net.host || !payload) return;
+    const delta=Math.round(Number(payload.delta)||0);
+    if(!delta) return;
+    money=Math.max(0,money+delta);
   });
   ch.subscribe(async (status, err)=>{
     console.log('Realtime status:', status, err || '');
@@ -704,6 +718,9 @@ function makeHouse(c, id, roofs) {
   for (let i = 0; i < 1500; i++) tufts.push({ x: rr(0, WORLD), y: rr(0, WORLD), s: rr(4, 10), a: rr(0, TAU), v: R() });
   for (let i = 0; i < 90; i++) patches.push({ x: rr(0, WORLD), y: rr(0, WORLD), rx: rr(60, 190), ry: rr(40, 130), rot: rr(0, TAU), v: R() });
 })();
+
+// Multiplayer için sandıkların tüm istemcilerde aynı kimliği vardır.
+for (let i = 0; i < chests.length; i++) chests[i].netId = i;
 
 /* Uzamsal ızgara: çarpışma sorguları için */
 function rebuildGrid() {
@@ -1248,7 +1265,9 @@ function itemState(it) {
 }
 function buy(it) {
   if (itemState(it) !== 'ok') return;
-  money -= it.price; sfx('buy');
+  money -= it.price;
+  if(net.connected && !net.host && net.channel) net.channel.send({type:'broadcast',event:'money_delta',payload:{delta:-it.price,from:net.id}});
+  sfx('buy');
   if (it.gun) { player.guns.push(it.gun); player.ammo[it.gun] = GUNS[it.gun].mag; const s = slots(); selectSlot(s.findIndex(x => x.id === it.gun)); toast(GUNS[it.gun].name + ' envantere eklendi'); }
   else if (it.id === 'turret') inv.turret++;
   else if (it.id === 'bomb') inv.bomb++;
@@ -1423,26 +1442,43 @@ function explode(b) {
   if (pd < RAD) hurtPlayer(Math.round(45 * (1 - pd / RAD)) + 5);
 }
 
+function openChestById(id, fromNetwork=false) {
+  const best=chests[id];
+  if(!best || best.open) return false;
+  best.open=true; sfx('chest');
+
+  // Sadece host ödülü üretir; böylece aynı sandık iki kez para/eşya vermez.
+  if(net.connected && !net.host) return true;
+
+  const r=Math.random(), cx=best.x+best.w/2, cy=best.y;
+  if(r<0.55){ const m=Math.round((25+Math.random()*45)*(1+0.1*level)); money+=m; levelMoney+=m; floatText(cx,cy,'+$'+m); toast('Sandıktan $'+m+' çıktı'); }
+  else if(r<0.70){ inv.medkit++; toast('Sandıktan ilk yardım çantası çıktı'); }
+  else if(r<0.85){ const n=1+Math.floor(Math.random()*2); inv.bomb+=n; toast('Sandıktan '+n+' bomba çıktı'); }
+  else if(r<0.92){ inv.turret++; toast('Sandıktan bir taret çıktı'); }
+  else if(r<0.96){
+    const pool=GUN_ORDER.filter(g=>!player.guns.includes(g)&&GUNS[g].price>0&&GUNS[g].price<=650);
+    if(pool.length){ const g=pool[Math.floor(Math.random()*pool.length)]; player.guns.push(g); player.ammo[g]=GUNS[g].mag; toast('Nadir buluntu: '+GUNS[g].name+'!'); }
+    else { money+=120; levelMoney+=120; toast('Sandıktan $120 çıktı'); }
+  } else { const m=100+level*20; money+=m; levelMoney+=m; floatText(cx,cy,'+$'+m); toast('Sandık dolu çıktı: $'+m); }
+  return true;
+}
+
 function openChest() {
-  if (state !== 'playing' || player.hi < 0) return;
-  let best = null, bd = 80;
-  for (const c of chests) {
-    if (c.open || c.hs.id !== player.hi) continue;
-    const d = Math.hypot(c.x + c.w / 2 - player.x, c.y + c.h / 2 - player.y);
-    if (d < bd) { bd = d; best = c; }
+  if(state!=='playing'||player.hi<0) return;
+  let best=null, bd=80;
+  for(const c of chests){
+    if(c.open||c.hs.id!==player.hi) continue;
+    const d=Math.hypot(c.x+c.w/2-player.x,c.y+c.h/2-player.y);
+    if(d<bd){bd=d;best=c;}
   }
-  if (!best) return;
-  best.open = true; sfx('chest');
-  const r = Math.random(), cx = best.x + best.w / 2, cy = best.y;
-  if (r < 0.55) { const m = Math.round((25 + Math.random() * 45) * (1 + 0.1 * level)); money += m; levelMoney += m; floatText(cx, cy, '+$' + m); toast('Sandıktan $' + m + ' çıktı'); }
-  else if (r < 0.70) { inv.medkit++; toast('Sandıktan ilk yardım çantası çıktı'); }
-  else if (r < 0.85) { const n = 1 + Math.floor(Math.random() * 2); inv.bomb += n; toast('Sandıktan ' + n + ' bomba çıktı'); }
-  else if (r < 0.92) { inv.turret++; toast('Sandıktan bir taret çıktı'); }
-  else if (r < 0.96) {
-    const pool = GUN_ORDER.filter(g => !player.guns.includes(g) && GUNS[g].price > 0 && GUNS[g].price <= 650);
-    if (pool.length) { const g = pool[Math.floor(Math.random() * pool.length)]; player.guns.push(g); player.ammo[g] = GUNS[g].mag; toast('Nadir buluntu: ' + GUNS[g].name + '!'); }
-    else { money += 120; toast('Sandıktan $120 çıktı'); }
-  } else { const m = 100 + level * 20; money += m; levelMoney += m; floatText(cx, cy, '+$' + m); toast('Sandık dolu çıktı: $' + m); }
+  if(!best) return;
+
+  if(net.connected && !net.host){
+    // Misafir hosttan açmasını ister. Host world snapshot ile hem açık durumu hem ortak parayı yollar.
+    net.channel.send({type:'broadcast',event:'chest_request',payload:{id:best.netId,from:net.id}});
+    return;
+  }
+  openChestById(best.netId);
 }
 
 /* =====================================================
@@ -2145,7 +2181,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v6';
+const GAME_VERSION = 'v7';
 
 function drawHUD() {
   const p = player, L = spec || levelSpec(1), narrow = W < 760;
