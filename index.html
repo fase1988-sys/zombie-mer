@@ -267,7 +267,7 @@ function upsertRemotePlayer(p){
     old.targetX=nx; old.targetY=ny;
   }
   if(Number.isFinite(Number(p.ang))) old.targetAng=Number(p.ang);
-  old.name=p.name||old.name; old.hp=p.hp ?? old.hp; old.host=!!p.host;
+  old.name=p.name||old.name; old.hp=p.hp ?? old.hp; old.dead=!!p.dead; old.host=!!p.host;
   old.lastNet=now;
 }
 
@@ -338,13 +338,25 @@ async function connectRoom(code, asHost){
     if(!delta) return;
     money=Math.max(0,money+delta);
   });
+  ch.on('broadcast',{event:'player_dead'},({payload})=>{
+    if(!payload) return;
+    const q=net.peers.get(payload.id);
+    if(q){ q.hp=0; q.dead=true; }
+    if(net.host) checkOnlineTeamAlive();
+  });
+  ch.on('broadcast',{event:'level_start'},({payload})=>{
+    if(!payload || net.host) return;
+    level=Number(payload.level)||level;
+    beginLevel();
+    hideOverlay();
+  });
   ch.subscribe(async (status, err)=>{
     console.log('Realtime status:', status, err || '');
     if(status==='SUBSCRIBED'){
       net.connected=true;
       netStatus('BAĞLANDI · Oda '+code,true);
       try {
-        const tr = await ch.track({id:net.id,name:net.name,x:player?player.x:MID,y:player?player.y:MID,ang:0,hp:player?player.hp:100,host:net.host});
+        const tr = await ch.track({id:net.id,name:net.name,x:player?player.x:MID,y:player?player.y:MID,ang:0,hp:player?player.hp:100,dead:player?player.hp<=0:false,host:net.host});
         console.log('Presence track:', tr);
       } catch(e) { console.error('Presence error:', e); }
       if(net.host && state==='menu') newGame();
@@ -366,7 +378,7 @@ function netTick(now){
   if(!net.connected || !net.channel || !player) return;
   if(now-net.lastSend>33){
     net.lastSend=now;
-    net.channel.send({type:'broadcast',event:'player',payload:{id:net.id,name:net.name,x:player.x,y:player.y,ang:player.ang,hp:player.hp,host:net.host}});
+    net.channel.send({type:'broadcast',event:'player',payload:{id:net.id,name:net.name,x:player.x,y:player.y,ang:player.ang,hp:player.hp,dead:player.hp<=0,host:net.host}});
   }
   if(net.host && now-net.lastWorld>100){
     net.lastWorld=now;
@@ -1116,6 +1128,8 @@ cv.addEventListener('touchcancel', touchEnd);
    ===================================================== */
 function setCursor() { cv.classList.toggle('playing', state === 'playing'); }
 
+function hideOverlay(){ $('overlay').classList.remove('show'); setCursor(); }
+
 function showOverlay(o) {
   $('ovTitle').textContent = o.title;
   $('ovText').textContent = o.text || '';
@@ -1202,6 +1216,7 @@ function beginLevel() {
   spawnT = 2.4;
   const p = player;
   p.x = MID; p.y = MID + 60; p.hi = -1;
+  p.hp = p.max; // Yeni bölümde tüm oyuncular yeniden doğar.
   p.ammo = {}; for (const g of p.guns) p.ammo[g] = GUNS[g].mag;
   p.reload = 0; p.stam = 100; p.tired = false; p.hurt = 0; p.cd = 0;
   for (const c of chests) c.open = false;
@@ -1218,7 +1233,7 @@ function beginLevel() {
 function retryLevel() { restoreSnap(); beginLevel(); }
 
 function levelClear() {
-  state = 'clear'; sfx('clear');
+  state = 'clear'; hideOverlay(); sfx('clear');
   const bonus = 40 + level * 15; money += bonus; levelMoney += bonus;
   for (const o of built) o.hp = o.max;           // odunlar ve taretler onarılır
   player.hp = Math.min(player.max, player.hp + 30);
@@ -1228,7 +1243,10 @@ function levelClear() {
     title: 'Bölüm ' + level + ' temizlendi',
     text: 'Bölgede canlı zombi kalmadı. Sonraki dalga daha güçlü olacak. Mağazada alışveriş yap, üssünü güçlendir.',
     extra: `<div class="stats"><div><b>${levelKills}</b>Bu bölümde öldürülen</div><div><b>$${money}</b>Paran</div><div><b>${score}</b>Puan</div></div>${note}`,
-    btn: 'Sonraki bölüm', onClick: () => { level++; beginLevel(); },
+    btn: 'Sonraki bölüm', onClick: () => {
+      level++; beginLevel();
+      if(net.connected && net.host && net.channel) net.channel.send({type:'broadcast',event:'level_start',payload:{level}});
+    },
     btn2: 'Mağaza', keep2: true, onClick2: openShop
   });
 }
@@ -1512,10 +1530,35 @@ function spawnZombie(type) {
   return true;
 }
 function hurtPlayer(d) {
-  if (state !== 'playing') return;
+  if (state !== 'playing' || player.hp <= 0) return;
   player.hp -= d; player.hurt = 0.3; shake = Math.max(shake, 8); sfx('hurt');
-  if (player.hp <= 0) { player.hp = 0; gameOver(); }
+  if (player.hp <= 0) {
+    player.hp = 0;
+    if(net.connected){
+      if(net.channel) net.channel.send({type:'broadcast',event:'player_dead',payload:{id:net.id}});
+      showDeadUntilNextLevel();
+      if(net.host) checkOnlineTeamAlive();
+    } else gameOver();
+  }
 }
+function onlineLivingCount(){
+  let n=(player && player.hp>0)?1:0;
+  for(const q of net.peers.values()) if(q && !q.dead && Number(q.hp)>0) n++;
+  return n;
+}
+function showDeadUntilNextLevel(){
+  state='dead_wait';
+  showOverlay({
+    title:'Öldün',
+    text:'Takım arkadaşın hayatta. Oyun onun için devam ediyor. Bölüm tamamlanınca tekrar doğacaksın.',
+    extra:'<div class="note">Sonraki bölümü bekliyorsun.</div>',
+    btn:'Takım', onClick:()=>openTeamMenu()
+  });
+}
+function checkOnlineTeamAlive(){
+  if(net.connected && net.host && onlineLivingCount()<=0) gameOver();
+}
+
 function damageZombie(z, dmg, kx, ky) {
   if (z.dead) return;
   z.hp -= dmg; z.flash = 0.08; z.sleep = false; sfx('hit');
@@ -1607,7 +1650,7 @@ function update(dt) {
   // Eylemler
   p.cd -= dt; p.flash -= dt; p.hurt -= dt; mouse.buf -= dt;
   const sl = slots()[p.sel] || slots()[0];
-  const want = mouse.down || mouse.buf > 0;
+  const want = p.hp > 0 && (mouse.down || mouse.buf > 0);
   if (sl.k === 'gun') {
     const w = GUNS[sl.id];
     if (p.reload > 0) {
@@ -1761,7 +1804,7 @@ function update(dt) {
     }
     if (contact && z.atk <= 0) {
       hurtPlayer(z.dmg); z.atk = 0.85;
-      if (state !== 'playing') return;
+      if (state !== 'playing' && state !== 'dead_wait') return;
     }
   }
   for (let i = 0; i < zombies.length; i++) {
@@ -1836,7 +1879,7 @@ function update(dt) {
   shake = Math.max(0, shake - dt * 30);
   if (banner) { banner.t -= dt; if (banner.t <= 0) banner = null; }
 
-  if (state === 'playing' && !queue.length && !zombies.length) levelClear();
+  if ((state === 'playing' || state === 'dead_wait') && (!net.connected || net.host) && !queue.length && !zombies.length) levelClear();
 }
 
 /* =====================================================
@@ -2181,7 +2224,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v7';
+const GAME_VERSION = 'v8';
 
 function drawHUD() {
   const p = player, L = spec || levelSpec(1), narrow = W < 760;
@@ -2384,7 +2427,7 @@ function draw() {
    ===================================================== */
 function frame(now) {
   const dt = Math.min(0.05, (now - last) / 1000); last = now;
-  if (state === 'playing') update(dt);
+  if (state === 'playing' || state === 'dead_wait') update(dt);
   else anim += dt;
   netTick(now);
   smoothRemotePlayers(typeof dt==='number'?dt:1/60);
