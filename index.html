@@ -181,7 +181,7 @@ div:has(> #legacyOnlineMarker){display:none!important}
 </div><div class="adminFooter"><span>● ADMIN ACCESS</span><span>v48 CONTROL CONSOLE</span></div></div></div></div>
 
 
-<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v63</b></div></div></div>
+<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v64</b></div></div></div>
 
 <div id="onlinePanel">
   <b><span id="legacyOnlineMarker">ONLINE CO-OP v8 · CLEAN LOBBY</span></b>
@@ -832,7 +832,7 @@ function makeHouse(c, id, roofs) {
     for(let ci=chests.length-1;ci>=0;ci--)if(doomed.some(h=>h.chests.includes(chests[ci])))chests.splice(ci,1);
     for(let hi=houses.length-1;hi>=0;hi--)if(doomed.includes(houses[hi]))houses.splice(hi,1);
     // Çadırlar kampın iç kenarlarında; tampon bölge sayesinde komşu bina çatısı üstlerine gelemez.
-    const offsets=[[-125,-82],[115,-82],[-125,82],[115,82]];
+    const offsets=[[-132,-88],[132,-88],[-132,88],[132,88]];
     const tentData=offsets.map(([ox,oy])=>({x:x+ox,y:y+oy,a:0,loot:false,inside:false}));
     abandonedCamps.push({id:i,x,y,r:rad,tents:tentData,fire:i%2===0,medical:i===1||i===3,discovered:false,plot});
   }
@@ -2016,7 +2016,7 @@ function bossSlam(z) {
    Güncelleme
    ===================================================== */
 function campRadius(cp){return (cp&&cp.r)||190}
-function nearestCampTent(maxD=72){
+function nearestCampTent(maxD=96){
  if(!player)return null;let best=null,bd=maxD;
  for(const cp of abandonedCamps)for(const t of cp.tents){const d=Math.hypot(player.x-t.x,player.y-t.y);if(d<bd){bd=d;best={camp:cp,tent:t};}}
  return best;
@@ -2077,7 +2077,7 @@ function update(dt) {
   p.x = clamp(p.x + mx * speed * dt, 40, WORLD - 40);
   p.y = clamp(p.y + my * speed * dt, 40, WORLD - 40);
   pushOut(p);
-  const tentNow=currentTent();if(tentNow){const dx=p.x-tentNow.tent.x,dy=p.y-tentNow.tent.y,d=Math.hypot(dx,dy);if(d>31){p.x=tentNow.tent.x+dx/d*31;p.y=tentNow.tent.y+dy/d*31;}}
+  const tentNow=currentTent();if(tentNow){const dx=p.x-tentNow.tent.x,dy=p.y-tentNow.tent.y,d=Math.hypot(dx,dy);if(d>78){p.x=tentNow.tent.x+dx/d*78;p.y=tentNow.tent.y+dy/d*78;}}
   p.hi = houseAt(p.x, p.y);
 
   // Kamera ve nişan / ölümde yaşayan takım arkadaşını izle
@@ -2098,7 +2098,7 @@ function update(dt) {
     if(insideTent&&!insideTent.tent.eLatch){
       insideTent.tent.eLatch=true;
       if(!insideTent.tent.loot){lootCampTent(insideTent.tent);}
-      else {insideTent.tent.inside=false;player.x=insideTent.tent.x+58;player.y=insideTent.tent.y+42;toast('Çadırdan çıktın');}
+      else {insideTent.tent.inside=false;player.x=insideTent.tent.x+92;player.y=insideTent.tent.y+62;toast('Çadırdan çıktın');}
     }else if(!insideTent&&ct&&!ct.tent.eLatch){
       ct.tent.eLatch=true;ct.tent.inside=true;player.x=ct.tent.x;player.y=ct.tent.y+8;toast('Çadırın içindesin · E ile ara');
     }
@@ -2452,15 +2452,34 @@ function drawDrops() {
 }
 function drawTentInterior(t){
  const x=t.x,y=t.y;ctx.save();
- ctx.fillStyle='#1e211c';ctx.beginPath();ctx.ellipse(x,y,46,38,0,0,TAU);ctx.fill();
- ctx.strokeStyle='#77715c';ctx.lineWidth=4;ctx.beginPath();ctx.ellipse(x,y,45,37,0,0,TAU);ctx.stroke();
- // Ev içinden tamamen farklı: uyku tulumu, sırt çantası, konserve ve fener.
- ctx.fillStyle='#46533d';ctx.fillRect(x-29,y-18,25,42);ctx.strokeStyle='#20271d';ctx.strokeRect(x-29,y-18,25,42);
- ctx.fillStyle='#71583b';ctx.fillRect(x+7,y-15,23,20);ctx.fillStyle='#29251e';ctx.fillRect(x+11,y-11,15,12);
- ctx.fillStyle='#9b8b62';ctx.beginPath();ctx.arc(x+18,y+18,6,0,TAU);ctx.fill();
- ctx.fillStyle='#d0b35c';ctx.fillRect(x-1,y+13,5,11);
- ctx.fillStyle=t.loot?'#34342f':'#a37438';ctx.fillRect(x+3,y+7,13,11);ctx.strokeStyle='#191914';ctx.strokeRect(x+3,y+7,13,11);
- ctx.font='800 8px '+FONT;ctx.textAlign='center';ctx.fillStyle='#d6c9a7';ctx.fillText(t.loot?'ARANDI':'E · ÇADIRI ARA',x,y+51);
+ // Büyük canvas çadır içi: zemin, kumaş kenarlar ve dikişler.
+ ctx.fillStyle='rgba(0,0,0,.38)';ctx.beginPath();ctx.ellipse(x+5,y+8,104,88,0,0,TAU);ctx.fill();
+ ctx.fillStyle='#30372c';ctx.beginPath();ctx.ellipse(x,y,100,84,0,0,TAU);ctx.fill();
+ ctx.strokeStyle='#8a8266';ctx.lineWidth=7;ctx.beginPath();ctx.ellipse(x,y,98,82,0,0,TAU);ctx.stroke();
+ ctx.strokeStyle='rgba(220,210,170,.18)';ctx.lineWidth=2;
+ ctx.beginPath();ctx.moveTo(x-88,y);ctx.quadraticCurveTo(x,y-24,x+88,y);ctx.moveTo(x,y-74);ctx.lineTo(x,y+74);ctx.stroke();
+ // Katlanmış battaniye + büyük uyku tulumu.
+ ctx.fillStyle='#4f6148';ctx.fillRect(x-72,y-48,43,93);ctx.strokeStyle='#20291e';ctx.lineWidth=3;ctx.strokeRect(x-72,y-48,43,93);
+ ctx.fillStyle='#6f765d';ctx.fillRect(x-67,y-42,33,18);ctx.fillStyle='#394735';ctx.fillRect(x-67,y-18,33,57);
+ ctx.strokeStyle='rgba(230,220,180,.18)';ctx.beginPath();ctx.moveTo(x-67,y+8);ctx.lineTo(x-34,y+8);ctx.stroke();
+ // Sağ tarafta saha masası, radyo ve harita.
+ ctx.fillStyle='#75593b';ctx.fillRect(x+25,y-47,58,31);ctx.strokeStyle='#35271b';ctx.strokeRect(x+25,y-47,58,31);
+ ctx.fillStyle='#252a27';ctx.fillRect(x+34,y-41,22,16);ctx.fillStyle='#8e2e27';ctx.fillRect(x+39,y-36,4,4);
+ ctx.strokeStyle='#b2a36d';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x+53,y-41);ctx.lineTo(x+61,y-57);ctx.stroke();
+ ctx.fillStyle='#c9b98b';ctx.fillRect(x+60,y-40,17,13);ctx.strokeStyle='#756b50';ctx.lineWidth=1;ctx.strokeRect(x+60,y-40,17,13);
+ // Sırt çantası, su matarası, konserve ve botlar.
+ ctx.fillStyle='#665039';ctx.fillRect(x+34,y+2,32,34);ctx.fillStyle='#2d3028';ctx.fillRect(x+40,y+8,20,19);
+ ctx.strokeStyle='#8b7653';ctx.lineWidth=3;ctx.beginPath();ctx.arc(x+50,y+3,12,Math.PI,TAU);ctx.stroke();
+ ctx.fillStyle='#68736a';ctx.beginPath();ctx.arc(x+79,y+22,8,0,TAU);ctx.fill();ctx.fillRect(x+75,y+8,8,15);
+ ctx.fillStyle='#a99763';ctx.beginPath();ctx.arc(x+14,y+39,7,0,TAU);ctx.fill();
+ ctx.fillStyle='#282722';ctx.fillRect(x-9,y+48,18,9);ctx.fillRect(x+12,y+48,18,9);
+ // Loot sandığı daha görünür.
+ ctx.fillStyle=t.loot?'#383a34':'#9a6932';ctx.fillRect(x-12,y-11,31,24);ctx.strokeStyle='#171812';ctx.lineWidth=3;ctx.strokeRect(x-12,y-11,31,24);
+ ctx.fillStyle='#c49a52';ctx.fillRect(x,y-2,7,7);
+ // Fener ışığı.
+ const g=ctx.createRadialGradient(x-8,y-58,2,x-8,y-58,45);g.addColorStop(0,'rgba(245,218,130,.24)');g.addColorStop(1,'rgba(245,218,130,0)');
+ ctx.fillStyle=g;ctx.beginPath();ctx.arc(x-8,y-58,45,0,TAU);ctx.fill();ctx.fillStyle='#d7bd62';ctx.fillRect(x-12,y-63,8,17);
+ ctx.font='900 11px '+FONT;ctx.textAlign='center';ctx.fillStyle='#eadba9';ctx.fillText(t.loot?'ÇADIR ARANDI':'E · MALZEMELERİ ARA',x,y+105);
  ctx.restore();
 }
 function drawAbandonedCamps(){
@@ -2479,13 +2498,22 @@ function drawAbandonedCamps(){
   for(let i=0;i<camp.tents.length;i++){
    const t=camp.tents[i],tx=t.x,ty=t.y;if(t.inside){drawTentInterior(t);continue}
    ctx.save();ctx.translate(tx,ty);
-   // Daha büyük dikdörtgen askerî/survivor çadırı, üstten görünüş.
-   ctx.fillStyle='rgba(0,0,0,.28)';ctx.fillRect(-45,-27,96,62);
-   ctx.fillStyle=i%2?'#59634d':'#6a654c';ctx.beginPath();ctx.moveTo(-47,27);ctx.lineTo(-35,-28);ctx.lineTo(35,-28);ctx.lineTo(47,27);ctx.closePath();ctx.fill();
-   ctx.strokeStyle='#252a22';ctx.lineWidth=4;ctx.stroke();
-   ctx.strokeStyle='rgba(215,207,170,.28)';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,-27);ctx.lineTo(0,27);ctx.stroke();
-   ctx.fillStyle='#171b16';ctx.fillRect(-11,13,22,15);
-   ctx.fillStyle='#d6c797';ctx.font='800 8px '+FONT;ctx.textAlign='center';ctx.fillText('E · GİR',0,43);ctx.restore();
+   // Büyük, katmanlı askerî survivor çadırı: gölge, dış tente, paneller, halatlar ve açık giriş.
+   ctx.fillStyle='rgba(0,0,0,.34)';ctx.beginPath();ctx.ellipse(5,8,67,48,0,0,TAU);ctx.fill();
+   ctx.fillStyle=i%2?'#515d48':'#625f46';ctx.beginPath();ctx.moveTo(-61,35);ctx.lineTo(-47,-37);ctx.lineTo(47,-37);ctx.lineTo(61,35);ctx.closePath();ctx.fill();
+   ctx.strokeStyle='#252a22';ctx.lineWidth=5;ctx.stroke();
+   ctx.fillStyle=i%2?'#657258':'#777154';ctx.beginPath();ctx.moveTo(-47,-37);ctx.lineTo(0,-50);ctx.lineTo(47,-37);ctx.lineTo(0,35);ctx.closePath();ctx.fill();
+   ctx.strokeStyle='rgba(226,216,176,.28)';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,-49);ctx.lineTo(0,34);ctx.moveTo(-47,-36);ctx.lineTo(-61,35);ctx.moveTo(47,-36);ctx.lineTo(61,35);ctx.stroke();
+   // Gergi halatları ve kazıklar.
+   ctx.strokeStyle='#8f896e';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(-48,-28);ctx.lineTo(-72,-42);ctx.moveTo(48,-28);ctx.lineTo(72,-42);ctx.moveTo(-56,27);ctx.lineTo(-76,42);ctx.moveTo(56,27);ctx.lineTo(76,42);ctx.stroke();
+   ctx.fillStyle='#b19b69';for(const q of [[-72,-42],[72,-42],[-76,42],[76,42]])ctx.fillRect(q[0]-2,q[1]-2,4,4);
+   // Açık giriş kanatları ve karanlık iç boşluk.
+   ctx.fillStyle='#121612';ctx.beginPath();ctx.moveTo(-18,12);ctx.lineTo(18,12);ctx.lineTo(13,36);ctx.lineTo(-13,36);ctx.closePath();ctx.fill();
+   ctx.fillStyle='#7b7556';ctx.beginPath();ctx.moveTo(-18,12);ctx.lineTo(-4,15);ctx.lineTo(-13,36);ctx.lineTo(-25,30);ctx.closePath();ctx.fill();
+   ctx.beginPath();ctx.moveTo(18,12);ctx.lineTo(4,15);ctx.lineTo(13,36);ctx.lineTo(25,30);ctx.closePath();ctx.fill();
+   // Yama ve küçük survivor işareti.
+   ctx.fillStyle='rgba(40,45,36,.7)';ctx.fillRect(-39,-12,18,14);ctx.strokeStyle='#92906e';ctx.strokeRect(-39,-12,18,14);
+   ctx.fillStyle='#e0c88a';ctx.font='900 9px '+FONT;ctx.textAlign='center';ctx.fillText('E · GİR',0,54);ctx.restore();
   }
   // Ortak kamp alanı: ateş, masa, variller, medikal kasa.
   ctx.fillStyle='#5b5951';for(let i=0;i<10;i++){const a=i*TAU/10;ctx.beginPath();ctx.arc(x+Math.cos(a)*21,y+Math.sin(a)*15,6,0,TAU);ctx.fill();}
@@ -2837,7 +2865,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v63';
+const GAME_VERSION = 'v64';
 
 function drawHUD() {
   if(player&&abandonedCamps.length&&player.hi<0){let cp=null,bd=1e9;for(const q of abandonedCamps){const d=Math.hypot(q.x-player.x,q.y-player.y);if(d<bd){bd=d;cp=q}}if(cp&&bd>190){ctx.save();ctx.textAlign='center';ctx.font='900 11px '+FONT;ctx.fillStyle='#e3aa45';ctx.fillText('🏕 KAMP  '+Math.round(bd)+'m',W/2,82);ctx.restore();}}
