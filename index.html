@@ -1,0 +1,2250 @@
+<!DOCTYPE html>
+<html lang="tr"><head>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<style id="standalone-fullscreen">
+html, body, #artifacts-component-root-html {
+  width: 100%;
+  height: 100%;
+  min-width: 100vw;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+#game {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+}
+</style>
+
+<title>Zombi İstilası</title>
+<meta name="description" content="Tarayıcıda oynanan zombi hayatta kalma oyunu: büyük harita, evler, üs kurma, mağaza, taret, bomba ve patronlar.">
+<style>
+  :root{
+    color-scheme: dark;
+    --night:#0b100d;
+    --panel:#141c17;
+    --bone:#ece6d6;
+    --muted:#a3ad9f;
+    --amber:#f0b429;
+    --blood:#c8382b;
+    --line:#2c3a31;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:var(--night);color:var(--bone);overflow:hidden;
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;touch-action:none;-webkit-user-select:none;user-select:none}
+  canvas{display:block;position:fixed;inset:0;width:100%;height:100%}
+  canvas.playing{cursor:none}
+  #overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;
+    background:rgba(5,8,6,.72);padding:16px;overflow:auto;z-index:10}
+  #overlay.show{display:flex}
+  .card{width:min(580px,100%);background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--amber);
+    padding:26px 28px 24px;border-radius:4px;max-height:100%;overflow:auto}
+  h1,h2{margin:0 0 8px;font-family:Impact,"Arial Narrow Bold","Arial Black",sans-serif;font-weight:900;
+    letter-spacing:.02em;line-height:1.05;color:var(--bone)}
+  h1{font-size:clamp(34px,7vw,52px)}
+  h2{font-size:30px}
+  .card p{margin:0 0 14px;line-height:1.5;color:var(--muted);max-width:62ch}
+  .controls{display:grid;grid-template-columns:auto 1fr;gap:7px 14px;margin:0 0 16px;font-size:14px;align-items:center}
+  .controls dt{display:flex;gap:4px;flex-wrap:wrap}
+  .controls dd{margin:0;color:var(--bone)}
+  kbd{font:600 12px system-ui,sans-serif;padding:3px 7px;border:1px solid #4a5a4f;border-bottom-width:3px;
+    border-radius:4px;background:#1d2821;color:var(--bone)}
+  .stats{display:flex;gap:24px;margin:0 0 16px;flex-wrap:wrap}
+  .stats div{font-size:13px;color:var(--muted)}
+  .stats b{display:block;font-size:26px;color:var(--bone);font-weight:700}
+  .note{margin:0 0 16px;padding:10px 12px;background:#1d2821;border-left:3px solid var(--amber);color:var(--bone);font-size:14px}
+  .btns{display:flex;gap:10px;flex-wrap:wrap}
+  button{font:700 16px system-ui,sans-serif;padding:12px 22px;border:0;border-radius:4px;cursor:pointer;
+    background:var(--amber);color:#1a1405}
+  button.alt{background:transparent;color:var(--bone);border:1px solid #4a5a4f}
+  button:hover:not(:disabled){filter:brightness(1.12)}
+  button:disabled{opacity:.45;cursor:not-allowed}
+  button:focus-visible{outline:3px solid var(--bone);outline-offset:2px}
+
+  #shop{position:fixed;inset:0;display:none;z-index:20;background:rgba(5,8,6,.86);overflow:auto;padding:16px;touch-action:pan-y}
+  #shop.show{display:block}
+  .shopbox{max-width:980px;margin:0 auto;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--amber);padding:20px 22px 24px;border-radius:4px}
+  .shophead{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:6px}
+  .shophead h2{margin:0;flex:1}
+  #shopMoney{font:800 26px system-ui,sans-serif;color:var(--amber)}
+  .shopnote{color:var(--muted);font-size:13px;margin:0 0 6px}
+  .cat{margin:18px 0 8px;font:800 17px system-ui,sans-serif;color:var(--bone)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:10px}
+  .item{background:#19241d;border:1px solid var(--line);border-radius:4px;padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+  .item b{font-size:16px}
+  .item .d{font-size:13px;color:var(--muted);line-height:1.4;flex:1}
+  .item .s{font-size:12px;color:#c9d3c5}
+  .item button{padding:9px 12px;font-size:14px}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<style id="online-v1-style">
+#onlinePanel{position:fixed;right:14px;top:78px;z-index:12;width:250px;padding:12px;border:1px solid rgba(255,255,255,.18);border-radius:12px;background:rgba(8,12,14,.88);color:#fff;font:13px system-ui,-apple-system,"Segoe UI",sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.35)}
+#onlinePanel b{font-size:14px} #onlinePanel .row{display:flex;gap:6px;margin-top:7px}
+#onlinePanel input{min-width:0;flex:1;padding:7px 8px;border-radius:7px;border:1px solid #566;background:#111a1d;color:#fff;text-transform:uppercase}
+#onlinePanel button{padding:7px 9px;border:0;border-radius:7px;background:#f0b429;color:#171006;font-weight:800;cursor:pointer}
+#onlinePanel .muted{opacity:.7;font-size:11px;margin-top:5px;line-height:1.3}
+#onlinePanel .ok{color:#8ee08e} #onlinePanel .bad{color:#ff8a7d}
+</style>
+
+<style id="team-menu-style">
+#teamMenu{position:fixed;inset:0;display:none;z-index:40;background:rgba(3,7,6,.82);padding:18px;overflow:auto}
+#teamMenu.show{display:block}
+#teamMenuBox{max-width:720px;margin:48px auto;background:#101915;border:1px solid #425349;border-left:6px solid var(--amber);border-radius:8px;padding:20px;color:var(--bone);font:14px system-ui,sans-serif}
+#teamMenuHead{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+#teamMenuHead h2{margin:0;flex:1}
+#teamMenuClose{padding:9px 14px}
+.teamJoin{display:grid;grid-template-columns:1fr auto auto;gap:8px;margin:16px 0}
+.teamJoin input{min-width:0;padding:11px;border-radius:6px;border:1px solid #526258;background:#0b120f;color:#fff;text-transform:uppercase;font-size:16px}
+#teamRoomLine{padding:10px 0;color:#c8d2ca}
+#teamPlayers{display:grid;gap:8px;margin-top:10px}
+.teamPlayer{display:flex;align-items:center;gap:10px;padding:10px 12px;background:#17231d;border:1px solid #34463b;border-radius:6px}
+.teamPlayer .name{font-weight:800;flex:1}
+.teamPlayer .tag{font-size:11px;color:#f0b429}
+.teamPlayer button{padding:7px 10px;font-size:12px;background:#8f3434;color:white}
+#teamHint{font-size:12px;color:#9dac9f;margin-top:12px}
+@media(max-width:560px){.teamJoin{grid-template-columns:1fr 1fr}.teamJoin input{grid-column:1/-1}}
+</style>
+
+
+<style id="v8-cleanup">
+/* Old top-right multiplayer box is obsolete; ESC Team Lobby is now the only lobby UI. */
+body > div:has(#legacyOnlineMarker),
+div:has(> #legacyOnlineMarker){display:none!important}
+</style>
+
+
+<style id="door-v8-style">
+.door-build-card{position:relative!important;min-width:70px!important}
+.door-v8-icon{width:28px;height:34px;margin:0 auto 3px;position:relative;border:2px solid #b98b52;background:#563a25;border-radius:2px}
+.door-v8-icon .door-panel{position:absolute;inset:4px;border:1px solid #8e6841}
+.door-v8-icon .door-knob{position:absolute;width:4px;height:4px;border-radius:50%;background:#e0bd68;right:4px;top:15px}
+.door-v8-cost{font-weight:800;color:#f0b429;font-size:11px;line-height:1.1}
+.door-v8-hp{font-size:9px;color:#9fd5a8;line-height:1.1}
+</style>
+
+</head>
+<body id="artifacts-component-root-html">
+<canvas id="game" width="580" height="843" class=""></canvas>
+
+
+<div id="onlinePanel">
+  <b><span id="legacyOnlineMarker">ONLINE CO-OP v8 · CLEAN LOBBY</span></b>
+  <div id="netStatus" data-online-status="1" class="muted">Online sistem yükleniyor…</div>
+  <div class="row"><input id="netName" maxlength="14" placeholder="İsmin" value="Oyuncu"></div>
+  <div class="row"><button id="createRoom" data-online-create="1">ODA OLUŞTUR</button><input id="roomCode" data-online-room="1" maxlength="6" autocomplete="off" autocapitalize="characters" placeholder="ODA KODU"><button id="joinRoom" data-online-join="1">KATIL</button></div>
+  <div id="roomInfo" data-online-info="1" class="muted">6 karakterli kod tamamlanınca otomatik katılır. · Ultra Smooth sync aktif</div>
+</div>
+
+<div id="overlay" class="show">
+  <div class="card">
+    <h1 id="ovTitle">Duraklatıldı</h1>
+    <p id="ovText">Hazır olduğunda devam et.</p>
+    <div id="ovExtra"></div>
+    <div class="btns">
+      <button id="ovBtn">Devam et</button>
+      <button id="ovBtn2" class="alt" hidden="">Baştan başla</button>
+    </div>
+  </div>
+</div>
+
+
+<div id="teamMenu" aria-hidden="true">
+  <div id="teamMenuBox">
+    <div id="teamMenuHead">
+      <h2>TAKIM / ONLINE ODA</h2>
+      <button id="teamMenuClose" class="alt">Oyuna dön · ESC</button>
+    </div>
+    <div id="teamRoomLine">Henüz bir odada değilsin.</div>
+    <div class="teamJoin">
+      <input id="teamRoomCode" maxlength="6" autocomplete="off" placeholder="ODA KODU">
+      <button id="teamCreate">ODA OLUŞTUR</button>
+      <button id="teamJoin">KATIL</button>
+    </div>
+    <div><b>Oyuncular</b></div>
+    <div id="teamPlayers"></div>
+    <div id="teamHint">Oda lideri oyuncuları odadan çıkarabilir. 6 karakterli kodu yazınca otomatik katılım da çalışır.</div>
+  </div>
+</div>
+
+<div id="shop">
+  <div class="shopbox">
+    <div class="shophead">
+      <h2>Mağaza</h2>
+      <div id="shopMoney"></div>
+      <button id="shopClose" class="alt">Kapat</button>
+    </div>
+    <p class="shopnote">Zombi öldürerek ve sandıklardan para kazanırsın. Satın aldığın silahlar ve eşyalar alttaki envanter çubuğuna eklenir.</p>
+    <div id="shopBody"></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(() => {
+'use strict';
+
+// ================= ONLINE CO-OP v1 =================
+// Supabase Dashboard > Project Settings / Connect bölümündeki URL ve PUBLISHABLE key'i buraya gir.
+// Secret/service_role anahtarı KULLANMA.
+const SUPABASE_URL = 'https://oxmuinvriqhbzxkyoren.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_sgFSXGiU72Evp0oVvhUHeA_jZw4qllx';
+
+let net = {
+  client:null, channel:null, room:'', id:(crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2)),
+  name:'Oyuncu', host:false, connected:false, peers:new Map(), lastSend:0, lastWorld:0
+};
+
+async function loadSupabase() {
+  if (SUPABASE_URL.startsWith('PASTE_') || SUPABASE_KEY.startsWith('PASTE_')) {
+    netStatus('Supabase bilgileri eksik.');
+    return false;
+  }
+  if (net.client) return true;
+  try {
+    if (!window.supabase || typeof window.supabase.createClient !== 'function') {
+      throw new Error('Supabase kütüphanesi yüklenemedi. İnternet bağlantısını kontrol et.');
+    }
+    net.client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+      auth: { persistSession:false, autoRefreshToken:false, detectSessionInUrl:false }
+    });
+    return true;
+  } catch(e) {
+    console.error('Supabase init error:', e);
+    netStatus('Başlatma hatası: ' + (e?.message || e));
+    return false;
+  }
+}
+function netStatus(t, ok=false){ const e=document.getElementById('netStatus'); if(e){e.textContent=t;e.className='muted '+(ok?'ok':'bad');} }
+function roomCode(){
+  const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let s=''; for(let i=0;i<6;i++) s+=chars[Math.floor(Math.random()*chars.length)];
+  return s;
+}
+function worldSnapshot(){
+  return {
+    level, score, kills, money, queue:[...queue],
+    zombies:zombies.map(z=>({type:z.type,x:z.x,y:z.y,hp:z.hp,max:z.max,dead:z.dead,hi:z.hi,sleep:z.sleep,a:z.a,boss:z.boss,atk:z.atk,dmg:z.dmg,r:z.r,spd:z.spd,ph:z.ph,flash:z.flash,stuck:z.stuck,detour:z.detour,dd:z.dd,dashT:z.dashT,skillT:z.skillT,tele:z.tele})),
+    built:built.map(o=>({...o}))
+  };
+}
+function applyWorld(w){
+  if(!w || net.host) return;
+  level=w.level; score=w.score; kills=w.kills; money=w.money;
+  queue=Array.isArray(w.queue)?w.queue:[];
+  if(Array.isArray(w.zombies)) zombies=w.zombies.map(q=>Object.assign(makeZombie(q.type,q.x,q.y),q));
+  if(Array.isArray(w.built)){ built=w.built.map(o=>({...o})); rebuildGrid(); }
+  spec=levelSpec(level);
+}
+async function leaveRoom(){
+  if(net.channel && net.client) await net.client.removeChannel(net.channel);
+  net.channel=null; net.room=''; net.connected=false; net.host=false; net.peers.clear();
+}
+
+function upsertRemotePlayer(p){
+  if(!p || !p.id || p.id===net.id) return;
+  const now=performance.now();
+  const old=net.peers.get(p.id);
+  if(!old){
+    net.peers.set(p.id,{
+      ...p,
+      x:Number(p.x)||MID, y:Number(p.y)||MID, ang:Number(p.ang)||0,
+      targetX:Number(p.x)||MID, targetY:Number(p.y)||MID, targetAng:Number(p.ang)||0,
+      vx:0, vy:0, lastNet:now
+    });
+    return;
+  }
+  const nx=Number(p.x), ny=Number(p.y);
+  const elapsed=Math.max(0.016,(now-(old.lastNet||now-50))/1000);
+  if(Number.isFinite(nx) && Number.isFinite(ny)){
+    old.vx=(nx-(Number.isFinite(old.targetX)?old.targetX:old.x))/elapsed;
+    old.vy=(ny-(Number.isFinite(old.targetY)?old.targetY:old.y))/elapsed;
+    old.targetX=nx; old.targetY=ny;
+  }
+  if(Number.isFinite(Number(p.ang))) old.targetAng=Number(p.ang);
+  old.name=p.name||old.name; old.hp=p.hp ?? old.hp; old.host=!!p.host;
+  old.lastNet=now;
+}
+
+function mergePresencePlayers(ch){
+  const seen=new Set();
+  const ps=ch.presenceState();
+  Object.values(ps).flat().forEach(p=>{
+    if(p && p.id!==net.id){ seen.add(p.id); upsertRemotePlayer(p); }
+  });
+  // Presence is authoritative for membership, but preserve interpolation state.
+  for(const id of Array.from(net.peers.keys())){
+    if(!seen.has(id)) net.peers.delete(id);
+  }
+}
+
+async function connectRoom(code, asHost){
+  try {
+    code=(code||'').trim().toUpperCase();
+    if(!code){ netStatus('Oda kodu yok.'); return; }
+    netStatus('Bağlanıyor… Oda '+code);
+    const ri=document.querySelector('[data-online-info="1"]');
+    if(ri) ri.textContent='Oda: '+code+' · bağlantı kuruluyor…';
+    if(!(await loadSupabase())) return;
+    await leaveRoom();
+    net.room=code; net.host=!!asHost;
+    const input=document.querySelector('[data-online-room="1"]');
+    if(input) input.value=code;
+    const ri2=document.querySelector('[data-online-info="1"]');
+    if(ri2) ri2.textContent='ODA KODU: '+code+' · bağlantı kuruluyor…';
+    try {
+      const u=new URL(location.href);
+      u.searchParams.set('room',code);
+      history.replaceState(null,'',u.toString());
+    } catch(e) {} net.name=(document.getElementById('netName').value||'Oyuncu').slice(0,14);
+  const ch=net.client.channel('zombi-room-'+code,{config:{broadcast:{self:false},presence:{key:net.id}}});
+  net.channel=ch;
+  ch.on('presence',{event:'sync'},()=>{
+    mergePresencePlayers(ch);
+    const ri=document.querySelector('[data-online-info="1"]');
+    if(ri) ri.textContent='Oda: '+code+' · '+(net.peers.size+1)+' oyuncu'+(net.host?' · HOST':'');
+    renderTeamMenu();
+  });
+  ch.on('broadcast',{event:'player'},({payload})=>{ upsertRemotePlayer(payload); });
+  ch.on('broadcast',{event:'kick'},async ({payload})=>{
+    if(payload && payload.target===net.id){
+      netStatus('Oda lideri seni takımdan çıkardı.');
+      await leaveRoom();
+      renderTeamMenu();
+      openTeamMenu();
+    }
+  });
+  ch.on('broadcast',{event:'world'},({payload})=>applyWorld(payload));
+  ch.on('broadcast',{event:'shot'},({payload})=>{
+    if(!net.host || !payload) return;
+    // Misafir atışını host dünyasında gerçek mermiye çevir.
+    const a=payload.ang, sp=payload.sp||1300;
+    bullets.push({x:payload.x,y:payload.y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:payload.life||0.6,dmg:payload.dmg||18,pierce:payload.pierce||1,hit:null});
+  });
+  ch.subscribe(async (status, err)=>{
+    console.log('Realtime status:', status, err || '');
+    if(status==='SUBSCRIBED'){
+      net.connected=true;
+      netStatus('BAĞLANDI · Oda '+code,true);
+      try {
+        const tr = await ch.track({id:net.id,name:net.name,x:player?player.x:MID,y:player?player.y:MID,ang:0,hp:player?player.hp:100,host:net.host});
+        console.log('Presence track:', tr);
+      } catch(e) { console.error('Presence error:', e); }
+      if(net.host && state==='menu') newGame();
+      renderTeamMenu();
+    } else if(status==='CHANNEL_ERROR'){
+      netStatus('CHANNEL_ERROR: '+(err?.message || 'Realtime bağlantısı reddedildi'));
+    } else if(status==='TIMED_OUT'){
+      netStatus('TIMED_OUT: Supabase bağlantısı zaman aşımına uğradı');
+    } else if(status==='CLOSED'){
+      netStatus('Bağlantı kapandı');
+    }
+  });
+  } catch(e) {
+    console.error('connectRoom error:', e);
+    netStatus('HATA: '+(e?.message || e));
+  }
+}
+function netTick(now){
+  if(!net.connected || !net.channel || !player) return;
+  if(now-net.lastSend>33){
+    net.lastSend=now;
+    net.channel.send({type:'broadcast',event:'player',payload:{id:net.id,name:net.name,x:player.x,y:player.y,ang:player.ang,hp:player.hp,host:net.host}});
+  }
+  if(net.host && now-net.lastWorld>100){
+    net.lastWorld=now;
+    net.channel.send({type:'broadcast',event:'world',payload:worldSnapshot()});
+  }
+}
+
+function smoothRemotePlayers(dt){
+  const frame=Math.max(0,Math.min(0.05,Number(dt)||1/60));
+  const now=performance.now();
+  for(const [id,p] of net.peers){
+    if(!p || id===net.id) continue;
+    const age=Math.max(0,(now-(p.lastNet||now))/1000);
+    // Short extrapolation hides network gaps; cap it so a lost packet cannot send a player flying.
+    const lead=Math.min(age,0.10);
+    const baseX=Number.isFinite(p.targetX)?p.targetX:p.x;
+    const baseY=Number.isFinite(p.targetY)?p.targetY:p.y;
+    const tx=baseX+(Number.isFinite(p.vx)?p.vx:0)*lead;
+    const ty=baseY+(Number.isFinite(p.vy)?p.vy:0)*lead;
+    if(!Number.isFinite(p.x)||!Number.isFinite(p.y)){p.x=tx;p.y=ty;}
+    const dx=tx-p.x,dy=ty-p.y,dist=Math.hypot(dx,dy);
+    if(dist>260){p.x=tx;p.y=ty;}
+    else{
+      const alpha=1-Math.exp(-24*frame);
+      p.x+=dx*alpha; p.y+=dy*alpha;
+    }
+    if(Number.isFinite(p.targetAng)){
+      let da=((p.targetAng-(p.ang||0)+Math.PI*3)%(Math.PI*2))-Math.PI;
+      p.ang=(p.ang||0)+da*(1-Math.exp(-20*frame));
+    }
+  }
+}
+
+function drawPeers(){
+  if(!net.connected) return;
+  for(const q of net.peers.values()){
+    if(!q || typeof q.x!=='number') continue;
+    ctx.save(); ctx.translate(q.x,q.y); ctx.rotate(q.ang||0);
+    ctx.fillStyle='#c96ad8'; ctx.beginPath(); ctx.arc(0,0,15,0,TAU); ctx.fill();
+    ctx.fillStyle='#f0c79a'; ctx.beginPath(); ctx.arc(1,0,7,0,TAU); ctx.fill();
+    ctx.fillStyle='#20252a'; ctx.fillRect(7,-3,22,6); ctx.restore();
+    ctx.font='700 12px '+FONT; ctx.textAlign='center'; ctx.fillStyle='#fff'; ctx.fillText(q.name||'Oyuncu',q.x,q.y-24);
+  }
+}
+
+let teamMenuOpen=false;
+
+function renderTeamMenu(){
+  const line=document.getElementById('teamRoomLine');
+  const list=document.getElementById('teamPlayers');
+  const codeInput=document.getElementById('teamRoomCode');
+  if(!line||!list) return;
+  if(net.connected && net.room){
+    line.innerHTML='<b>ODA: '+net.room+'</b> · '+(net.host?'LİDER SENSİN':'Takıma katıldın');
+    if(codeInput) codeInput.value=net.room;
+  } else {
+    line.textContent='Henüz bir odada değilsin.';
+  }
+  list.innerHTML='';
+  const me=document.createElement('div');
+  me.className='teamPlayer';
+  me.innerHTML='<span class="name">'+escapeTeam(net.name||'Oyuncu')+' (Sen)</span>'+(net.host?'<span class="tag">LİDER</span>':'');
+  list.appendChild(me);
+  for(const [id,p] of net.peers){
+    const row=document.createElement('div');
+    row.className='teamPlayer';
+    const nm=document.createElement('span'); nm.className='name'; nm.textContent=p.name||'Oyuncu'; row.appendChild(nm);
+    if(p.host){ const tag=document.createElement('span'); tag.className='tag'; tag.textContent='LİDER'; row.appendChild(tag); }
+    if(net.host && !p.host){
+      const kick=document.createElement('button'); kick.textContent='AT';
+      kick.addEventListener('click',async ()=>{
+        if(!net.channel || !net.host) return;
+        await net.channel.send({type:'broadcast',event:'kick',payload:{target:id,by:net.id}});
+        net.peers.delete(id); renderTeamMenu();
+      });
+      row.appendChild(kick);
+    }
+    list.appendChild(row);
+  }
+}
+function escapeTeam(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function openTeamMenu(){
+  teamMenuOpen=true;
+  for(const k in keys) keys[k]=false;
+  mouse.down=false;
+  const m=document.getElementById('teamMenu');
+  m.classList.add('show'); m.setAttribute('aria-hidden','false');
+  renderTeamMenu();
+}
+function closeTeamMenu(){
+  teamMenuOpen=false;
+  const m=document.getElementById('teamMenu');
+  m.classList.remove('show'); m.setAttribute('aria-hidden','true');
+  last=performance.now();
+}
+function bindTeamMenu(){
+  const input=document.getElementById('teamRoomCode');
+  const clean=v=>String(v||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,6);
+  document.getElementById('teamMenuClose').onclick=closeTeamMenu;
+  document.getElementById('teamCreate').onclick=()=>{
+    const c=roomCode(); input.value=c; connectRoom(c,true).then(renderTeamMenu);
+  };
+  document.getElementById('teamJoin').onclick=()=>{
+    const c=clean(input.value); input.value=c;
+    if(c.length!==6){ lineTeam('6 karakterli oda kodunu yaz.'); input.focus(); return; }
+    connectRoom(c,false).then(renderTeamMenu);
+  };
+  let timer=null,lastAuto='';
+  input.addEventListener('input',()=>{
+    input.value=clean(input.value); clearTimeout(timer);
+    if(input.value.length===6 && input.value!==lastAuto){
+      const c=input.value; timer=setTimeout(()=>{lastAuto=c;connectRoom(c,false).then(renderTeamMenu);},220);
+    }
+  });
+}
+function lineTeam(msg){const l=document.getElementById('teamRoomLine');if(l)l.textContent=msg;}
+bindTeamMenu();
+
+
+function bindOnlineButtons(){
+  const root = document.querySelector('[data-online-room="1"]')?.closest('div');
+  const input = document.querySelector('[data-online-room="1"]');
+  const createBtn = document.querySelector('[data-online-create="1"]');
+  const joinBtn = document.querySelector('[data-online-join="1"]');
+
+  if(!input || !createBtn || !joinBtn){
+    console.error('Online controls missing', {input,createBtn,joinBtn});
+    netStatus('Online panel yüklenemedi.');
+    return;
+  }
+
+  const cleanCode = (v) => String(v || '')
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g,'')
+    .slice(0,6);
+
+  let autoJoinTimer=null;
+  let joiningCode='';
+  input.addEventListener('input', () => {
+    input.value=cleanCode(input.value);
+    clearTimeout(autoJoinTimer);
+    if(input.value.length===6){
+      const code=input.value;
+      netStatus('Kod tamam · otomatik bağlanıyor… '+code,true);
+      autoJoinTimer=setTimeout(()=>{
+        if(input.value===code && (!net.connected || net.room!==code) && joiningCode!==code){
+          joiningCode=code;
+          connectRoom(code,false).finally(()=>{ joiningCode=''; });
+        }
+      },220);
+    } else {
+      netStatus('6 karakterli oda kodunu yaz ('+input.value.length+'/6)');
+    }
+  });
+
+  createBtn.addEventListener('click', (ev) => {
+    ev.preventDefault();
+    const c = roomCode();
+    input.value = c;
+    netStatus('Oda oluşturuluyor… '+c);
+    connectRoom(c,true);
+  });
+
+  joinBtn.addEventListener('click', (ev) => {
+    ev.preventDefault();
+    const code = cleanCode(input.value);
+    input.value = code;
+    console.log('JOIN clicked, room=', code);
+    if(code.length !== 6){
+      netStatus('6 karakterli oda kodunu yaz. Şu an: '+(code || 'boş'));
+      input.focus();
+      return;
+    }
+    netStatus('Odaya bağlanıyor… '+code);
+    connectRoom(code,false);
+  });
+
+  input.addEventListener('keydown', (ev) => {
+    if(ev.key === 'Enter'){
+      ev.preventDefault();
+      joinBtn.click();
+    }
+  });
+
+  try {
+    const incoming = cleanCode(new URL(location.href).searchParams.get('room'));
+    if(incoming.length === 6){
+      input.value = incoming;
+      netStatus('Kod hazır: '+incoming+' · KATIL bas', true);
+    } else {
+      netStatus('Online sistem hazır · Oda oluştur veya 6 haneli kod gir', true);
+    }
+  } catch(e) {
+    netStatus('Online sistem hazır · Oda oluştur veya 6 haneli kod gir', true);
+  }
+}
+bindOnlineButtons();
+
+
+/* =====================================================
+   Yardımcılar
+   ===================================================== */
+const $ = id => document.getElementById(id);
+const cv = $('game'), ctx = cv.getContext('2d');
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const TAU = Math.PI * 2;
+const FONT = 'system-ui,-apple-system,"Segoe UI",Roboto,sans-serif';
+const HEAD = 'Impact,"Arial Black",' + FONT;
+let W = 0, H = 0, DPR = 1;
+
+function resize() {
+  DPR = Math.min(window.devicePixelRatio || 1, 2);
+  W = window.innerWidth; H = window.innerHeight;
+  cv.width = W * DPR; cv.height = H * DPR;
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+}
+window.addEventListener('resize', resize);
+resize();
+
+function seeded(seed) {
+  return function () {
+    seed |= 0; seed = seed + 0x6D2B79F5 | 0;
+    let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+
+/* =====================================================
+   Dünya: evler (içi olan), ağaçlar, sandıklar
+   ===================================================== */
+const WORLD = 3600, MID = WORLD / 2, ROAD = 170, CELL = 160, GN = Math.ceil(WORLD / CELL);
+const R = seeded(90210);
+const rr = (a, b) => a + R() * (b - a);
+const houses = [], obs = [], chests = [], tufts = [], patches = [];
+let built = [];                       // oyuncunun kurduğu bloklar ve taretler
+let grid = [];
+
+function onRoad(x, y, w, h, m) {
+  return (x < MID + ROAD / 2 + m && x + w > MID - ROAD / 2 - m) ||
+         (y < MID + ROAD / 2 + m && y + h > MID - ROAD / 2 - m);
+}
+function rectsNear(a, b, m) {
+  return a.x < b.x + b.w + m && a.x + a.w > b.x - m && a.y < b.y + b.h + m && a.y + a.h > b.y - m;
+}
+function distToRect(px, py, o) {
+  const cx = clamp(px, o.x, o.x + o.w), cy = clamp(py, o.y, o.y + o.h);
+  return Math.hypot(px - cx, py - cy);
+}
+
+function makeHouse(c, id, roofs) {
+  const T = 16, dw = 84;
+  const side = ['N', 'S', 'E', 'W'][Math.floor(R() * 4)];
+  const hs = { id, x: c.x, y: c.y, w: c.w, h: c.h, T, side, roof: roofs[Math.floor(R() * roofs.length)],
+               vents: [], furn: [], chests: [], walls: [] };
+  let d;
+  if (side === 'N' || side === 'S') {
+    d = { x: c.x + rr(T + dw / 2 + 26, c.w - T - dw / 2 - 26), y: side === 'N' ? c.y + T / 2 : c.y + c.h - T / 2, nx: 0, ny: side === 'N' ? -1 : 1 };
+  } else {
+    d = { x: side === 'W' ? c.x + T / 2 : c.x + c.w - T / 2, y: c.y + rr(T + dw / 2 + 26, c.h - T - dw / 2 - 26), nx: side === 'W' ? -1 : 1, ny: 0 };
+  }
+  d.w = dw; hs.door = d;
+  hs.inner = { x: c.x + T, y: c.y + T, w: c.w - 2 * T, h: c.h - 2 * T };
+
+  const x = c.x, y = c.y, w = c.w, h = c.h, segs = [];
+  if (side === 'N') segs.push([x, y, d.x - dw / 2 - x, T], [d.x + dw / 2, y, x + w - (d.x + dw / 2), T]); else segs.push([x, y, w, T]);
+  if (side === 'S') segs.push([x, y + h - T, d.x - dw / 2 - x, T], [d.x + dw / 2, y + h - T, x + w - (d.x + dw / 2), T]); else segs.push([x, y + h - T, w, T]);
+  if (side === 'W') segs.push([x, y, T, d.y - dw / 2 - y], [x, d.y + dw / 2, T, y + h - (d.y + dw / 2)]); else segs.push([x, y, T, h]);
+  if (side === 'E') segs.push([x + w - T, y, T, d.y - dw / 2 - y], [x + w - T, d.y + dw / 2, T, y + h - (d.y + dw / 2)]); else segs.push([x + w - T, y, T, h]);
+  for (const s of segs) if (s[2] > 0 && s[3] > 0) {
+    const o = { x: s[0], y: s[1], w: s[2], h: s[3], t: 'w', sb: true, hs };
+    obs.push(o); hs.walls.push(o);
+  }
+  const nv = 1 + Math.floor(R() * 3);
+  for (let i = 0; i < nv; i++) hs.vents.push({ x: rr(30, w - 66), y: rr(30, h - 66), s: rr(18, 34) });
+
+  // İç eşyalar ve sandıklar
+  const inX = d.x - d.nx * 60, inY = d.y - d.ny * 60, inn = hs.inner;
+  const taken = () => hs.furn.concat(hs.chests);
+  const spot = (sw, sh) => {
+    for (let i = 0; i < 40; i++) {
+      const sx = rr(inn.x + 8, inn.x + inn.w - sw - 8), sy = rr(inn.y + 8, inn.y + inn.h - sh - 8);
+      const r = { x: sx, y: sy, w: sw, h: sh };
+      if (Math.hypot(sx + sw / 2 - inX, sy + sh / 2 - inY) < 120) continue;
+      if (taken().some(o => rectsNear(r, o, 30))) continue;
+      return r;
+    }
+    return null;
+  };
+  const nf = 1 + Math.floor(R() * 3);
+  for (let i = 0; i < nf; i++) {
+    const bed = R() < 0.4, s = spot(bed ? 42 : 58, bed ? 74 : 36);
+    if (s) { s.t = 'f'; s.kind = bed ? 'bed' : 'table'; s.sb = false; hs.furn.push(s); obs.push(s); }
+  }
+  const nc = R() < 0.5 ? 2 : 1;
+  for (let i = 0; i < nc; i++) {
+    let placed = null;
+    for (let k = 0; k < 30 && !placed; k++) {
+      const wall = Math.floor(R() * 4), cw = 38, ch = 26;
+      let cx, cy;
+      if (wall === 0) { cx = rr(inn.x + 10, inn.x + inn.w - cw - 10); cy = inn.y + 4; }
+      else if (wall === 1) { cx = rr(inn.x + 10, inn.x + inn.w - cw - 10); cy = inn.y + inn.h - ch - 4; }
+      else if (wall === 2) { cx = inn.x + 4; cy = rr(inn.y + 10, inn.y + inn.h - ch - 10); }
+      else { cx = inn.x + inn.w - cw - 4; cy = rr(inn.y + 10, inn.y + inn.h - ch - 10); }
+      const r = { x: cx, y: cy, w: cw, h: ch };
+      if (Math.hypot(cx + cw / 2 - inX, cy + ch / 2 - inY) < 110) continue;
+      if (taken().some(o => rectsNear(r, o, 24))) continue;
+      placed = r;
+    }
+    if (placed) {
+      placed.t = 'k'; placed.sb = false; placed.open = false; placed.hs = hs;
+      hs.chests.push(placed); chests.push(placed); obs.push(placed);
+    }
+  }
+  return hs;
+}
+
+(function buildWorld() {
+  const roofs = ['#3a4046', '#4a3c37', '#34433d', '#3e3b4b', '#4b4a3a', '#3b4552'];
+  let tries = 0;
+  while (houses.length < 46 && tries++ < 8000) {
+    const w = Math.floor(rr(230, 350)), h = Math.floor(rr(200, 290));
+    const x = Math.floor(rr(140, WORLD - 140 - w)), y = Math.floor(rr(140, WORLD - 140 - h));
+    const c = { x, y, w, h };
+    if (onRoad(x, y, w, h, 60)) continue;
+    if (distToRect(MID, MID, c) < 480) continue;
+    if (houses.some(o => rectsNear(c, o, 100))) continue;
+    houses.push(makeHouse(c, houses.length, roofs));
+  }
+  let t = 0; tries = 0;
+  while (t < 240 && tries++ < 6000) {
+    const s = 26, x = rr(90, WORLD - 120), y = rr(90, WORLD - 120);
+    const c = { x, y, w: s, h: s, t: 't', sb: true, cr: rr(34, 56), shade: Math.floor(R() * 3) };
+    if (onRoad(x - 40, y - 40, s + 80, s + 80, 0)) continue;
+    if (distToRect(MID, MID, c) < 300) continue;
+    if (houses.some(o => rectsNear(c, o, 70))) continue;
+    if (obs.some(o => o.t === 't' && rectsNear(c, o, 50))) continue;
+    obs.push(c); t++;
+  }
+  let k = 0; tries = 0;
+  while (k < 34 && tries++ < 4000) {
+    const s = 44, x = rr(120, WORLD - 160), y = rr(120, WORLD - 160);
+    const c = { x, y, w: s, h: s, t: 'c', sb: true };
+    if (distToRect(MID, MID, c) < 230) continue;
+    if (houses.some(o => rectsNear(c, o, 60))) continue;
+    if (obs.some(o => (o.t === 't' || o.t === 'c') && rectsNear(c, o, 40))) continue;
+    obs.push(c); k++;
+  }
+  for (let i = 0; i < 1500; i++) tufts.push({ x: rr(0, WORLD), y: rr(0, WORLD), s: rr(4, 10), a: rr(0, TAU), v: R() });
+  for (let i = 0; i < 90; i++) patches.push({ x: rr(0, WORLD), y: rr(0, WORLD), rx: rr(60, 190), ry: rr(40, 130), rot: rr(0, TAU), v: R() });
+})();
+
+/* Uzamsal ızgara: çarpışma sorguları için */
+function rebuildGrid() {
+  grid = new Array(GN * GN);
+  for (let i = 0; i < grid.length; i++) grid[i] = [];
+  const add = o => {
+    const x0 = clamp(Math.floor(o.x / CELL), 0, GN - 1), x1 = clamp(Math.floor((o.x + o.w) / CELL), 0, GN - 1);
+    const y0 = clamp(Math.floor(o.y / CELL), 0, GN - 1), y1 = clamp(Math.floor((o.y + o.h) / CELL), 0, GN - 1);
+    for (let gy = y0; gy <= y1; gy++) for (let gx = x0; gx <= x1; gx++) grid[gy * GN + gx].push(o);
+  };
+  for (const o of obs) add(o);
+  for (const o of built) add(o);
+}
+rebuildGrid();
+
+function houseAt(x, y) {
+  for (let i = 0; i < houses.length; i++) {
+    const n = houses[i].inner;
+    if (x > n.x && x < n.x + n.w && y > n.y && y < n.y + n.h) return i;
+  }
+  return -1;
+}
+function circleHitsObs(x, y, r) {
+  const x0 = clamp(Math.floor((x - r) / CELL), 0, GN - 1), x1 = clamp(Math.floor((x + r) / CELL), 0, GN - 1);
+  const y0 = clamp(Math.floor((y - r) / CELL), 0, GN - 1), y1 = clamp(Math.floor((y + r) / CELL), 0, GN - 1);
+  for (let gy = y0; gy <= y1; gy++) for (let gx = x0; gx <= x1; gx++) {
+    const c = grid[gy * GN + gx];
+    for (let i = 0; i < c.length; i++) if (distToRect(x, y, c[i]) < r) return true;
+  }
+  return false;
+}
+function bulletBlocked(x, y) {
+  if (x < 0 || y < 0 || x > WORLD || y > WORLD) return true;
+  const c = grid[clamp(Math.floor(y / CELL), 0, GN - 1) * GN + clamp(Math.floor(x / CELL), 0, GN - 1)];
+  for (let i = 0; i < c.length; i++) {
+    const o = c[i];
+    if (o.sb && x >= o.x && x <= o.x + o.w && y >= o.y && y <= o.y + o.h) return true;
+  }
+  return false;
+}
+function rectFree(x, y, w, h) {
+  const x0 = clamp(Math.floor(x / CELL), 0, GN - 1), x1 = clamp(Math.floor((x + w) / CELL), 0, GN - 1);
+  const y0 = clamp(Math.floor(y / CELL), 0, GN - 1), y1 = clamp(Math.floor((y + h) / CELL), 0, GN - 1);
+  for (let gy = y0; gy <= y1; gy++) for (let gx = x0; gx <= x1; gx++) {
+    const c = grid[gy * GN + gx];
+    for (let i = 0; i < c.length; i++) {
+      const o = c[i];
+      if (o.x < x + w && o.x + o.w > x && o.y < y + h && o.y + o.h > y) return false;
+    }
+  }
+  return true;
+}
+function pushOut(e) {
+  const x0 = clamp(Math.floor((e.x - e.r) / CELL), 0, GN - 1), x1 = clamp(Math.floor((e.x + e.r) / CELL), 0, GN - 1);
+  const y0 = clamp(Math.floor((e.y - e.r) / CELL), 0, GN - 1), y1 = clamp(Math.floor((e.y + e.r) / CELL), 0, GN - 1);
+  for (let gy = y0; gy <= y1; gy++) for (let gx = x0; gx <= x1; gx++) {
+    const c = grid[gy * GN + gx];
+    for (let i = 0; i < c.length; i++) {
+      const o = c[i];
+      // Kapı oyuncuya açıktır; zombiler için normal, sağlam bir engeldir.
+      if (o.t === 'door' && e === player) continue;
+      if (e.x + e.r < o.x || e.x - e.r > o.x + o.w || e.y + e.r < o.y || e.y - e.r > o.y + o.h) continue;
+      const cx = clamp(e.x, o.x, o.x + o.w), cy = clamp(e.y, o.y, o.y + o.h);
+      const dx = e.x - cx, dy = e.y - cy, d2 = dx * dx + dy * dy;
+      if (d2 >= e.r * e.r) continue;
+      if (d2 > 1e-6) {
+        const d = Math.sqrt(d2), p = e.r - d;
+        e.x += dx / d * p; e.y += dy / d * p;
+      } else {
+        const l = e.x - o.x, r = o.x + o.w - e.x, t = e.y - o.y, b = o.y + o.h - e.y;
+        const m = Math.min(l, r, t, b);
+        if (m === l) e.x = o.x - e.r; else if (m === r) e.x = o.x + o.w + e.r;
+        else if (m === t) e.y = o.y - e.r; else e.y = o.y + o.h + e.r;
+      }
+    }
+  }
+}
+
+/* Mini harita için sabit katman */
+const MM = 176;
+const mmBase = document.createElement('canvas');
+mmBase.width = mmBase.height = MM;
+(function () {
+  const c = mmBase.getContext('2d'), s = MM / WORLD;
+  if (!c) return;
+  c.fillStyle = '#16241b'; c.fillRect(0, 0, MM, MM);
+  c.fillStyle = '#3a3d42';
+  c.fillRect((MID - ROAD / 2) * s, 0, ROAD * s, MM);
+  c.fillRect(0, (MID - ROAD / 2) * s, MM, ROAD * s);
+  for (const h of houses) { c.fillStyle = '#7b848a'; c.fillRect(h.x * s, h.y * s, Math.max(3, h.w * s), Math.max(3, h.h * s)); }
+  for (const o of obs) if (o.t === 't') { c.fillStyle = '#2c5a36'; c.fillRect(o.x * s - 1, o.y * s - 1, 3, 3); }
+})();
+
+/* =====================================================
+   Silahlar, zombiler, mağaza
+   ===================================================== */
+const GUN_ORDER = ['pistol', 'shotgun', 'smg', 'rifle', 'sniper', 'minigun'];
+const GUNS = {
+  pistol:  { name: 'Tabanca',          price: 0,    mag: 12,  rate: .26,  reload: 1.1, dmg: 30,  spread: .025, pellets: 1, auto: false, speed: 1400, range: 950,  kick: 3,  len: 24, pierce: 1, desc: 'Hafif ve güvenilir. Başlangıç silahın.' },
+  shotgun: { name: 'Pompalı tüfek',    price: 300,  mag: 6,   rate: .8,   reload: 2.2, dmg: 20,  spread: .24,  pellets: 7, auto: false, speed: 1200, range: 520,  kick: 9,  len: 32, pierce: 1, desc: 'Yakın mesafede yıkıcıdır, tek atışta 7 saçma fırlatır.' },
+  smg:     { name: 'Hafif makineli',   price: 350,  mag: 32,  rate: .075, reload: 1.5, dmg: 15,  spread: .09,  pellets: 1, auto: true,  speed: 1500, range: 800,  kick: 2,  len: 26, pierce: 1, desc: 'Çok hızlı ateş eder ama mermi başına hasarı düşüktür.' },
+  rifle:   { name: 'Otomatik tüfek',   price: 650,  mag: 30,  rate: .1,   reload: 1.7, dmg: 28,  spread: .05,  pellets: 1, auto: true,  speed: 1600, range: 1100, kick: 3,  len: 36, pierce: 1, desc: 'Dengeli ve isabetli; her mesafede işe yarar.' },
+  sniper:  { name: 'Keskin nişancı',   price: 900,  mag: 5,   rate: 1.0,  reload: 2.4, dmg: 180, spread: .004, pellets: 1, auto: false, speed: 2800, range: 1900, kick: 10, len: 46, pierce: 4, desc: 'Tek atışta zombileri deler geçer; patronlara karşı çok etkili.' },
+  minigun: { name: 'Minigun',          price: 2000, mag: 120, rate: .045, reload: 4.0, dmg: 24,  spread: .11,  pellets: 1, auto: true,  speed: 1500, range: 1000, kick: 3,  len: 38, pierce: 1, desc: 'Kurşun yağmuru. Ağır ve pahalı ama durdurulamaz.' }
+};
+const ZT = {
+  n:  { hp: 70,   spd: 64,  r: 16, dmg: 11, score: 10,  money: 8,   col: '#6f8c57', arm: '#5c7848', head: '#82a068' },
+  f:  { hp: 42,   spd: 122, r: 14, dmg: 8,  score: 15,  money: 12,  col: '#98a355', arm: '#7f8a45', head: '#aab566' },
+  t:  { hp: 320,  spd: 48,  r: 24, dmg: 24, score: 40,  money: 30,  col: '#4e6b5d', arm: '#3e574b', head: '#5f7f6f' },
+  b1: { hp: 1300, spd: 68,  r: 36, dmg: 38, score: 300, money: 150, col: '#8a3a3a', arm: '#6e2c2c', head: '#a24c4c', boss: 1, name: 'Kasap' },
+  b2: { hp: 1700, spd: 56,  r: 38, dmg: 30, score: 400, money: 220, col: '#5c3a7a', arm: '#472c5f', head: '#7650a0', boss: 1, name: 'Çağırıcı' },
+  b3: { hp: 3200, spd: 46,  r: 50, dmg: 50, score: 600, money: 320, col: '#3f5060', arm: '#2f3d4b', head: '#566b7f', boss: 1, name: 'Yıkıcı' }
+};
+const NAMES = ['Şehir merkezi', 'Terk edilmiş sokaklar', 'Kan izi', 'Son hat', 'Sürünün başı', 'Karanlık saat', 'Çürüme', 'Kıyamet'];
+function levelSpec(n) {
+  const bosses = [];
+  if (n >= 3 && n % 2 === 1) {
+    const k = (n - 3) / 2, types = ['b1', 'b2', 'b3'], cnt = 1 + Math.floor(k / 3);
+    for (let i = 0; i < cnt; i++) bosses.push(types[k % 3]);
+  }
+  return { name: NAMES[(n - 1) % NAMES.length], n: 6 + 4 * n, f: Math.max(0, 3 * (n - 1)), t: Math.max(0, 2 * (n - 2)), bosses,
+           hp: 1 + 0.14 * (n - 1), sp: Math.min(1.5, 1 + 0.03 * (n - 1)), dm: 1 + 0.08 * (n - 1),
+           interval: Math.max(0.45, 1.7 - 0.15 * (n - 1)), house: Math.min(3 + n * 2, 18) };
+}
+const BLOCK_COST = 6, BLOCK_HP = 120, DOOR_COST = 10, DOOR_HP = 160, TURRET_HP = 220;
+
+/* Mağaza envanteri */
+const inv = { turret: 0, bomb: 0, medkit: 0 };
+let up = { wall: 0, turret: 0, hp: 0 };
+const SHOP = [
+  { cat: 'Silahlar', items: GUN_ORDER.filter(g => GUNS[g].price > 0).map(g => ({ id: g, gun: g, name: GUNS[g].name, price: GUNS[g].price, desc: GUNS[g].desc })) },
+  { cat: 'Savunma', items: [
+    { id: 'turret', name: 'Otomatik taret', price: 160, desc: 'Yakınındaki zombilere kendi kendine ateş eder. Envanterden seçip yerleştir; canı bölüm sonunda yenilenir.', count: () => inv.turret },
+    { id: 'wallup', name: 'Odun takviyesi', price: 220, max: 3, desc: 'Tüm odun blokların canını %50 artırır.', lvl: () => up.wall },
+    { id: 'turretup', name: 'Taret ateş gücü', price: 260, max: 3, desc: 'Taretlerin hasarını %40 artırır.', lvl: () => up.turret }
+  ] },
+  { cat: 'Sarf malzeme', items: [
+    { id: 'bomb', name: 'Bomba', price: 45, desc: 'Fare imlecine fırlatılır, 1,5 saniye sonra patlar ve geniş alanda hasar verir.', count: () => inv.bomb },
+    { id: 'bomb5', name: 'Bomba paketi (5)', price: 190, desc: 'Beş bomba, tek fiyat.' },
+    { id: 'medkit', name: 'İlk yardım çantası', price: 70, desc: 'Kullanınca canını 60 doldurur.', count: () => inv.medkit },
+    { id: 'maxhp', name: 'Dayanıklılık', price: 300, max: 3, desc: 'En yüksek canını +25 artırır.', lvl: () => up.hp }
+  ] }
+];
+
+/* =====================================================
+   Ses
+   ===================================================== */
+let AC = null, noiseBuf = null, muted = false;
+function audio() {
+  if (!AC) {
+    try {
+      AC = new (window.AudioContext || window.webkitAudioContext)();
+      noiseBuf = AC.createBuffer(1, AC.sampleRate * 0.5, AC.sampleRate);
+      const d = noiseBuf.getChannelData(0);
+      for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    } catch (e) { AC = null; }
+  }
+  if (AC && AC.state === 'suspended') AC.resume();
+}
+function noise(dur, freq, q, vol) {
+  if (!AC || muted) return;
+  const t = AC.currentTime, s = AC.createBufferSource(), f = AC.createBiquadFilter(), g = AC.createGain();
+  s.buffer = noiseBuf; f.type = 'bandpass'; f.frequency.value = freq; f.Q.value = q;
+  g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+  s.connect(f); f.connect(g); g.connect(AC.destination); s.start(t); s.stop(t + dur);
+}
+function tone(f0, f1, dur, vol, type, delay) {
+  if (!AC || muted) return;
+  const t = AC.currentTime + (delay || 0), o = AC.createOscillator(), g = AC.createGain();
+  o.type = type || 'square'; o.frequency.setValueAtTime(f0, t);
+  o.frequency.exponentialRampToValueAtTime(Math.max(20, f1), t + dur);
+  g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+  o.connect(g); g.connect(AC.destination); o.start(t); o.stop(t + dur);
+}
+let lastSfx = {};
+function sfx(n) {
+  const now = performance.now();
+  if (lastSfx[n] && now - lastSfx[n] < 40) return; lastSfx[n] = now;
+  switch (n) {
+    case 'shot_pistol': noise(.09, 1800, .8, .35); tone(220, 60, .08, .22, 'square'); break;
+    case 'shot_smg': noise(.06, 2600, .7, .22); tone(200, 80, .05, .12, 'square'); break;
+    case 'shot_rifle': noise(.07, 2200, .7, .28); tone(170, 70, .06, .16, 'square'); break;
+    case 'shot_minigun': noise(.05, 2000, .7, .2); break;
+    case 'shot_shotgun': noise(.2, 900, .6, .6); tone(140, 40, .16, .35, 'sawtooth'); break;
+    case 'shot_sniper': noise(.3, 700, .5, .7); tone(120, 30, .3, .4, 'sawtooth'); break;
+    case 'tur': noise(.04, 2800, .8, .08); break;
+    case 'hit': noise(.05, 500, 1, .2); break;
+    case 'die': tone(130, 45, .28, .16, 'sawtooth'); break;
+    case 'hurt': tone(190, 80, .16, .28, 'square'); break;
+    case 'reload': tone(900, 600, .04, .12, 'square'); tone(700, 900, .05, .12, 'square', .16); break;
+    case 'empty': tone(300, 200, .03, .1, 'square'); break;
+    case 'pick': tone(500, 900, .12, .16, 'sine'); break;
+    case 'coin': tone(900, 1400, .1, .12, 'triangle'); break;
+    case 'spawn': tone(95, 70, .5, .06, 'sawtooth'); break;
+    case 'clear': tone(400, 600, .15, .2, 'triangle'); tone(600, 900, .2, .2, 'triangle', .15); break;
+    case 'place': tone(220, 130, .07, .15, 'square'); break;
+    case 'break': noise(.12, 600, .6, .3); break;
+    case 'bomb': noise(.6, 220, .5, .8); tone(90, 28, .5, .5, 'sawtooth'); break;
+    case 'boss': tone(70, 40, .9, .22, 'sawtooth'); break;
+    case 'slam': noise(.35, 160, .5, .7); tone(80, 30, .3, .4, 'sawtooth'); break;
+    case 'buy': tone(500, 800, .08, .14, 'triangle'); tone(800, 1100, .1, .14, 'triangle', .08); break;
+    case 'chest': tone(300, 500, .12, .15, 'triangle'); tone(500, 800, .15, .15, 'triangle', .1); break;
+  }
+}
+
+/* =====================================================
+   Durum
+   ===================================================== */
+let state = 'menu';       // menu | playing | paused | clear | over | shop
+let shopPrev = null;
+let level = 1, score = 0, kills = 0, levelKills = 0, money = 0, levelMoney = 0, spec = null, snap = null;
+let player = null, zombies = [], bullets = [], drops = [], decals = [], parts = [], queue = [], bombs = [], floats = [], toasts = [];
+let spawnT = 0, banner = null, shake = 0, anim = 0, last = performance.now(), nearChest = null;
+const cam = { x: 0, y: 0 };
+let uiRects = { slots: [], shop: null, chest: null };
+
+function toast(text) {
+  if (toasts.length && toasts[toasts.length - 1].text === text && toasts[toasts.length - 1].t > 1.2) return;
+  toasts.push({ text, t: 2.6 }); if (toasts.length > 4) toasts.shift();
+}
+function floatText(x, y, text, col) { floats.push({ x, y, text, t: 0.9, col: col || '#f0b429' }); }
+
+function slots() {
+  const s = [];
+  for (const id of GUN_ORDER) if (player.guns.includes(id)) s.push({ k: 'gun', id });
+  s.push({ k: 'block' }, { k: 'door' }, { k: 'turret' }, { k: 'bomb' }, { k: 'medkit' });
+  return s;
+}
+function selectSlot(i) {
+  const s = slots(); if (i < 0 || i >= s.length) return;
+  player.sel = i; player.reload = 0; player.cd = 0.12;
+}
+function newPlayer() {
+  return { x: MID, y: MID + 60, r: 15, hp: 100, max: 100, stam: 100, tired: false, ang: 0,
+           guns: ['pistol'], ammo: { pistol: GUNS.pistol.mag }, sel: 0, cd: 0, reload: 0, reloadMax: 1, flash: 0, hurt: 0, hi: -1 };
+}
+
+/* =====================================================
+   Girdi
+   ===================================================== */
+const keys = {};
+const mouse = { x: W / 2, y: H / 2, down: false, buf: 0 };
+const touch = { stick: null, aim: null, on: false };
+
+function uiHit(px, py) {
+  const inR = r => r && px >= r.x && px <= r.x + r.w && py >= r.y && py <= r.y + r.h;
+  if (inR(uiRects.shop)) { openShop(); return true; }
+  if (inR(uiRects.chest)) { openChest(); return true; }
+  for (let i = 0; i < uiRects.slots.length; i++) if (inR(uiRects.slots[i])) { selectSlot(i); return true; }
+  return false;
+}
+
+window.addEventListener('keydown', e => {
+  audio();
+  if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space', 'Tab'].includes(e.code)) e.preventDefault();
+  const rep = e.repeat; keys[e.code] = true; if (rep) return;
+  if (e.code === 'KeyM') muted = !muted;
+  if (e.code === 'Tab') { if (state === 'shop') closeShop(); else openShop(); return; }
+  if (teamMenuOpen) { if (e.code === 'Escape') closeTeamMenu(); return; }
+  if (state === 'shop') { if (e.code === 'Escape') closeShop(); return; }
+  if (state === 'playing') {
+    if (e.code === 'Escape') { openTeamMenu(); return; }
+    if (e.code === 'KeyR') startReload();
+    if (e.code === 'KeyE') openChest();
+    if (/^Digit\d$/.test(e.code)) { const n = parseInt(e.code.slice(5), 10); selectSlot(n === 0 ? 9 : n - 1); }
+    if (e.code === 'KeyP') pauseGame();
+  } else if (state === 'paused' && e.code === 'KeyP') {
+    $('ovBtn').click();
+  }
+});
+window.addEventListener('keyup', e => { keys[e.code] = false; });
+window.addEventListener('blur', () => { for (const k in keys) keys[k] = false; mouse.down=false; if (state === 'playing' && !net.connected) pauseGame(); });
+
+cv.addEventListener('contextmenu', e => e.preventDefault());
+cv.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; touch.on = false; });
+cv.addEventListener('mousedown', e => {
+  audio(); mouse.x = e.clientX; mouse.y = e.clientY; touch.on = false;
+  if (state !== 'playing') return;
+  if (e.button === 2) { removeBuiltAtMouse(); return; }
+  if (e.button !== 0) return;
+  if (uiHit(e.clientX, e.clientY)) return;
+  mouse.down = true; mouse.buf = 0.15;
+});
+window.addEventListener('mouseup', () => { mouse.down = false; });
+cv.addEventListener('wheel', e => {
+  if (state !== 'playing') return;
+  e.preventDefault();
+  const n = slots().length;
+  selectSlot((player.sel + (e.deltaY > 0 ? 1 : -1) + n) % n);
+}, { passive: false });
+
+cv.addEventListener('touchstart', e => {
+  e.preventDefault(); audio(); touch.on = true;
+  if (state !== 'playing') return;
+  for (const t of e.changedTouches) {
+    if (uiHit(t.clientX, t.clientY)) continue;
+    if (t.clientX < W / 2 && !touch.stick) touch.stick = { id: t.identifier, ox: t.clientX, oy: t.clientY, x: t.clientX, y: t.clientY };
+    else if (!touch.aim) {
+      touch.aim = { id: t.identifier };
+      mouse.x = t.clientX; mouse.y = t.clientY; mouse.down = true; mouse.buf = 0.15;
+    }
+  }
+}, { passive: false });
+cv.addEventListener('touchmove', e => {
+  e.preventDefault();
+  for (const t of e.changedTouches) {
+    if (touch.stick && t.identifier === touch.stick.id) { touch.stick.x = t.clientX; touch.stick.y = t.clientY; }
+    if (touch.aim && t.identifier === touch.aim.id) { mouse.x = t.clientX; mouse.y = t.clientY; }
+  }
+}, { passive: false });
+function touchEnd(e) {
+  for (const t of e.changedTouches) {
+    if (touch.stick && t.identifier === touch.stick.id) touch.stick = null;
+    if (touch.aim && t.identifier === touch.aim.id) { touch.aim = null; mouse.down = false; }
+  }
+}
+cv.addEventListener('touchend', touchEnd);
+cv.addEventListener('touchcancel', touchEnd);
+
+/* =====================================================
+   Oyun akışı ve ekranlar
+   ===================================================== */
+function setCursor() { cv.classList.toggle('playing', state === 'playing'); }
+
+function showOverlay(o) {
+  $('ovTitle').textContent = o.title;
+  $('ovText').textContent = o.text || '';
+  $('ovExtra').innerHTML = o.extra || '';
+  $('ovBtn').textContent = o.btn;
+  $('ovBtn').onclick = () => { $('overlay').classList.remove('show'); o.onClick(); setCursor(); };
+  const b2 = $('ovBtn2');
+  if (o.btn2) {
+    b2.hidden = false; b2.textContent = o.btn2;
+    b2.onclick = () => { if (!o.keep2) $('overlay').classList.remove('show'); o.onClick2(); setCursor(); };
+  } else b2.hidden = true;
+  $('overlay').classList.add('show');
+  setCursor();
+  setTimeout(() => $('ovBtn').focus(), 30);
+}
+
+const CONTROLS = `
+<dl class="controls">
+  <dt><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd></dt><dd>Hareket (ok tuşları da çalışır)</dd>
+  <dt><kbd>Fare</kbd></dt><dd>Nişan al, sol tıkla ateş et / yerleştir</dd>
+  <dt><kbd>1</kbd>…<kbd>0</kbd></dt><dd>Envanterden eşya seç (fare tekerleği de çalışır)</dd>
+  <dt><kbd>Tab</kbd></dt><dd>Mağazayı aç: silah, taret, bomba satın al</dd>
+  <dt><kbd>E</kbd></dt><dd>Evlerin içindeki sandıkları aç</dd>
+  <dt><kbd>Sağ tık</kbd></dt><dd>Duvarı, kapıyı veya tareti kır/sök (yarı para iadesi)</dd>
+  <dt><kbd>R</kbd><kbd>Shift</kbd></dt><dd>Şarjör yenile, koş</dd>
+  <dt><kbd>P</kbd><kbd>M</kbd></dt><dd>Duraklat, sesi kapat</dd>
+<dt><kbd>Online</kbd></dt><dd>Sağ üstten oda oluştur veya oda koduyla katıl.</dd>
+</dl>
+<p style="font-size:13px">Dokunmatik ekranda: sol yarıyı sürükleyerek yürü, sağ yarıya basılı tutarak nişan al ve ateş et. Envanter kutularına ve Mağaza düğmesine dokun.</p>`;
+
+function showMenu() {
+  state = 'menu';
+  showOverlay({
+    title: 'Zombi İstilası',
+    text: 'Şehir düştü. Zombileri öldür, para kazan, evlerdeki sandıkları soy ve odun bloklarla kendi üssünü kur. Mağazadan silah, taret ve bomba al. Her bölüm daha zor, bazı bölümlerde patronlar var.',
+    extra: CONTROLS, btn: 'Oyuna başla', onClick: newGame
+  });
+}
+function pauseGame() {
+  if (state !== 'playing') return;
+  state = 'paused';
+  showOverlay({ title: 'Duraklatıldı', text: 'Hazır olduğunda devam et.', btn: 'Devam et', onClick: () => { state = 'playing'; last = performance.now(); } });
+}
+
+function takeSnap() {
+  snap = JSON.stringify({ money, score, kills, level, up, inv, guns: player.guns, max: player.max, sel: player.sel, built: built.map(o => Object.assign({}, o)) });
+}
+function restoreSnap() {
+  const s = JSON.parse(snap);
+  money = s.money; score = s.score; kills = s.kills; level = s.level;
+  Object.assign(up, s.up); Object.assign(inv, s.inv);
+  player.guns = s.guns; player.max = s.max; player.hp = s.max; player.sel = Math.min(s.sel, slots().length - 1);
+  built = s.built; rebuildGrid();
+}
+
+function newGame() {
+  money = 100; score = 0; kills = 0; level = 1;
+  up = { wall: 0, turret: 0, hp: 0 }; inv.turret = 0; inv.bomb = 0; inv.medkit = 1;
+  player = newPlayer(); built = []; decals = []; rebuildGrid();
+  beginLevel();
+}
+
+function spawnInside(type, hs) {
+  const T = ZT[type], inn = hs.inner, d = hs.door;
+  const inX = d.x - d.nx * 60, inY = d.y - d.ny * 60;
+  for (let i = 0; i < 25; i++) {
+    const x = rr(inn.x + 30, inn.x + inn.w - 30), y = rr(inn.y + 30, inn.y + inn.h - 30);
+    if (circleHitsObs(x, y, T.r + 6) || Math.hypot(x - inX, y - inY) < 80) continue;
+    const z = makeZombie(type, x, y); z.sleep = true; zombies.push(z); return;
+  }
+}
+
+function beginLevel() {
+  spec = levelSpec(level);
+  levelKills = 0; levelMoney = 0;
+  queue = [];
+  for (let i = 0; i < spec.n; i++) queue.push('n');
+  for (let i = 0; i < spec.f; i++) queue.push('f');
+  for (let i = 0; i < spec.t; i++) queue.push('t');
+  for (let i = queue.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [queue[i], queue[j]] = [queue[j], queue[i]]; }
+  for (const b of spec.bosses) queue.push(b);
+  zombies = []; bullets = []; drops = []; parts = []; bombs = []; floats = []; toasts = [];
+  decals = [];                                   // önceki bölümün ölüleri ve kanı temizlenir
+  spawnT = 2.4;
+  const p = player;
+  p.x = MID; p.y = MID + 60; p.hi = -1;
+  p.ammo = {}; for (const g of p.guns) p.ammo[g] = GUNS[g].mag;
+  p.reload = 0; p.stam = 100; p.tired = false; p.hurt = 0; p.cd = 0;
+  for (const c of chests) c.open = false;
+  for (const o of built) o.hp = o.max;
+  // evlerde uyuyan zombiler
+  const far = houses.filter(h => distToRect(MID, MID, h) > 520);
+  let inHouse = 0;
+  for (let i = 0; i < spec.house && far.length; i++) {
+    const hs = far[Math.floor(Math.random() * far.length)];
+    const r = Math.random(), type = level >= 3 && r < 0.12 ? 't' : r < 0.3 && level >= 2 ? 'f' : 'n';
+    spawnInside(type, hs); inHouse++;
+  }
+  const total = queue.length + zombies.length;
+  const bossNames = spec.bosses.map(b => ZT[b].name);
+  banner = { title: 'Bölüm ' + level, sub: spec.name + ' · ' + total + ' zombi' + (bossNames.length ? ' · Patron: ' + bossNames.join(', ') : ''), t: 3.6, max: 3.6 };
+  state = 'playing';
+  takeSnap();
+  setCursor();
+}
+function retryLevel() { restoreSnap(); beginLevel(); }
+
+function levelClear() {
+  state = 'clear'; sfx('clear');
+  const bonus = 40 + level * 15; money += bonus; levelMoney += bonus;
+  for (const o of built) o.hp = o.max;           // odunlar ve taretler onarılır
+  player.hp = Math.min(player.max, player.hp + 30);
+  const note = built.length ? `<div class="note">Bölüm ödülü: <b>$${bonus}</b>. Tüm duvarların, kapıların ve taretlerin canı yenilendi.</div>`
+                            : `<div class="note">Bölüm ödülü: <b>$${bonus}</b>. Mağazadan silah ve savunma alabilirsin.</div>`;
+  showOverlay({
+    title: 'Bölüm ' + level + ' temizlendi',
+    text: 'Bölgede canlı zombi kalmadı. Sonraki dalga daha güçlü olacak. Mağazada alışveriş yap, üssünü güçlendir.',
+    extra: `<div class="stats"><div><b>${levelKills}</b>Bu bölümde öldürülen</div><div><b>$${money}</b>Paran</div><div><b>${score}</b>Puan</div></div>${note}`,
+    btn: 'Sonraki bölüm', onClick: () => { level++; beginLevel(); },
+    btn2: 'Mağaza', keep2: true, onClick2: openShop
+  });
+}
+function gameOver() {
+  state = 'over';
+  showOverlay({
+    title: 'Zombilere yenildin',
+    text: 'Bölüm ' + level + ' sırasında düştün. Bölümü baştan deneyebilir (para, silah ve üssün bölümün başındaki hâline döner) ya da sıfırdan başlayabilirsin.',
+    extra: `<div class="stats"><div><b>${kills}</b>Toplam öldürülen</div><div><b>${score}</b>Puan</div><div><b>${level}</b>Ulaşılan bölüm</div></div>`,
+    btn: 'Bölümü tekrar dene', onClick: retryLevel, btn2: 'Baştan başla', onClick2: newGame
+  });
+}
+
+/* ---------- Mağaza ---------- */
+function openShop() {
+  if (state === 'playing') { shopPrev = 'playing'; state = 'shop'; mouse.down = false; touch.stick = null; touch.aim = null; }
+  else if (state === 'clear') shopPrev = 'clear';
+  else return;
+  renderShop(); $('shop').classList.add('show'); setCursor();
+  setTimeout(() => $('shopClose').focus(), 30);
+}
+function closeShop() {
+  $('shop').classList.remove('show');
+  if (shopPrev === 'playing') { state = 'playing'; last = performance.now(); }
+  else if (shopPrev === 'clear') setTimeout(() => $('ovBtn').focus(), 30);
+  shopPrev = null; setCursor();
+}
+$('shopClose').onclick = closeShop;
+
+function itemState(it) {
+  if (it.gun) return player.guns.includes(it.gun) ? 'own' : money < it.price ? 'poor' : 'ok';
+  if (it.max && it.lvl() >= it.max) return 'max';
+  return money < it.price ? 'poor' : 'ok';
+}
+function buy(it) {
+  if (itemState(it) !== 'ok') return;
+  money -= it.price; sfx('buy');
+  if (it.gun) { player.guns.push(it.gun); player.ammo[it.gun] = GUNS[it.gun].mag; const s = slots(); selectSlot(s.findIndex(x => x.id === it.gun)); toast(GUNS[it.gun].name + ' envantere eklendi'); }
+  else if (it.id === 'turret') inv.turret++;
+  else if (it.id === 'bomb') inv.bomb++;
+  else if (it.id === 'bomb5') inv.bomb += 5;
+  else if (it.id === 'medkit') inv.medkit++;
+  else if (it.id === 'wallup') {
+    up.wall++;
+    for (const o of built) if (o.t === 'block') { const nm = Math.round(BLOCK_HP * (1 + 0.5 * up.wall)); o.hp += nm - o.max; o.max = nm; }
+  }
+  else if (it.id === 'turretup') up.turret++;
+  else if (it.id === 'maxhp') { up.hp++; player.max += 25; player.hp += 25; }
+  renderShop();
+}
+function renderShop() {
+  $('shopMoney').textContent = '$' + money;
+  const body = $('shopBody'); body.innerHTML = '';
+  for (const c of SHOP) {
+    const h = document.createElement('div'); h.className = 'cat'; h.textContent = c.cat; body.appendChild(h);
+    const g = document.createElement('div'); g.className = 'grid'; body.appendChild(g);
+    for (const it of c.items) {
+      const st = itemState(it), card = document.createElement('div'); card.className = 'item';
+      let stats = '';
+      if (it.gun) { const w = GUNS[it.gun]; stats = `Hasar ${w.dmg}${w.pellets > 1 ? '×' + w.pellets : ''} · ${(1 / w.rate).toFixed(1)} atış/sn · Şarjör ${w.mag}`; }
+      else if (it.lvl) stats = `Seviye ${it.lvl()} / ${it.max}`;
+      else if (it.count) stats = `Envanterde: ${it.count()}`;
+      card.innerHTML = `<b></b><div class="d"></div><div class="s"></div>`;
+      card.children[0].textContent = it.name; card.children[1].textContent = it.desc; card.children[2].textContent = stats;
+      const b = document.createElement('button');
+      b.textContent = st === 'own' ? 'Sahipsin' : st === 'max' ? 'Maksimum seviye' : st === 'poor' ? '$' + it.price + ' · Yetersiz para' : '$' + it.price + ' · Satın al';
+      b.disabled = st !== 'ok'; b.onclick = () => buy(it);
+      card.appendChild(b); g.appendChild(card);
+    }
+  }
+}
+
+/* =====================================================
+   Silah, üs kurma, bomba, sandık
+   ===================================================== */
+function curGun() { const s = slots()[player.sel]; return s && s.k === 'gun' ? GUNS[s.id] : null; }
+function curGunId() { const s = slots()[player.sel]; return s && s.k === 'gun' ? s.id : null; }
+
+function startReload() {
+  const id = curGunId(); if (!id) return;
+  const w = GUNS[id];
+  if (player.reload > 0 || player.ammo[id] >= w.mag) return;
+  player.reload = player.reloadMax = w.reload; sfx('reload');
+}
+function shoot(id) {
+  const w = GUNS[id], p = player;
+  p.ammo[id]--; p.cd = w.rate; p.flash = 0.06;
+  shake = Math.max(shake, w.kick);
+  const mx = p.x + Math.cos(p.ang) * (p.r + w.len - 4), my = p.y + Math.sin(p.ang) * (p.r + w.len - 4);
+  for (let i = 0; i < w.pellets; i++) {
+    const a = p.ang + (Math.random() - 0.5) * 2 * w.spread, sp = w.speed * (0.92 + Math.random() * 0.16);
+    bullets.push({ x: mx, y: my, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life: w.range / sp, dmg: w.dmg, pierce: w.pierce, hit: null });
+  }
+  sfx('shot_' + id);
+  if (net.connected && !net.host && net.channel) {
+    const ww=GUNS[id], a=p.ang;
+    net.channel.send({type:'broadcast',event:'shot',payload:{x:p.x+Math.cos(a)*(p.r+ww.len),y:p.y+Math.sin(a)*(p.r+ww.len),ang:a,sp:1400,life:ww.range/1400,dmg:ww.dmg,pierce:ww.pierce}});
+  }
+  for (let i = 0; i < 2; i++) parts.push({ x: mx, y: my, vx: Math.cos(p.ang + (Math.random() - .5)) * 160, vy: Math.sin(p.ang + (Math.random() - .5)) * 160, life: .12, max: .12, col: '#ffd36b', s: 3 });
+}
+
+function canPlace(gx, gy) {
+  const x = gx * 40, y = gy * 40, rect = { x, y, w: 40, h: 40 };
+  if (x < 60 || y < 60 || x + 40 > WORLD - 60 || y + 40 > WORLD - 60) return false;
+  if (Math.hypot(x + 20 - player.x, y + 20 - player.y) > 300) return false;
+  if (player.hi >= 0) return false;
+  for (const h of houses) if (x < h.x + h.w + 28 && x + 40 > h.x - 28 && y < h.y + h.h + 28 && y + 40 > h.y - 28) return false;
+  if (!rectFree(x, y, 40, 40)) return false;
+  if (distToRect(player.x, player.y, rect) < player.r + 3) return false;
+  for (const z of zombies) if (distToRect(z.x, z.y, rect) < z.r) return false;
+  return true;
+}
+function tryPlace(kind) {
+  if (player.hi >= 0) { toast('Evlerin içine üs kurulamaz'); return false; }
+  const gx = Math.floor((mouse.x + cam.x) / 40), gy = Math.floor((mouse.y + cam.y) / 40);
+  if (!canPlace(gx, gy)) return false;
+  if (kind === 'block') {
+    if (money < BLOCK_COST) { toast('Yetersiz para'); return false; }
+    money -= BLOCK_COST;
+    const hp = Math.round(BLOCK_HP * (1 + 0.5 * up.wall));
+    built.push({ t: 'block', x: gx * 40, y: gy * 40, w: 40, h: 40, hp, max: hp, sb: false });
+  } else if (kind === 'door') {
+    if (money < DOOR_COST) { toast('Yetersiz para'); return false; }
+    money -= DOOR_COST;
+    const hp = Math.round(DOOR_HP * (1 + 0.5 * up.wall));
+    built.push({ t: 'door', x: gx * 40, y: gy * 40, w: 40, h: 40, hp, max: hp, sb: false });
+  } else {
+    const hp = TURRET_HP;
+    built.push({ t: 'turret', x: gx * 40 + 2, y: gy * 40 + 2, w: 36, h: 36, hp, max: hp, sb: false, cd: 0, ang: 0 });
+  }
+  rebuildGrid(); sfx('place');
+  return true;
+}
+function removeBuiltAtMouse() {
+  const wx = mouse.x + cam.x, wy = mouse.y + cam.y;
+  for (let i = 0; i < built.length; i++) {
+    const o = built[i];
+    if (wx >= o.x && wx <= o.x + o.w && wy >= o.y && wy <= o.y + o.h && Math.hypot(o.x + o.w / 2 - player.x, o.y + o.h / 2 - player.y) < 340) {
+      const refund = o.t === 'block' ? Math.floor(BLOCK_COST / 2) : o.t === 'door' ? Math.floor(DOOR_COST / 2) : 80;
+      money += refund; floatText(o.x + 20, o.y, '+$' + refund);
+      built.splice(i, 1); rebuildGrid(); sfx('break'); return;
+    }
+  }
+}
+function damageBuilt(o, d) {
+  o.hp -= d;
+  for (let i = 0; i < 3; i++) parts.push({ x: o.x + o.w / 2, y: o.y + o.h / 2, vx: (Math.random() - .5) * 160, vy: (Math.random() - .5) * 160, life: .35, max: .35, col: '#a9773f', s: 4 });
+  if (o.hp <= 0) {
+    const i = built.indexOf(o);
+    if (i >= 0) { built.splice(i, 1); rebuildGrid(); sfx('break'); }
+  }
+}
+function nearestBuilt(z) {
+  let best = null, bd = z.r + 8;
+  for (const o of built) { const d = distToRect(z.x, z.y, o); if (d < bd) { bd = d; best = o; } }
+  return best;
+}
+
+function throwBomb() {
+  const p = player, tx = mouse.x + cam.x, ty = mouse.y + cam.y;
+  const dx = tx - p.x, dy = ty - p.y, d = Math.hypot(dx, dy) || 1, m = Math.min(d, 420);
+  bombs.push({ sx: p.x, sy: p.y, x: p.x, y: p.y, tx: p.x + dx / d * m, ty: p.y + dy / d * m, t: 0, fuse: 1.5 });
+  sfx('place');
+}
+function explode(b) {
+  sfx('bomb'); shake = Math.max(shake, 16);
+  const RAD = 150;
+  for (let i = 0; i < 28; i++) {
+    const a = Math.random() * TAU, s = 80 + Math.random() * 300;
+    parts.push({ x: b.x, y: b.y, vx: Math.cos(a) * s, vy: Math.sin(a) * s, life: .5 + Math.random() * .3, max: .8, col: Math.random() < .5 ? '#ff9a2e' : '#ffd36b', s: 5 });
+  }
+  decals.push({ x: b.x, y: b.y, r: 70, scorch: true, life: 10 });
+  for (const z of zombies) {
+    if (z.dead) continue;
+    const d = Math.hypot(z.x - b.x, z.y - b.y);
+    if (d < RAD + z.r) damageZombie(z, 260 * (1 - 0.5 * Math.min(1, d / RAD)));
+  }
+  const pd = Math.hypot(player.x - b.x, player.y - b.y);
+  if (pd < RAD) hurtPlayer(Math.round(45 * (1 - pd / RAD)) + 5);
+}
+
+function openChest() {
+  if (state !== 'playing' || player.hi < 0) return;
+  let best = null, bd = 80;
+  for (const c of chests) {
+    if (c.open || c.hs.id !== player.hi) continue;
+    const d = Math.hypot(c.x + c.w / 2 - player.x, c.y + c.h / 2 - player.y);
+    if (d < bd) { bd = d; best = c; }
+  }
+  if (!best) return;
+  best.open = true; sfx('chest');
+  const r = Math.random(), cx = best.x + best.w / 2, cy = best.y;
+  if (r < 0.55) { const m = Math.round((25 + Math.random() * 45) * (1 + 0.1 * level)); money += m; levelMoney += m; floatText(cx, cy, '+$' + m); toast('Sandıktan $' + m + ' çıktı'); }
+  else if (r < 0.70) { inv.medkit++; toast('Sandıktan ilk yardım çantası çıktı'); }
+  else if (r < 0.85) { const n = 1 + Math.floor(Math.random() * 2); inv.bomb += n; toast('Sandıktan ' + n + ' bomba çıktı'); }
+  else if (r < 0.92) { inv.turret++; toast('Sandıktan bir taret çıktı'); }
+  else if (r < 0.96) {
+    const pool = GUN_ORDER.filter(g => !player.guns.includes(g) && GUNS[g].price > 0 && GUNS[g].price <= 650);
+    if (pool.length) { const g = pool[Math.floor(Math.random() * pool.length)]; player.guns.push(g); player.ammo[g] = GUNS[g].mag; toast('Nadir buluntu: ' + GUNS[g].name + '!'); }
+    else { money += 120; toast('Sandıktan $120 çıktı'); }
+  } else { const m = 100 + level * 20; money += m; levelMoney += m; floatText(cx, cy, '+$' + m); toast('Sandık dolu çıktı: $' + m); }
+}
+
+/* =====================================================
+   Zombiler
+   ===================================================== */
+function makeZombie(type, x, y) {
+  const T = ZT[type], L = spec;
+  const hp = T.hp * L.hp;
+  return { x, y, r: T.r, type, hp, max: hp, spd: T.spd * L.sp * (0.9 + Math.random() * 0.2), dmg: T.dmg * L.dm,
+    score: T.score, money: T.money, a: Math.random() * TAU, ph: Math.random() * TAU, atk: 0.3, flash: 0, stuck: 0, detour: 0, dd: 1,
+    hi: -1, sleep: false, boss: !!T.boss, skillT: 3 + Math.random() * 2, dashT: 0, tele: 0, atkObj: null };
+}
+function spawnZombie(type) {
+  const T = ZT[type];
+  let x = 0, y = 0, ok = false;
+  for (let i = 0; i < 40 && !ok; i++) {
+    const a = Math.random() * TAU, d = Math.hypot(W, H) / 2 + 80 + Math.random() * 320;
+    x = clamp(player.x + Math.cos(a) * d, 60, WORLD - 60);
+    y = clamp(player.y + Math.sin(a) * d, 60, WORLD - 60);
+    if (circleHitsObs(x, y, T.r + 8)) continue;
+    if (houseAt(x, y) >= 0) continue;
+    if (Math.hypot(x - player.x, y - player.y) < 420) continue;
+    ok = true;
+  }
+  zombies.push(makeZombie(type, x, y));
+  if (T.boss) { sfx('boss'); toast('Patron geldi: ' + T.name); }
+  else sfx('spawn');
+}
+function hurtPlayer(d) {
+  if (state !== 'playing') return;
+  player.hp -= d; player.hurt = 0.3; shake = Math.max(shake, 8); sfx('hurt');
+  if (player.hp <= 0) { player.hp = 0; gameOver(); }
+}
+function damageZombie(z, dmg, kx, ky) {
+  if (z.dead) return;
+  z.hp -= dmg; z.flash = 0.08; z.sleep = false; sfx('hit');
+  if (kx !== undefined) { z.x += kx; z.y += ky; }
+  for (let i = 0; i < 3; i++) parts.push({ x: z.x, y: z.y, vx: (Math.random() - .5) * 180, vy: (Math.random() - .5) * 180, life: .35, max: .35, col: '#8f1c1f', s: 3 });
+  if (z.hp <= 0) killZombie(z);
+}
+function killZombie(z) {
+  z.dead = true; kills++; levelKills++; score += z.score;
+  const m = Math.round(z.money * (1 + 0.04 * (level - 1)));
+  money += m; levelMoney += m; floatText(z.x, z.y - z.r, '+$' + m); sfx('die');
+  const corpses = decals.filter(d => d.corpse).length;
+  if (corpses < 30) decals.push({ x: z.x, y: z.y, r: z.r, a: z.a, type: z.type, corpse: true, life: 6 });
+  if (decals.filter(d => d.blood).length < 50) for (let i = 0; i < 2; i++) decals.push({ x: z.x + (Math.random() - .5) * z.r * 2, y: z.y + (Math.random() - .5) * z.r * 2, r: z.r * (.4 + Math.random() * .5), blood: true, life: 14 });
+  if (z.boss || Math.random() < 0.10) drops.push({ x: z.x, y: z.y, heal: z.boss ? 60 : 30 });
+  for (let i = 0; i < 8; i++) {
+    const a = Math.random() * TAU, s = 60 + Math.random() * 140;
+    parts.push({ x: z.x, y: z.y, vx: Math.cos(a) * s, vy: Math.sin(a) * s, life: .5, max: .5, col: '#8f1c1f', s: 4 });
+  }
+}
+
+/* Hedef seçimi: oyuncu bir evdeyse kapıdan girmek, zombi evdeyse kapıdan çıkmak gerekir */
+function zombieTarget(z) {
+  const p = player, pb = p.hi, zb = z.hi;
+  if (zb === pb) return { x: p.x, y: p.y };
+  const hs = houses[zb >= 0 ? zb : pb], d = hs.door;
+  const rx = z.x - d.x, ry = z.y - d.y, along = rx * d.nx + ry * d.ny, lat = -rx * d.ny + ry * d.nx;
+  const aligned = Math.abs(lat) < d.w / 2 - z.r * 0.6;
+  if (zb >= 0) {                                     // evin içinde, dışarı çık
+    if (aligned) return { x: d.x + d.nx * 80, y: d.y + d.ny * 80 };
+    return { x: d.x - d.nx * 55, y: d.y - d.ny * 55 };
+  }
+  // dışarıda, oyuncu evin içinde
+  if (aligned && along > -8 && along < 130) return { x: d.x - d.nx * 60, y: d.y - d.ny * 60 };
+  return { x: d.x + d.nx * 80, y: d.y + d.ny * 80 };
+}
+
+function bossSlam(z) {
+  sfx('slam'); shake = Math.max(shake, 14);
+  const RAD = 175;
+  for (let i = 0; i < 24; i++) {
+    const a = i / 24 * TAU;
+    parts.push({ x: z.x + Math.cos(a) * 40, y: z.y + Math.sin(a) * 40, vx: Math.cos(a) * 320, vy: Math.sin(a) * 320, life: .4, max: .4, col: '#c9b48a', s: 5 });
+  }
+  if (z.hi === player.hi && Math.hypot(player.x - z.x, player.y - z.y) < RAD) hurtPlayer(Math.round(z.dmg * 0.7));
+  for (const o of built.slice()) if (Math.hypot(o.x + o.w / 2 - z.x, o.y + o.h / 2 - z.y) < RAD) damageBuilt(o, 90);
+}
+
+/* =====================================================
+   Güncelleme
+   ===================================================== */
+function update(dt) {
+  anim += dt;
+  const p = player;
+  p.hi = houseAt(p.x, p.y);
+
+  // Hareket
+  let mx = (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0);
+  let my = (keys.KeyS || keys.ArrowDown ? 1 : 0) - (keys.KeyW || keys.ArrowUp ? 1 : 0);
+  if (touch.stick) {
+    const dx = touch.stick.x - touch.stick.ox, dy = touch.stick.y - touch.stick.oy, l = Math.hypot(dx, dy);
+    if (l > 8) { mx = dx / Math.max(l, 60); my = dy / Math.max(l, 60); }
+  }
+  const ml = Math.hypot(mx, my);
+  if (ml > 1) { mx /= ml; my /= ml; }
+  const moving = ml > 0.05;
+  const wantsSprint = (keys.ShiftLeft || keys.ShiftRight) && moving;
+  if (p.tired && p.stam > 30) p.tired = false;
+  const sprint = wantsSprint && !p.tired && p.stam > 0;
+  if (sprint) { p.stam -= 38 * dt; if (p.stam <= 0) { p.stam = 0; p.tired = true; } }
+  else p.stam = Math.min(100, p.stam + 20 * dt);
+  const speed = sprint ? 285 : 200;
+  p.x = clamp(p.x + mx * speed * dt, 40, WORLD - 40);
+  p.y = clamp(p.y + my * speed * dt, 40, WORLD - 40);
+  pushOut(p);
+  p.hi = houseAt(p.x, p.y);
+
+  // Kamera ve nişan
+  const lookX = (mouse.x - W / 2) * 0.2, lookY = (mouse.y - H / 2) * 0.2;
+  cam.x = clamp(p.x + lookX - W / 2, 0, Math.max(0, WORLD - W));
+  cam.y = clamp(p.y + lookY - H / 2, 0, Math.max(0, WORLD - H));
+  p.ang = Math.atan2(mouse.y + cam.y - p.y, mouse.x + cam.x - p.x);
+
+  // Eylemler
+  p.cd -= dt; p.flash -= dt; p.hurt -= dt; mouse.buf -= dt;
+  const sl = slots()[p.sel] || slots()[0];
+  const want = mouse.down || mouse.buf > 0;
+  if (sl.k === 'gun') {
+    const w = GUNS[sl.id];
+    if (p.reload > 0) {
+      p.reload -= dt;
+      if (p.reload <= 0) { p.reload = 0; p.ammo[sl.id] = w.mag; }
+    } else if (p.ammo[sl.id] <= 0) startReload();
+    const fire = w.auto ? want : mouse.buf > 0;
+    if (fire && p.reload <= 0 && p.cd <= 0 && p.ammo[sl.id] > 0) { shoot(sl.id); mouse.buf = 0; }
+  } else if (want && p.cd <= 0) {
+    if (sl.k === 'block') { if (tryPlace('block')) p.cd = 0.07; else if (mouse.buf > 0) mouse.buf = 0; }
+    else if (sl.k === 'door') { if (tryPlace('door')) p.cd = 0.12; else if (mouse.buf > 0) mouse.buf = 0; }
+    else if (sl.k === 'turret') {
+      if (mouse.buf > 0) {
+        if (inv.turret <= 0) toast('Taretin yok. Mağazadan al (Tab)');
+        else if (tryPlace('turret')) { inv.turret--; p.cd = 0.3; }
+        mouse.buf = 0;
+      }
+    } else if (sl.k === 'bomb') {
+      if (mouse.buf > 0) {
+        if (inv.bomb <= 0) toast('Bomban yok. Mağazadan al (Tab)');
+        else { throwBomb(); inv.bomb--; p.cd = 0.5; }
+        mouse.buf = 0;
+      }
+    } else if (sl.k === 'medkit') {
+      if (mouse.buf > 0) {
+        if (inv.medkit <= 0) toast('Çantan yok. Mağazadan al (Tab)');
+        else if (p.hp >= p.max) toast('Canın zaten dolu');
+        else { inv.medkit--; p.hp = Math.min(p.max, p.hp + 60); p.cd = 0.6; sfx('pick'); floatText(p.x, p.y - 24, '+60 can', '#7fbf5a'); }
+        mouse.buf = 0;
+      }
+    }
+  }
+
+  // Sandık yakınlığı
+  nearChest = null;
+  if (p.hi >= 0) {
+    let bd = 80;
+    for (const c of chests) {
+      if (c.open || c.hs.id !== p.hi) continue;
+      const d = Math.hypot(c.x + c.w / 2 - p.x, c.y + c.h / 2 - p.y);
+      if (d < bd) { bd = d; nearChest = c; }
+    }
+  }
+
+  // Mermiler
+  for (let i = bullets.length - 1; i >= 0; i--) {
+    const b = bullets[i]; let dead = false;
+    for (let s = 0; s < 3 && !dead; s++) {
+      b.x += b.vx * dt / 3; b.y += b.vy * dt / 3;
+      if (bulletBlocked(b.x, b.y)) {
+        dead = true;
+        for (let k = 0; k < 2; k++) parts.push({ x: b.x, y: b.y, vx: (Math.random() - .5) * 140, vy: (Math.random() - .5) * 140, life: .2, max: .2, col: '#e8d8a8', s: 2 });
+        break;
+      }
+      for (const z of zombies) {
+        if (z.dead) continue;
+        if (b.hit && b.hit.indexOf(z) >= 0) continue;
+        const dx = z.x - b.x, dy = z.y - b.y, rr2 = z.r + 3;
+        if (dx * dx + dy * dy < rr2 * rr2) {
+          const bl = Math.hypot(b.vx, b.vy);
+          damageZombie(z, b.dmg, b.vx / bl * 4, b.vy / bl * 4);
+          if (!b.hit) b.hit = [];
+          b.hit.push(z); b.pierce--;
+          if (b.pierce <= 0) { dead = true; break; }
+        }
+      }
+    }
+    b.life -= dt;
+    if (dead || b.life <= 0) bullets.splice(i, 1);
+  }
+
+  // Zombiler
+  if (!net.connected || net.host) {
+  for (const z of zombies) if (!z.dead) z.hi = houseAt(z.x, z.y);
+  for (const z of zombies) {
+    if (z.dead) continue;
+    const dx = p.x - z.x, dy = p.y - z.y, d = Math.hypot(dx, dy) || 1;
+    if (z.sleep) {
+      if (d < 380 || (p.hi >= 0 && p.hi === z.hi) || z.flash > 0) z.sleep = false; else continue;
+    }
+    z.flash -= dt; z.atk -= dt;
+    const tgt = zombieTarget(z);
+    let ang = Math.atan2(tgt.y - z.y, tgt.x - z.x);
+    z.a = ang;
+    if (z.detour > 0) { z.detour -= dt; ang += z.dd * 1.35; }
+
+    // Patron yetenekleri
+    if (z.boss) {
+      z.skillT -= dt;
+      if (z.type === 'b1') {
+        if (z.dashT > 0) z.dashT -= dt;
+        else if (z.skillT <= 0 && d < 700 && d > 140 && z.hi === p.hi) { z.dashT = 0.55; z.skillT = 4.5; sfx('slam'); }
+      } else if (z.type === 'b2') {
+        if (z.skillT <= 0) {
+          z.skillT = 9; sfx('boss'); toast('Çağırıcı zombi çağırdı!');
+          for (let k = 0; k < 3; k++) {
+            const a = Math.random() * TAU, sx = z.x + Math.cos(a) * 70, sy = z.y + Math.sin(a) * 70;
+            if (!circleHitsObs(sx, sy, 16) && houseAt(sx, sy) === z.hi) zombies.push(makeZombie('f', sx, sy));
+          }
+        }
+      } else if (z.type === 'b3') {
+        if (z.tele > 0) { z.tele -= dt; if (z.tele <= 0) bossSlam(z); }
+        else if (z.skillT <= 0 && (d < 300 || nearestBuilt(z))) { z.tele = 0.8; z.skillT = 6; }
+      }
+    }
+
+    const sameCtx = z.hi === p.hi;
+    const contact = sameCtx && d < z.r + p.r + 3;
+    if (!contact && !z.atkObj) {
+      let v = z.spd * (1 + Math.sin(anim * 3 + z.ph) * 0.22);
+      if (z.dashT > 0) v *= 3.6;
+      if (z.tele > 0) v *= 0.1;
+      const px = z.x, py = z.y;
+      z.x += Math.cos(ang) * v * dt; z.y += Math.sin(ang) * v * dt;
+      pushOut(z);
+      // Bir savunmaya temas ettiği anda onu hedefle; sadece "stuck" zamanlayıcısını bekleme.
+      const touchingBuilt = nearestBuilt(z);
+      if (touchingBuilt) z.atkObj = touchingBuilt;
+      const moved = Math.hypot(z.x - px, z.y - py);
+      if (moved < v * dt * 0.35) {
+        z.stuck += dt;
+        if (z.stuck > 0.25) {
+          const bo = nearestBuilt(z);
+          if (bo) z.atkObj = bo;
+          else if (z.stuck > 0.45) { z.detour = 1.2; z.dd = Math.random() < 0.5 ? -1 : 1; z.stuck = 0; }
+        }
+      } else z.stuck = 0;
+    }
+    if (z.atkObj) {
+      const o = z.atkObj;
+      if (o.hp <= 0 || built.indexOf(o) < 0 || distToRect(z.x, z.y, o) > z.r + 14) { z.atkObj = null; z.stuck = 0; }
+      else if (z.atk <= 0) { damageBuilt(o, z.dmg * 1.4); z.atk = 0.8; }
+    }
+    if (contact && z.atk <= 0) {
+      hurtPlayer(z.dmg); z.atk = 0.85;
+      if (state !== 'playing') return;
+    }
+  }
+  for (let i = 0; i < zombies.length; i++) {
+    const a = zombies[i]; if (a.dead) continue;
+    for (let j = i + 1; j < zombies.length; j++) {
+      const b = zombies[j]; if (b.dead) continue;
+      const dx = b.x - a.x, dy = b.y - a.y, d = Math.hypot(dx, dy), min = (a.r + b.r) * 0.85;
+      if (d < min && d > 0.01) {
+        const push = (min - d) / 2;
+        a.x -= dx / d * push; a.y -= dy / d * push; b.x += dx / d * push; b.y += dy / d * push;
+      }
+    }
+  }
+  zombies = zombies.filter(z => !z.dead);
+
+  }
+
+  // Taretler
+  for (const o of built) {
+    if (o.t !== 'turret') continue;
+    o.cd -= dt;
+    let best = null, bd = 420;
+    const cx = o.x + o.w / 2, cy = o.y + o.h / 2;
+    for (const z of zombies) {
+      if (z.hi >= 0 || z.sleep) continue;
+      const d = Math.hypot(z.x - cx, z.y - cy);
+      if (d < bd) { bd = d; best = z; }
+    }
+    if (best) {
+      o.ang = Math.atan2(best.y - cy, best.x - cx);
+      if (o.cd <= 0) {
+        o.cd = 0.32;
+        const a = o.ang + (Math.random() - .5) * 0.07, sp = 1400;
+        bullets.push({ x: cx + Math.cos(a) * 22, y: cy + Math.sin(a) * 22, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life: 0.45, dmg: 16 * (1 + 0.4 * up.turret), pierce: 1, hit: null });
+        sfx('tur');
+      }
+    }
+  }
+
+  // Bombalar
+  for (let i = bombs.length - 1; i >= 0; i--) {
+    const b = bombs[i]; b.t += dt;
+    if (b.t < 0.5) { const k = b.t / 0.5, e = 1 - (1 - k) * (1 - k); b.x = b.sx + (b.tx - b.sx) * e; b.y = b.sy + (b.ty - b.sy) * e; }
+    else { b.x = b.tx; b.y = b.ty; }
+    if (b.t >= b.fuse) { explode(b); bombs.splice(i, 1); if (state !== 'playing') return; }
+  }
+
+  // Doğuş
+  if (!net.connected || net.host) spawnT -= dt;
+  const alive = zombies.filter(z => !z.sleep).length;
+  const maxAlive = Math.min(44, 8 + level * 3);
+  if ((!net.connected || net.host) && queue.length && alive < maxAlive && spawnT <= 0) {
+    spawnZombie(queue.shift());
+    spawnT = spec.interval * (0.7 + Math.random() * 0.6);
+  }
+
+  // Can paketleri
+  for (let i = drops.length - 1; i >= 0; i--) {
+    const dr = drops[i];
+    if (Math.hypot(dr.x - p.x, dr.y - p.y) < 26) { p.hp = Math.min(p.max, p.hp + dr.heal); drops.splice(i, 1); sfx('pick'); }
+  }
+
+  // Efektler
+  for (let i = parts.length - 1; i >= 0; i--) {
+    const q = parts[i]; q.x += q.vx * dt; q.y += q.vy * dt; q.vx *= 0.92; q.vy *= 0.92; q.life -= dt;
+    if (q.life <= 0) parts.splice(i, 1);
+  }
+  if (parts.length > 260) parts.splice(0, parts.length - 260);
+  for (let i = decals.length - 1; i >= 0; i--) { decals[i].life -= dt; if (decals[i].life <= 0) decals.splice(i, 1); }
+  for (let i = floats.length - 1; i >= 0; i--) { floats[i].t -= dt; floats[i].y -= 30 * dt; if (floats[i].t <= 0) floats.splice(i, 1); }
+  for (let i = toasts.length - 1; i >= 0; i--) { toasts[i].t -= dt; if (toasts[i].t <= 0) toasts.splice(i, 1); }
+  shake = Math.max(0, shake - dt * 30);
+  if (banner) { banner.t -= dt; if (banner.t <= 0) banner = null; }
+
+  if (state === 'playing' && !queue.length && !zombies.length) levelClear();
+}
+
+/* =====================================================
+   Çizim
+   ===================================================== */
+function vis(x, y, w, h, m) {
+  m = m || 0;
+  return x + w > cam.x - m && x < cam.x + W + m && y + h > cam.y - m && y < cam.y + H + m;
+}
+
+function drawGround() {
+  ctx.fillStyle = '#1b2a20'; ctx.fillRect(cam.x - 20, cam.y - 20, W + 40, H + 40);
+  ctx.fillStyle = '#1e2f24'; ctx.fillRect(0, 0, WORLD, WORLD);
+  for (const p of patches) {
+    if (!vis(p.x - p.rx, p.y - p.rx, p.rx * 2, p.rx * 2)) continue;
+    ctx.fillStyle = p.v < 0.5 ? 'rgba(84,72,46,.22)' : 'rgba(20,40,26,.5)';
+    ctx.beginPath(); ctx.ellipse(p.x, p.y, p.rx, p.ry, p.rot, 0, TAU); ctx.fill();
+  }
+  ctx.fillStyle = '#2b2e33';
+  ctx.fillRect(MID - ROAD / 2, 0, ROAD, WORLD);
+  ctx.fillRect(0, MID - ROAD / 2, WORLD, ROAD);
+  ctx.strokeStyle = '#3f4349'; ctx.lineWidth = 8;
+  ctx.strokeRect(MID - ROAD / 2, -10, ROAD, WORLD + 20);
+  ctx.strokeRect(-10, MID - ROAD / 2, WORLD + 20, ROAD);
+  ctx.fillStyle = '#2b2e33'; ctx.fillRect(MID - ROAD / 2 + 4, MID - ROAD / 2 + 4, ROAD - 8, ROAD - 8);
+  ctx.strokeStyle = 'rgba(201,162,39,.65)'; ctx.lineWidth = 4; ctx.setLineDash([32, 26]);
+  ctx.beginPath(); ctx.moveTo(MID, 0); ctx.lineTo(MID, MID - ROAD / 2); ctx.moveTo(MID, MID + ROAD / 2); ctx.lineTo(MID, WORLD);
+  ctx.moveTo(0, MID); ctx.lineTo(MID - ROAD / 2, MID); ctx.moveTo(MID + ROAD / 2, MID); ctx.lineTo(WORLD, MID); ctx.stroke();
+  ctx.setLineDash([]);
+  for (const t of tufts) {
+    if (t.x < cam.x - 10 || t.x > cam.x + W + 10 || t.y < cam.y - 10 || t.y > cam.y + H + 10) continue;
+    if (Math.abs(t.x - MID) < ROAD / 2 + 6 || Math.abs(t.y - MID) < ROAD / 2 + 6) continue;
+    ctx.strokeStyle = t.v < .5 ? '#2c4a34' : '#28402d'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(t.x, t.y); ctx.lineTo(t.x + Math.cos(t.a) * t.s, t.y - t.s);
+    ctx.moveTo(t.x + 3, t.y); ctx.lineTo(t.x + 3 + Math.cos(t.a + 1) * t.s, t.y - t.s * .8); ctx.stroke();
+  }
+}
+
+function drawDecals() {
+  for (const d of decals) {
+    if (!vis(d.x - 80, d.y - 80, 160, 160)) continue;
+    if (d.blood) { ctx.fillStyle = 'rgba(110,14,18,' + (0.5 * clamp(d.life / 4, 0, 1)) + ')'; ctx.beginPath(); ctx.arc(d.x, d.y, d.r, 0, TAU); ctx.fill(); }
+    else if (d.scorch) { ctx.fillStyle = 'rgba(10,10,10,' + (0.55 * clamp(d.life / 3, 0, 1)) + ')'; ctx.beginPath(); ctx.arc(d.x, d.y, d.r, 0, TAU); ctx.fill(); }
+    else if (d.corpse) {
+      const T = ZT[d.type], al = clamp(d.life / 2, 0, 1) * 0.8;
+      ctx.save(); ctx.translate(d.x, d.y); ctx.rotate(d.a + 1.2); ctx.globalAlpha = al;
+      ctx.fillStyle = T.col; ctx.beginPath(); ctx.ellipse(0, 0, d.r * 1.05, d.r * .78, 0, 0, TAU); ctx.fill();
+      ctx.fillStyle = T.head; ctx.beginPath(); ctx.arc(d.r * .7, 0, d.r * .5, 0, TAU); ctx.fill();
+      ctx.restore();
+    }
+  }
+}
+function drawDrops() {
+  for (const dr of drops) {
+    if (!vis(dr.x - 30, dr.y - 30, 60, 60)) continue;
+    const pulse = 1 + Math.sin(anim * 5) * 0.08;
+    ctx.save(); ctx.translate(dr.x, dr.y); ctx.scale(pulse, pulse);
+    ctx.fillStyle = 'rgba(200,56,43,.25)'; ctx.beginPath(); ctx.arc(0, 0, 24, 0, TAU); ctx.fill();
+    ctx.fillStyle = '#ece6d6'; ctx.fillRect(-12, -12, 24, 24);
+    ctx.fillStyle = '#c8382b'; ctx.fillRect(-3, -9, 6, 18); ctx.fillRect(-9, -3, 18, 6);
+    ctx.restore();
+  }
+}
+function drawCrates() {
+  for (const o of obs) {
+    if (o.t !== 'c' || !vis(o.x, o.y, o.w + 6, o.h + 6)) continue;
+    ctx.fillStyle = 'rgba(0,0,0,.3)'; ctx.fillRect(o.x + 4, o.y + 5, o.w, o.h);
+    ctx.fillStyle = '#7a5a34'; ctx.fillRect(o.x, o.y, o.w, o.h);
+    ctx.strokeStyle = '#4d3820'; ctx.lineWidth = 3; ctx.strokeRect(o.x + 1.5, o.y + 1.5, o.w - 3, o.h - 3);
+    ctx.beginPath(); ctx.moveTo(o.x + 4, o.y + 4); ctx.lineTo(o.x + o.w - 4, o.y + o.h - 4);
+    ctx.moveTo(o.x + o.w - 4, o.y + 4); ctx.lineTo(o.x + 4, o.y + o.h - 4); ctx.stroke();
+  }
+}
+function drawBuilt() {
+  for (const o of built) {
+    if (!vis(o.x, o.y, o.w + 10, o.h + 24)) continue;
+    const f = clamp(o.hp / o.max, 0, 1);
+    if (o.t === 'block') {
+      ctx.fillStyle = 'rgba(0,0,0,.3)'; ctx.fillRect(o.x + 4, o.y + 5, o.w, o.h);
+      ctx.fillStyle = f > .5 ? '#a9773f' : f > .25 ? '#8f6234' : '#74502a'; ctx.fillRect(o.x, o.y, o.w, o.h);
+      ctx.strokeStyle = '#5a3d1e'; ctx.lineWidth = 2;
+      for (let i = 1; i < 4; i++) { ctx.beginPath(); ctx.moveTo(o.x, o.y + i * 10); ctx.lineTo(o.x + o.w, o.y + i * 10); ctx.stroke(); }
+      ctx.strokeRect(o.x + 1, o.y + 1, o.w - 2, o.h - 2);
+      if (f < .6) { ctx.strokeStyle = 'rgba(20,10,0,.7)'; ctx.beginPath(); ctx.moveTo(o.x + 8, o.y + 4); ctx.lineTo(o.x + 20, o.y + 20); ctx.lineTo(o.x + 14, o.y + 34); ctx.stroke(); }
+      if (f < .3) { ctx.beginPath(); ctx.moveTo(o.x + 34, o.y + 6); ctx.lineTo(o.x + 24, o.y + 24); ctx.stroke(); }
+    } else if (o.t === 'door') {
+      ctx.fillStyle = 'rgba(0,0,0,.3)'; ctx.fillRect(o.x + 4, o.y + 5, o.w, o.h);
+      ctx.fillStyle = f > .5 ? '#8b5a2b' : f > .25 ? '#70451f' : '#543318'; ctx.fillRect(o.x, o.y, o.w, o.h);
+      ctx.strokeStyle = '#d2a66b'; ctx.lineWidth = 3; ctx.strokeRect(o.x + 2, o.y + 2, o.w - 4, o.h - 4);
+      ctx.strokeStyle = '#5a3518'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(o.x + 8, o.y + 4); ctx.lineTo(o.x + 8, o.y + o.h - 4); ctx.moveTo(o.x + o.w - 8, o.y + 4); ctx.lineTo(o.x + o.w - 8, o.y + o.h - 4); ctx.stroke();
+      ctx.fillStyle = '#e7c27d'; ctx.beginPath(); ctx.arc(o.x + o.w - 10, o.y + o.h / 2, 3, 0, TAU); ctx.fill();
+    } else {
+      const cx = o.x + o.w / 2, cy = o.y + o.h / 2;
+      ctx.fillStyle = 'rgba(0,0,0,.3)'; ctx.beginPath(); ctx.arc(cx + 3, cy + 4, 20, 0, TAU); ctx.fill();
+      ctx.fillStyle = '#2c3a44'; ctx.fillRect(o.x, o.y, o.w, o.h);
+      ctx.strokeStyle = '#7f96a6'; ctx.lineWidth = 2; ctx.strokeRect(o.x + 1, o.y + 1, o.w - 2, o.h - 2);
+      ctx.save(); ctx.translate(cx, cy); ctx.rotate(o.ang || 0);
+      ctx.fillStyle = '#48606f'; ctx.beginPath(); ctx.arc(0, 0, 12, 0, TAU); ctx.fill();
+      ctx.fillStyle = '#11181d'; ctx.fillRect(4, -3, 20, 6);
+      ctx.restore();
+    }
+
+    // Can çubuğu ve sayısal can HER ZAMAN görünür.
+    const by = o.y - 14;
+    ctx.fillStyle = 'rgba(0,0,0,.78)'; ctx.fillRect(o.x, by, o.w, 6);
+    ctx.fillStyle = f > .5 ? '#7fbf5a' : f > .25 ? '#e0a530' : '#d64534';
+    ctx.fillRect(o.x, by, o.w * f, 6);
+    ctx.font = '700 10px ' + FONT; ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+    ctx.fillStyle = '#ffffff'; ctx.shadowColor = '#000'; ctx.shadowBlur = 3;
+    ctx.fillText(Math.max(0, Math.ceil(o.hp)) + '/' + o.max, o.x + o.w / 2, by - 1);
+    ctx.shadowBlur = 0; ctx.textBaseline = 'alphabetic';
+  }
+}
+function drawTrees() {
+  const greens = [['#1f4a2a', '#2b6136'], ['#24502e', '#34703f'], ['#1b4226', '#276137']];
+  for (const o of obs) {
+    if (o.t !== 't') continue;
+    const cx = o.x + o.w / 2, cy = o.y + o.h / 2;
+    if (!vis(cx - o.cr, cy - o.cr, o.cr * 2, o.cr * 2, 20)) continue;
+    const g = greens[o.shade];
+    ctx.fillStyle = 'rgba(0,0,0,.28)'; ctx.beginPath(); ctx.ellipse(cx + 10, cy + 14, o.cr, o.cr * .85, 0, 0, TAU); ctx.fill();
+    ctx.fillStyle = '#4a3522'; ctx.fillRect(o.x + 6, o.y + 6, o.w - 12, o.h - 12);
+    ctx.globalAlpha = .88;
+    ctx.fillStyle = g[0]; ctx.beginPath(); ctx.arc(cx, cy, o.cr, 0, TAU); ctx.fill();
+    ctx.fillStyle = g[1]; ctx.beginPath(); ctx.arc(cx - o.cr * .22, cy - o.cr * .25, o.cr * .62, 0, TAU); ctx.fill();
+    ctx.globalAlpha = 1;
+  }
+}
+function drawRoof(h) {
+  if (!vis(h.x, h.y, h.w + 14, h.h + 14)) return;
+  ctx.fillStyle = 'rgba(0,0,0,.38)'; ctx.fillRect(h.x + 10, h.y + 12, h.w, h.h);
+  ctx.fillStyle = h.roof; ctx.fillRect(h.x, h.y, h.w, h.h);
+  ctx.fillStyle = 'rgba(255,255,255,.06)'; ctx.fillRect(h.x, h.y, h.w, 7);
+  ctx.strokeStyle = 'rgba(0,0,0,.55)'; ctx.lineWidth = 4; ctx.strokeRect(h.x + 2, h.y + 2, h.w - 4, h.h - 4);
+  ctx.strokeStyle = 'rgba(255,255,255,.09)'; ctx.lineWidth = 2; ctx.strokeRect(h.x + 18, h.y + 18, h.w - 36, h.h - 36);
+  for (const v of h.vents) {
+    ctx.fillStyle = 'rgba(0,0,0,.35)'; ctx.fillRect(h.x + v.x, h.y + v.y, v.s, v.s);
+    ctx.strokeStyle = 'rgba(255,255,255,.14)'; ctx.lineWidth = 2; ctx.strokeRect(h.x + v.x, h.y + v.y, v.s, v.s);
+  }
+  // kapı işareti
+  const d = h.door;
+  ctx.fillStyle = '#9a7a4e';
+  if (d.nx === 0) { ctx.fillRect(d.x - d.w / 2, d.y - h.T / 2, d.w, h.T); ctx.fillStyle = '#c4a473'; ctx.fillRect(d.x - d.w / 2 + 6, d.y - 3 + d.ny * 0, d.w - 12, 6); }
+  else { ctx.fillRect(d.x - h.T / 2, d.y - d.w / 2, h.T, d.w); ctx.fillStyle = '#c4a473'; ctx.fillRect(d.x - 3, d.y - d.w / 2 + 6, 6, d.w - 12); }
+}
+
+function drawInteriorScene(hs) {
+  const n = hs.inner;
+  // zemin
+  ctx.fillStyle = '#4a3a2c'; ctx.fillRect(n.x, n.y, n.w, n.h);
+  ctx.strokeStyle = 'rgba(0,0,0,.28)'; ctx.lineWidth = 1;
+  ctx.beginPath();
+  for (let yy = n.y + 22; yy < n.y + n.h; yy += 22) { ctx.moveTo(n.x, yy); ctx.lineTo(n.x + n.w, yy); }
+  ctx.stroke();
+  ctx.fillStyle = 'rgba(120,40,40,.32)'; ctx.fillRect(n.x + n.w * .3, n.y + n.h * .3, n.w * .4, n.h * .4);
+  ctx.strokeStyle = 'rgba(200,150,120,.25)'; ctx.lineWidth = 3; ctx.strokeRect(n.x + n.w * .3 + 6, n.y + n.h * .3 + 6, n.w * .4 - 12, n.h * .4 - 12);
+  // kapı eşiği
+  const d = hs.door;
+  ctx.fillStyle = '#7a6448';
+  if (d.nx === 0) ctx.fillRect(d.x - d.w / 2, d.y - hs.T / 2, d.w, hs.T); else ctx.fillRect(d.x - hs.T / 2, d.y - d.w / 2, hs.T, d.w);
+  // eşyalar
+  for (const f of hs.furn) {
+    ctx.fillStyle = 'rgba(0,0,0,.3)'; ctx.fillRect(f.x + 4, f.y + 5, f.w, f.h);
+    if (f.kind === 'bed') {
+      ctx.fillStyle = '#6b4f3a'; ctx.fillRect(f.x, f.y, f.w, f.h);
+      ctx.fillStyle = '#7d8fa8'; ctx.fillRect(f.x + 3, f.y + 18, f.w - 6, f.h - 21);
+      ctx.fillStyle = '#e4dccb'; ctx.fillRect(f.x + 5, f.y + 4, f.w - 10, 12);
+    } else {
+      ctx.fillStyle = '#7a5a38'; ctx.fillRect(f.x, f.y, f.w, f.h);
+      ctx.strokeStyle = '#4d3820'; ctx.lineWidth = 2; ctx.strokeRect(f.x + 1, f.y + 1, f.w - 2, f.h - 2);
+    }
+  }
+  for (const c of hs.chests) {
+    ctx.fillStyle = 'rgba(0,0,0,.3)'; ctx.fillRect(c.x + 3, c.y + 4, c.w, c.h);
+    ctx.fillStyle = c.open ? '#5c4527' : '#8a5f2d'; ctx.fillRect(c.x, c.y, c.w, c.h);
+    ctx.strokeStyle = '#3a2812'; ctx.lineWidth = 2; ctx.strokeRect(c.x + 1, c.y + 1, c.w - 2, c.h - 2);
+    if (c.open) { ctx.fillStyle = '#1e140a'; ctx.fillRect(c.x + 4, c.y + 4, c.w - 8, c.h - 8); }
+    else {
+      ctx.fillStyle = '#e0b83a'; ctx.fillRect(c.x + c.w / 2 - 4, c.y + c.h / 2 - 5, 8, 10);
+      ctx.fillStyle = 'rgba(255,255,255,.25)'; ctx.fillRect(c.x + 3, c.y + 3, c.w - 6, 3);
+      if (nearChest === c) { ctx.strokeStyle = '#f0b429'; ctx.lineWidth = 3; ctx.strokeRect(c.x - 3, c.y - 3, c.w + 6, c.h + 6); }
+    }
+  }
+  // duvarlar
+  for (const w of hs.walls) {
+    ctx.fillStyle = '#5b4a3b'; ctx.fillRect(w.x, w.y, w.w, w.h);
+    ctx.strokeStyle = '#2b2118'; ctx.lineWidth = 2; ctx.strokeRect(w.x + 1, w.y + 1, w.w - 2, w.h - 2);
+  }
+}
+
+function drawZombie(z) {
+  const T = ZT[z.type];
+  if (!vis(z.x - z.r * 2, z.y - z.r * 2, z.r * 4, z.r * 4)) return;
+  if (z.tele > 0) {
+    ctx.strokeStyle = 'rgba(230,70,50,' + (0.4 + 0.3 * Math.sin(anim * 20)) + ')'; ctx.lineWidth = 4;
+    ctx.beginPath(); ctx.arc(z.x, z.y, 175, 0, TAU); ctx.stroke();
+    ctx.fillStyle = 'rgba(230,70,50,.12)'; ctx.fill();
+  }
+  ctx.save(); ctx.translate(z.x, z.y);
+  ctx.fillStyle = 'rgba(0,0,0,.3)'; ctx.beginPath(); ctx.ellipse(3, 5, z.r, z.r * .9, 0, 0, TAU); ctx.fill();
+  if (z.boss) { ctx.strokeStyle = 'rgba(255,80,60,' + (0.35 + 0.2 * Math.sin(anim * 4)) + ')'; ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(0, 0, z.r + 7, 0, TAU); ctx.stroke(); }
+  ctx.rotate(z.a);
+  const sw = z.sleep ? 0 : Math.sin(anim * 4 + z.ph) * 4;
+  ctx.fillStyle = T.arm;
+  ctx.beginPath(); ctx.arc(z.r * .95 + sw, -z.r * .72, z.r * .3, 0, TAU); ctx.fill();
+  ctx.beginPath(); ctx.arc(z.r * .95 - sw, z.r * .72, z.r * .3, 0, TAU); ctx.fill();
+  ctx.fillStyle = T.col; ctx.beginPath(); ctx.arc(0, 0, z.r, 0, TAU); ctx.fill();
+  if (z.type === 'b3') { ctx.fillStyle = '#2a3540'; for (let i = 0; i < 6; i++) { const a = i / 6 * TAU; ctx.beginPath(); ctx.arc(Math.cos(a) * z.r * .8, Math.sin(a) * z.r * .8, z.r * .16, 0, TAU); ctx.fill(); } }
+  ctx.fillStyle = T.head; ctx.beginPath(); ctx.arc(z.r * .1, 0, z.r * .58, 0, TAU); ctx.fill();
+  ctx.fillStyle = z.type === 'b2' ? '#d6a0ff' : '#d8342a';
+  const er = z.boss ? z.r * .13 : z.r * .11;
+  ctx.beginPath(); ctx.arc(z.r * .38, -z.r * .22, er, 0, TAU); ctx.arc(z.r * .38, z.r * .22, er, 0, TAU); ctx.fill();
+  if (z.flash > 0) { ctx.fillStyle = 'rgba(255,255,255,.55)'; ctx.beginPath(); ctx.arc(0, 0, z.r, 0, TAU); ctx.fill(); }
+  ctx.restore();
+  if (z.hp < z.max && !z.boss) {
+    const w = z.r * 2;
+    ctx.fillStyle = 'rgba(0,0,0,.6)'; ctx.fillRect(z.x - w / 2, z.y - z.r - 10, w, 4);
+    ctx.fillStyle = '#c8382b'; ctx.fillRect(z.x - w / 2, z.y - z.r - 10, w * Math.max(0, z.hp / z.max), 4);
+  }
+}
+
+function drawPlayer() {
+  const p = player, g = curGun(), len = g ? g.len : 14;
+  ctx.save(); ctx.translate(p.x, p.y);
+  ctx.fillStyle = 'rgba(0,0,0,.32)'; ctx.beginPath(); ctx.ellipse(3, 5, p.r, p.r * .9, 0, 0, TAU); ctx.fill();
+  ctx.rotate(p.ang);
+  if (g) {
+    ctx.fillStyle = '#15181a'; ctx.fillRect(p.r * .4, -3, len, 6);
+    if (curGunId() === 'shotgun') ctx.fillRect(p.r * .4, -5, len * .55, 3);
+    if (curGunId() === 'minigun') { ctx.fillRect(p.r * .4, -6, len, 3); ctx.fillRect(p.r * .4, 3, len, 3); }
+  }
+  ctx.fillStyle = '#c9a07a';
+  ctx.beginPath(); ctx.arc(p.r + 5, -4, 4.5, 0, TAU); ctx.arc(p.r + 12, 5, 4.5, 0, TAU); ctx.fill();
+  ctx.fillStyle = '#2d5a86'; ctx.beginPath(); ctx.arc(0, 0, p.r, 0, TAU); ctx.fill();
+  ctx.fillStyle = '#3b77ad'; ctx.beginPath(); ctx.arc(-2, 0, p.r * .72, 0, TAU); ctx.fill();
+  ctx.fillStyle = '#d2a679'; ctx.beginPath(); ctx.arc(1, 0, p.r * .5, 0, TAU); ctx.fill();
+  ctx.fillStyle = '#1c2733'; ctx.beginPath(); ctx.arc(0, 0, p.r * .5, Math.PI * .55, Math.PI * 1.45); ctx.fill();
+  if (p.flash > 0 && g) {
+    const tx = p.r + len - 2;
+    ctx.fillStyle = '#ffd86b'; ctx.beginPath(); ctx.moveTo(tx, 0); ctx.lineTo(tx + 20, -7); ctx.lineTo(tx + 13, 0); ctx.lineTo(tx + 20, 7); ctx.closePath(); ctx.fill();
+  }
+  ctx.restore();
+}
+function drawBombs() {
+  for (const b of bombs) {
+    const lift = b.t < 0.5 ? Math.sin(b.t / 0.5 * Math.PI) * 30 : 0;
+    ctx.fillStyle = 'rgba(0,0,0,.3)'; ctx.beginPath(); ctx.ellipse(b.x, b.y + 4, 9, 5, 0, 0, TAU); ctx.fill();
+    ctx.fillStyle = '#1c1f22'; ctx.beginPath(); ctx.arc(b.x, b.y - lift, 9, 0, TAU); ctx.fill();
+    const blink = Math.sin(b.t * (8 + b.t * 10)) > 0;
+    ctx.fillStyle = blink ? '#ff4a3a' : '#ffb03a'; ctx.beginPath(); ctx.arc(b.x + 4, b.y - lift - 9, 3, 0, TAU); ctx.fill();
+    if (b.t >= 0.5) { ctx.strokeStyle = 'rgba(255,120,60,.25)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(b.x, b.y, 150, 0, TAU); ctx.stroke(); }
+  }
+}
+function drawBulletsParts() {
+  ctx.strokeStyle = '#ffe08a'; ctx.lineWidth = 2.5; ctx.lineCap = 'round';
+  for (const b of bullets) {
+    if (!vis(b.x - 40, b.y - 40, 80, 80)) continue;
+    ctx.beginPath(); ctx.moveTo(b.x - b.vx * 0.02, b.y - b.vy * 0.02); ctx.lineTo(b.x, b.y); ctx.stroke();
+  }
+  for (const q of parts) { ctx.globalAlpha = clamp(q.life / q.max, 0, 1); ctx.fillStyle = q.col; ctx.fillRect(q.x - q.s / 2, q.y - q.s / 2, q.s, q.s); }
+  ctx.globalAlpha = 1;
+  ctx.font = '800 16px ' + FONT; ctx.textAlign = 'center';
+  for (const f of floats) { ctx.globalAlpha = clamp(f.t / 0.4, 0, 1); ctx.fillStyle = f.col; ctx.shadowColor = 'rgba(0,0,0,.8)'; ctx.shadowBlur = 3; ctx.fillText(f.text, f.x, f.y); }
+  ctx.globalAlpha = 1; ctx.shadowBlur = 0;
+}
+function drawGhost() {
+  const sl = slots()[player.sel];
+  if (!sl || (sl.k !== 'block' && sl.k !== 'door' && sl.k !== 'turret') || state !== 'playing' || player.hi >= 0) return;
+  if (touch.on && !touch.aim) return;
+  const gx = Math.floor((mouse.x + cam.x) / 40), gy = Math.floor((mouse.y + cam.y) / 40);
+  const ok = canPlace(gx, gy);
+  ctx.fillStyle = ok ? 'rgba(120,220,120,.38)' : 'rgba(230,70,60,.38)'; ctx.fillRect(gx * 40, gy * 40, 40, 40);
+  ctx.strokeStyle = ok ? '#8ee08e' : '#e6584a'; ctx.lineWidth = 2; ctx.strokeRect(gx * 40 + 1, gy * 40 + 1, 38, 38);
+  if (sl.k === 'turret') { ctx.strokeStyle = 'rgba(200,230,255,.3)'; ctx.beginPath(); ctx.arc(gx * 40 + 20, gy * 40 + 20, 420, 0, TAU); ctx.stroke(); }
+}
+
+function drawEdgeArrows() {
+  const cx = W / 2, cy = H / 2; let n = 0;
+  for (const z of zombies) {
+    if (z.hi >= 0 || z.sleep) continue;
+    const sx = z.x - cam.x, sy = z.y - cam.y;
+    if (sx > -20 && sx < W + 20 && sy > -20 && sy < H + 20) continue;
+    const dx = z.x - player.x, dy = z.y - player.y, d = Math.hypot(dx, dy);
+    if (d > 1100 || n++ > 14) continue;
+    const ux = dx / d, uy = dy / d;
+    const t = Math.min((cx - 34) / Math.max(Math.abs(ux), 1e-4), (cy - 34) / Math.max(Math.abs(uy), 1e-4));
+    ctx.save(); ctx.translate(cx + ux * t, cy + uy * t); ctx.rotate(Math.atan2(uy, ux));
+    ctx.globalAlpha = clamp(1.1 - d / 1100, .25, .9);
+    ctx.fillStyle = z.boss ? '#ff7a3a' : '#e0483a'; const s = z.boss ? 1.5 : 1;
+    ctx.beginPath(); ctx.moveTo(10 * s, 0); ctx.lineTo(-6 * s, -7 * s); ctx.lineTo(-6 * s, 7 * s); ctx.closePath(); ctx.fill();
+    ctx.restore();
+  }
+}
+
+/* --- HUD --- */
+function bar(x, y, w, h, f, col) {
+  ctx.fillStyle = 'rgba(0,0,0,.55)'; ctx.fillRect(x, y, w, h);
+  ctx.fillStyle = col; ctx.fillRect(x, y, w * clamp(f, 0, 1), h);
+  ctx.strokeStyle = 'rgba(236,230,214,.4)'; ctx.lineWidth = 1; ctx.strokeRect(x + .5, y + .5, w - 1, h - 1);
+}
+function drawItemIcon(sl, cx, cy, s) {
+  ctx.save(); ctx.translate(cx, cy);
+  if (sl.k === 'gun') {
+    const id = sl.id; ctx.fillStyle = '#d5dbd6';
+    const L = s * (id === 'pistol' ? .5 : id === 'smg' ? .62 : id === 'sniper' ? .95 : .8);
+    ctx.fillRect(-L / 2, -s * .1, L, s * .14);
+    ctx.fillRect(-L / 2 + L * .15, s * .02, s * .13, s * .26);
+    if (id === 'shotgun') ctx.fillRect(-L / 2, -s * .2, L * .7, s * .07);
+    if (id === 'smg' || id === 'rifle') ctx.fillRect(-L * .1, s * .02, s * .1, s * .28);
+    if (id === 'sniper') { ctx.fillStyle = '#7fb0d0'; ctx.fillRect(-L * .1, -s * .22, s * .3, s * .1); }
+    if (id === 'minigun') { ctx.fillRect(-L / 2, -s * .2, L, s * .07); ctx.fillRect(-L / 2, s * .04, L, s * .07); }
+  } else if (sl.k === 'block') {
+    ctx.fillStyle = '#a9773f'; ctx.fillRect(-s * .3, -s * .3, s * .6, s * .6);
+    ctx.strokeStyle = '#5a3d1e'; ctx.lineWidth = 2; ctx.strokeRect(-s * .3, -s * .3, s * .6, s * .6);
+    for (let i = -1; i <= 1; i += 2) { ctx.beginPath(); ctx.moveTo(-s * .3, i * s * .1); ctx.lineTo(s * .3, i * s * .1); ctx.stroke(); }
+  } else if (sl.k === 'turret') {
+    ctx.fillStyle = '#2c3a44'; ctx.fillRect(-s * .3, -s * .3, s * .6, s * .6);
+    ctx.fillStyle = '#48606f'; ctx.beginPath(); ctx.arc(0, 0, s * .2, 0, TAU); ctx.fill();
+    ctx.fillStyle = '#11181d'; ctx.fillRect(0, -s * .05, s * .34, s * .1);
+  } else if (sl.k === 'bomb') {
+    ctx.fillStyle = '#1c1f22'; ctx.beginPath(); ctx.arc(0, s * .05, s * .26, 0, TAU); ctx.fill();
+    ctx.strokeStyle = '#c9a56a'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(s * .1, -s * .16); ctx.lineTo(s * .22, -s * .3); ctx.stroke();
+    ctx.fillStyle = '#ffb03a'; ctx.beginPath(); ctx.arc(s * .24, -s * .32, 3, 0, TAU); ctx.fill();
+  } else if (sl.k === 'medkit') {
+    ctx.fillStyle = '#ece6d6'; ctx.fillRect(-s * .3, -s * .24, s * .6, s * .48);
+    ctx.fillStyle = '#c8382b'; ctx.fillRect(-s * .06, -s * .18, s * .12, s * .36); ctx.fillRect(-s * .18, -s * .06, s * .36, s * .12);
+  }
+  ctx.restore();
+}
+
+function drawHUD() {
+  const p = player, L = spec || levelSpec(1), narrow = W < 760;
+  uiRects = { slots: [], shop: null, chest: null };
+  ctx.textBaseline = 'alphabetic';
+  ctx.shadowColor = 'rgba(0,0,0,.8)'; ctx.shadowBlur = 4;
+
+  // Can, dayanıklılık, para
+  const f = p.hp / p.max;
+  ctx.fillStyle = '#ece6d6'; ctx.font = '700 14px ' + FONT; ctx.textAlign = 'left';
+  ctx.fillText('Can  ' + Math.ceil(p.hp) + ' / ' + p.max, 20, 30);
+  bar(20, 36, 230, 16, f, f > .5 ? '#7fbf5a' : f > .25 ? '#e0a530' : '#d64534');
+  bar(20, 58, 230, 6, p.stam / 100, p.tired ? '#8a6a3a' : '#5aa0d6');
+  ctx.fillStyle = '#f0b429'; ctx.font = '800 22px ' + FONT;
+  ctx.fillText('$' + money, 20, 92);
+
+  // Bölüm bilgisi
+  ctx.textAlign = 'center';
+  const ty = narrow ? 118 : 32;
+  ctx.fillStyle = '#ece6d6'; ctx.font = '900 22px ' + HEAD;
+  ctx.fillText('Bölüm ' + level + ' · ' + L.name, W / 2, ty);
+  ctx.font = '600 14px ' + FONT; ctx.fillStyle = '#f0b429';
+  ctx.fillText('Kalan zombi: ' + (zombies.length + queue.length), W / 2, ty + 22);
+
+  // Patron çubuğu
+  let boss = null, bc = 0;
+  for (const z of zombies) if (z.boss) { bc++; if (!boss) boss = z; }
+  if (boss) {
+    const bw = Math.min(360, W - 40), bx = W / 2 - bw / 2, by = ty + 34;
+    bar(bx, by, bw, 12, boss.hp / boss.max, '#c8382b');
+    ctx.fillStyle = '#ece6d6'; ctx.font = '700 13px ' + FONT;
+    ctx.fillText(ZT[boss.type].name + (bc > 1 ? '  ×' + bc : ''), W / 2, by + 28);
+  }
+
+  // Puan ve mağaza düğmesi
+  ctx.textAlign = 'right'; ctx.fillStyle = '#ece6d6'; ctx.font = '700 18px ' + FONT;
+  ctx.fillText('Puan  ' + score, W - 20, 30);
+  const sb = { x: W - 138, y: 40, w: 118, h: 28 };
+  uiRects.shop = sb; ctx.shadowBlur = 0;
+  ctx.fillStyle = 'rgba(240,180,41,.92)'; ctx.fillRect(sb.x, sb.y, sb.w, sb.h);
+  ctx.fillStyle = '#1a1405'; ctx.font = '700 13px ' + FONT; ctx.textAlign = 'center';
+  ctx.fillText('Mağaza (Tab)', sb.x + sb.w / 2, sb.y + 19);
+  ctx.shadowBlur = 4;
+
+  // Envanter çubuğu
+  const sls = slots(), n = sls.length;
+  const ss = Math.max(38, Math.min(62, Math.floor((W - 24) / n) - 6)), gap = 6;
+  const total = n * (ss + gap) - gap, x0 = Math.round((W - total) / 2), y0 = H - ss - 14;
+  ctx.shadowBlur = 0;
+  for (let i = 0; i < n; i++) {
+    const s = sls[i], x = x0 + i * (ss + gap), cur = i === p.sel;
+    uiRects.slots.push({ x, y: y0, w: ss, h: ss });
+    let count = null, dim = false;
+    if (s.k === 'turret') { count = inv.turret; dim = count <= 0; }
+    else if (s.k === 'bomb') { count = inv.bomb; dim = count <= 0; }
+    else if (s.k === 'medkit') { count = inv.medkit; dim = count <= 0; }
+    else if (s.k === 'block') dim = money < BLOCK_COST;
+    else if (s.k === 'door') dim = money < DOOR_COST;
+    ctx.fillStyle = cur ? 'rgba(240,180,41,.28)' : 'rgba(10,15,12,.72)'; ctx.fillRect(x, y0, ss, ss);
+    ctx.strokeStyle = cur ? '#f0b429' : 'rgba(236,230,214,.28)'; ctx.lineWidth = cur ? 3 : 1; ctx.strokeRect(x + .5, y0 + .5, ss - 1, ss - 1);
+    ctx.globalAlpha = dim ? .38 : 1; drawItemIcon(s, x + ss / 2, y0 + ss / 2 + 2, ss * .9); ctx.globalAlpha = 1;
+    ctx.fillStyle = '#a3ad9f'; ctx.font = '700 11px ' + FONT; ctx.textAlign = 'left';
+    ctx.fillText(String(i + 1 === 10 ? 0 : i + 1), x + 5, y0 + 13);
+    ctx.textAlign = 'right'; ctx.fillStyle = '#ece6d6'; ctx.font = '800 12px ' + FONT;
+    if (count !== null) ctx.fillText('×' + count, x + ss - 5, y0 + ss - 6);
+    else if (s.k === 'block') { ctx.fillStyle = '#f0b429'; ctx.fillText('$' + BLOCK_COST, x + ss - 5, y0 + ss - 6); }
+    else if (s.k === 'gun') { ctx.fillStyle = p.ammo[s.id] <= Math.ceil(GUNS[s.id].mag * .25) ? '#e0483a' : '#ece6d6'; ctx.fillText(p.ammo[s.id], x + ss - 5, y0 + ss - 6); }
+  }
+  // Seçili eşya açıklaması
+  const cs = sls[p.sel]; let info = '';
+  if (cs.k === 'gun') { const w = GUNS[cs.id]; info = w.name + '   ' + p.ammo[cs.id] + ' / ' + w.mag; }
+  else if (cs.k === 'block') info = 'Odun blok · $' + BLOCK_COST + ' · Sol tık: yerleştir · Sağ tık: yık';
+  else if (cs.k === 'turret') info = 'Taret (' + inv.turret + ') · Sol tık: yerleştir';
+  else if (cs.k === 'bomb') info = 'Bomba (' + inv.bomb + ') · Sol tık: fırlat';
+  else info = 'İlk yardım çantası (' + inv.medkit + ') · Sol tık: kullan';
+  ctx.textAlign = 'center'; ctx.font = '700 14px ' + FONT; ctx.fillStyle = '#ece6d6';
+  ctx.shadowBlur = 4; ctx.fillText(info, W / 2, y0 - 10);
+  if (p.reload > 0) {
+    ctx.fillStyle = '#f0b429'; ctx.font = '600 13px ' + FONT; ctx.fillText('Şarjör yenileniyor…', W / 2, y0 - 44);
+    bar(W / 2 - 60, y0 - 38, 120, 5, 1 - p.reload / p.reloadMax, '#f0b429');
+  }
+  // Bildirimler
+  ctx.font = '700 15px ' + FONT;
+  for (let i = 0; i < toasts.length; i++) {
+    const t = toasts[toasts.length - 1 - i];
+    ctx.globalAlpha = clamp(t.t / 0.5, 0, 1); ctx.fillStyle = '#f0b429'; ctx.fillText(t.text, W / 2, y0 - 66 - i * 22);
+  }
+  ctx.globalAlpha = 1;
+
+  // Sandık istemi
+  if (nearChest) {
+    ctx.fillStyle = '#ece6d6'; ctx.font = '700 16px ' + FONT; ctx.shadowBlur = 4;
+    ctx.fillText('E  ·  Sandığı aç', W / 2, H * 0.62);
+    if (touch.on) { uiRects.chest = { x: W / 2 - 70, y: H * 0.62 + 10, w: 140, h: 40 }; ctx.shadowBlur = 0; ctx.fillStyle = 'rgba(240,180,41,.9)'; ctx.fillRect(W / 2 - 70, H * 0.62 + 10, 140, 40); ctx.fillStyle = '#1a1405'; ctx.fillText('Sandığı aç', W / 2, H * 0.62 + 36); }
+  }
+  ctx.shadowBlur = 0;
+
+  // Mini harita
+  const mms = narrow ? 112 : MM, mmx = W - mms - 16, mmy = narrow ? 82 : H - mms - 16, s = mms / WORLD;
+  ctx.globalAlpha = .9; ctx.drawImage(mmBase, mmx, mmy, mms, mms); ctx.globalAlpha = 1;
+  ctx.strokeStyle = 'rgba(236,230,214,.5)'; ctx.lineWidth = 1; ctx.strokeRect(mmx + .5, mmy + .5, mms - 1, mms - 1);
+  ctx.strokeStyle = 'rgba(255,255,255,.35)'; ctx.strokeRect(mmx + cam.x * s, mmy + cam.y * s, W * s, H * s);
+  for (const o of built) { ctx.fillStyle = o.t === 'turret' ? '#7fb0d0' : '#c99a5a'; ctx.fillRect(mmx + o.x * s, mmy + o.y * s, 2, 2); }
+  for (const z of zombies) { ctx.fillStyle = z.boss ? '#ff7a3a' : z.sleep ? '#a86a2a' : '#e0483a'; const zs = z.boss ? 5 : 3; ctx.fillRect(mmx + z.x * s - zs / 2, mmy + z.y * s - zs / 2, zs, zs); }
+  ctx.fillStyle = '#7fd0ff'; ctx.beginPath(); ctx.arc(mmx + player.x * s, mmy + player.y * s, 3.5, 0, TAU); ctx.fill();
+
+  // Bölüm başlığı
+  if (banner) {
+    const a = clamp(banner.t / 0.7, 0, 1) * clamp((banner.max - banner.t) / 0.3, 0, 1);
+    ctx.globalAlpha = a; ctx.textAlign = 'center'; ctx.shadowBlur = 10;
+    ctx.fillStyle = '#ece6d6'; ctx.font = '900 ' + Math.min(84, Math.max(44, W * 0.09)) + 'px ' + HEAD;
+    ctx.fillText(banner.title, W / 2, H * 0.28);
+    ctx.font = '600 ' + (W < 600 ? 15 : 20) + 'px ' + FONT; ctx.fillStyle = '#f0b429';
+    ctx.fillText(banner.sub, W / 2, H * 0.28 + 34);
+    ctx.globalAlpha = 1; ctx.shadowBlur = 0;
+  }
+
+  // Dokunmatik çubuk
+  if (touch.on && touch.stick) {
+    const s0 = touch.stick, dx = s0.x - s0.ox, dy = s0.y - s0.oy, l = Math.hypot(dx, dy) || 1, k = Math.min(l, 60) / l;
+    ctx.strokeStyle = 'rgba(236,230,214,.45)'; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.arc(s0.ox, s0.oy, 60, 0, TAU); ctx.stroke();
+    ctx.fillStyle = 'rgba(236,230,214,.4)'; ctx.beginPath(); ctx.arc(s0.ox + dx * k, s0.oy + dy * k, 26, 0, TAU); ctx.fill();
+  }
+}
+
+function drawCrosshair() {
+  if (touch.on && !touch.aim) return;
+  const x = mouse.x, y = mouse.y, reloading = player.reload > 0;
+  ctx.strokeStyle = reloading ? '#f0b429' : '#ece6d6'; ctx.lineWidth = 2; ctx.shadowColor = 'rgba(0,0,0,.8)'; ctx.shadowBlur = 3;
+  ctx.beginPath(); ctx.arc(x, y, 12, 0, TAU); ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(x - 20, y); ctx.lineTo(x - 7, y); ctx.moveTo(x + 7, y); ctx.lineTo(x + 20, y);
+  ctx.moveTo(x, y - 20); ctx.lineTo(x, y - 7); ctx.moveTo(x, y + 7); ctx.lineTo(x, y + 20);
+  ctx.stroke(); ctx.shadowBlur = 0;
+}
+
+function draw() {
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#0b100d'; ctx.fillRect(0, 0, W, H);
+  if (!player) return;
+
+  const sx = (Math.random() - .5) * shake, sy = (Math.random() - .5) * shake;
+  const inside = player.hi >= 0 ? houses[player.hi] : null;
+
+  if (inside) {
+    // Evin içindeyken yalnızca evin içi görünür
+    ctx.fillStyle = '#040505'; ctx.fillRect(0, 0, W, H);
+    ctx.save();
+    ctx.translate(-cam.x + sx, -cam.y + sy);
+    ctx.beginPath(); ctx.rect(inside.x, inside.y, inside.w, inside.h); ctx.clip();
+    drawInteriorScene(inside);
+    drawDecals(); drawDrops();
+    for (const z of zombies) drawZombie(z);
+    drawBombs(); drawPlayer(); drawPeers(); drawBulletsParts();
+    ctx.restore();
+    const g = ctx.createRadialGradient(W / 2, H / 2, Math.min(W, H) * .25, W / 2, H / 2, Math.hypot(W, H) * .55);
+    g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,.5)');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  } else {
+    ctx.save();
+    ctx.translate(-cam.x + sx, -cam.y + sy);
+    drawGround(); drawDecals(); drawDrops(); drawCrates(); drawBuilt(); drawTrees();
+    for (const h of houses) drawRoof(h);
+    for (const z of zombies) if (z.hi < 0) drawZombie(z);
+    drawBombs(); drawPlayer(); drawPeers(); drawBulletsParts(); drawGhost();
+    ctx.strokeStyle = '#0a0f0c'; ctx.lineWidth = 60; ctx.strokeRect(-10, -10, WORLD + 20, WORLD + 20);
+    ctx.strokeStyle = '#6b5a3c'; ctx.lineWidth = 6; ctx.setLineDash([18, 10]); ctx.strokeRect(24, 24, WORLD - 48, WORLD - 48); ctx.setLineDash([]);
+    ctx.restore();
+    const g = ctx.createRadialGradient(W / 2, H / 2, Math.min(W, H) * .3, W / 2, H / 2, Math.hypot(W, H) * .62);
+    g.addColorStop(0, 'rgba(4,8,14,0)'); g.addColorStop(1, 'rgba(4,8,14,.68)');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = 'rgba(10,20,40,.16)'; ctx.fillRect(0, 0, W, H);
+    drawEdgeArrows();
+  }
+  if (player.hurt > 0) {
+    const h = ctx.createRadialGradient(W / 2, H / 2, Math.min(W, H) * .25, W / 2, H / 2, Math.hypot(W, H) * .6);
+    h.addColorStop(0, 'rgba(200,30,30,0)'); h.addColorStop(1, 'rgba(200,30,30,' + clamp(player.hurt * 1.6, 0, .55) + ')');
+    ctx.fillStyle = h; ctx.fillRect(0, 0, W, H);
+  }
+  if (player.hp > 0 && player.hp < 30) { ctx.fillStyle = 'rgba(160,20,20,' + (0.06 + Math.sin(anim * 6) * 0.04) + ')'; ctx.fillRect(0, 0, W, H); }
+
+  drawHUD();
+  if (state === 'playing') drawCrosshair();
+}
+
+/* =====================================================
+   Döngü
+   ===================================================== */
+function frame(now) {
+  const dt = Math.min(0.05, (now - last) / 1000); last = now;
+  if (state === 'playing') update(dt);
+  else anim += dt;
+  netTick(now);
+  smoothRemotePlayers(typeof dt==='number'?dt:1/60);
+  draw();
+  requestAnimationFrame(frame);
+}
+
+spec = levelSpec(1);
+player = newPlayer();
+cam.x = MID - W / 2; cam.y = MID - H / 2;
+showMenu();
+requestAnimationFrame(frame);
+
+if (window.__TEST) window.__TEST.api = { newGame, update, draw, get state() { return state; }, get player() { return player; }, get zombies() { return zombies; }, get built() { return built; }, houses, chests, keys, mouse, inv, selectSlot, openChest, openShop, closeShop, buy, renderShop, SHOP, cam, get money() { return money; }, set money(v) { money = v; }, get queue() { return queue; }, get level() { return level; }, set state(v) { state = v; }, tryPlace, explode, throwBomb, levelClear, beginLevel, setLevel(n) { level = n; }, slots, houseAt };
+})();
+
+
+function ensureDoorBuildCard(){
+  // Find the existing door build button/slot by its data/type/text.
+  const candidates=[...document.querySelectorAll('button,[data-build],[data-type],.slot,.buildSlot,.build-item')];
+  let door=candidates.find(el=>{
+    const t=((el.dataset&&((el.dataset.build||'')+(el.dataset.type||'')))+' '+(el.textContent||'')).toLowerCase();
+    return t.includes('door')||t.includes('kapı')||t.includes('kapi');
+  });
+  if(!door) return;
+  door.classList.add('door-build-card');
+  // Keep the existing click behavior; only add missing visual information.
+  if(!door.querySelector('.door-v8-icon')){
+    const icon=document.createElement('div');
+    icon.className='door-v8-icon';
+    icon.innerHTML='<span class="door-panel"></span><span class="door-knob"></span>';
+    door.prepend(icon);
+  }
+  if(!/10\s*\$|\$\s*10|10\s*(coin|para|kredi)/i.test(door.textContent)){
+    const cost=document.createElement('div'); cost.className='door-v8-cost'; cost.textContent='10 $'; door.appendChild(cost);
+  }
+  if(!/160\s*HP/i.test(door.textContent)){
+    const hp=document.createElement('div'); hp.className='door-v8-hp'; hp.textContent='160 HP'; door.appendChild(hp);
+  }
+}
+ensureDoorBuildCard();
+
+</script>
+
+
+</body></html>
