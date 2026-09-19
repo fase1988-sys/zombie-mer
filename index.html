@@ -195,7 +195,7 @@ div:has(> #legacyOnlineMarker){display:none!important}
 
 <div id="menuJumpScare" aria-hidden="true"><div class="jsFace"><div class="jsCrack"></div><div class="jsMouth"></div></div></div>
 
-<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v132</b></div></div></div>
+<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v133</b></div></div></div>
 
 <div id="onlinePanel">
   <b><span id="legacyOnlineMarker">ONLINE CO-OP v8 · CLEAN LOBBY</span></b>
@@ -724,7 +724,8 @@ function makeHouse(c, id, roofs) {
   }
   d.w = dw; hs.door = d;
   hs.inner = { x: c.x + T, y: c.y + T, w: c.w - 2 * T, h: c.h - 2 * T };
-  // Tüm evler tam olarak 2 katlıdır.\n  hs.floors = 2;
+  // Tüm evler tam olarak 2 katlıdır.
+  hs.floors = 2;
   hs.stairs = hs.floors>1 ? {x:hs.inner.x+hs.inner.w-52,y:hs.inner.y+hs.inner.h-76,w:36,h:58} : null;
 
   const x = c.x, y = c.y, w = c.w, h = c.h, segs = [];
@@ -3164,7 +3165,9 @@ function drawRoof(h) {
 
 function drawInteriorScene(hs) {
   const n = hs.inner, floor=(player&&player.hi===hs.id?houseFloor():1);
-  // İki kat aynı iç tasarım ve renk paletini kullanır.\n  const upper=false;\n  ctx.fillStyle='#49382a';ctx.fillRect(n.x,n.y,n.w,n.h);
+  // İki kat aynı iç tasarım ve renk paletini kullanır.
+  const upper=false;
+  ctx.fillStyle='#49382a';ctx.fillRect(n.x,n.y,n.w,n.h);
   for(let yy=n.y;yy<n.y+n.h;yy+=20){
     const row=Math.floor((yy-n.y)/20),off=(row%2)*32;
     ctx.strokeStyle='rgba(20,12,8,.30)';ctx.lineWidth=1;
@@ -3174,7 +3177,8 @@ function drawInteriorScene(hs) {
     }
     ctx.fillStyle='rgba(205,165,110,.035)';ctx.fillRect(n.x,yy+2,n.w,2);
   }
-  // 1. ve 2. kat aynı temel tasarıma sahiptir.\n  if(hs.stairs){
+  // 1. ve 2. kat aynı temel tasarıma sahiptir.
+  if(hs.stairs){
     const s=hs.stairs;
     ctx.fillStyle='rgba(0,0,0,.38)';ctx.fillRect(s.x+6,s.y+7,s.w,s.h);
     ctx.fillStyle=upper?'#52646c':'#765638';ctx.fillRect(s.x,s.y,s.w,s.h);
@@ -3224,7 +3228,8 @@ function drawInteriorScene(hs) {
   else ctx.fillRect(d.x-hs.T/2,d.y-d.w/2,hs.T,d.w);
 
   // Mobilyalar: alt katta mevcut eşyalar; üst katta sade yatak/masa köşesi.
-  const floorFurn=hs.furn;\n  for(const f of floorFurn){
+  const floorFurn=hs.furn;
+  for(const f of floorFurn){
     ctx.fillStyle='rgba(0,0,0,.34)';ctx.fillRect(f.x+5,f.y+6,f.w,f.h);
     if(f.kind==='bed'){
       ctx.fillStyle='#5b402d';ctx.fillRect(f.x,f.y,f.w,f.h);
@@ -3455,7 +3460,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v132';
+const GAME_VERSION = 'v133';
 
 function drawHUD() {
   if(player&&abandonedCamps.length&&player.hi<0){let cp=null,bd=1e9;for(const q of abandonedCamps){const d=Math.hypot(q.x-player.x,q.y-player.y);if(d<bd){bd=d;cp=q}}if(cp&&bd>190){ctx.save();ctx.textAlign='center';ctx.font='900 11px '+FONT;ctx.fillStyle='#e3aa45';ctx.fillText('🏕 KAMP  '+Math.round(bd)+'m',W/2,82);ctx.restore();}}
