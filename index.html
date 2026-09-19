@@ -181,7 +181,7 @@ div:has(> #legacyOnlineMarker){display:none!important}
 </div><div class="adminFooter"><span>● ADMIN ACCESS</span><span>v48 CONTROL CONSOLE</span></div></div></div></div>
 
 
-<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v57</b></div></div></div>
+<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v58</b></div></div></div>
 
 <div id="onlinePanel">
   <b><span id="legacyOnlineMarker">ONLINE CO-OP v8 · CLEAN LOBBY</span></b>
@@ -811,25 +811,30 @@ function makeHouse(c, id, roofs) {
   for (let i = 0; i < 1500; i++) tufts.push({ x: rr(0, WORLD), y: rr(0, WORLD), s: rr(4, 10), a: rr(0, TAU), v: R() });
   for (let i = 0; i < 90; i++) patches.push({ x: rr(0, WORLD), y: rr(0, WORLD), rx: rr(60, 190), ry: rr(40, 130), rot: rr(0, TAU), v: R() });
   // Terk edilmiş kamplar: haritada keşfedilebilen küçük survivor alanları.
-  // v57: bazı terk edilmiş binaların arsaları kamp alanına dönüştürülür.
-  // Böylece kamp, rastgele boşluğa çizilmiş bir daire değil, haritanın gerçek yerleşim dokusunun parçasıdır.
+  // v58: kamp için tek bina değil, kamp dikdörtgeniyle çakışan TÜM binalar kaldırılır.
   const chosen=[];
   const candidates=houses.filter(h=>distToRect(MID,MID,h)>650).sort((a,b)=>a.id-b.id);
   for(let i=0;i<candidates.length&&chosen.length<5;i++){
     const h=candidates[i],cx=h.x+h.w/2,cy=h.y+h.h/2;
-    if(chosen.every(q=>Math.hypot(q.x-cx,q.y-cy)>900))chosen.push({h,x:cx,y:cy});
+    if(chosen.every(q=>Math.hypot(q.x-cx,q.y-cy)>1050))chosen.push({h,x:cx,y:cy});
   }
   for(let i=0;i<chosen.length;i++){
-    const q=chosen[i],h=q.h,x=q.x,y=q.y,rad=205;
-    // Seçilen binanın bütün collision/furniture/chest objelerini dünyadan kaldır.
-    const removeSet=new Set(h.walls.concat(h.furn,h.chests));
-    for(let oi=obs.length-1;oi>=0;oi--)if(removeSet.has(obs[oi])||((obs[oi].t==='t'||obs[oi].t==='c')&&Math.hypot(obs[oi].x+obs[oi].w/2-x,obs[oi].y+obs[oi].h/2-y)<rad+95))obs.splice(oi,1);
-    for(let ci=chests.length-1;ci>=0;ci--)if(h.chests.includes(chests[ci]))chests.splice(ci,1);
-    const hi=houses.indexOf(h);if(hi>=0)houses.splice(hi,1);
-    const count=4,tentData=[];
-    const offsets=[[-105,-55],[92,-65],[-98,72],[88,76]];
-    for(let ti=0;ti<count;ti++){const ox=offsets[ti][0],oy=offsets[ti][1];tentData.push({x:x+ox,y:y+oy,a:0,loot:false,inside:false});}
-    abandonedCamps.push({id:i,x,y,r:rad,tents:tentData,fire:i%2===0,medical:i===1||i===3,discovered:false,plot:{x:h.x-35,y:h.y-35,w:h.w+70,h:h.h+70}});
+    const q=chosen[i],x=q.x,y=q.y,rad=225;
+    // Çadırların ve ortak alanın tamamını kapsayan gerçek kamp sınırı.
+    const plot={x:x-215,y:y-175,w:430,h:350};
+    const clear={x:plot.x-95,y:plot.y-95,w:plot.w+190,h:plot.h+190};
+    // Kamp alanı/tamponuyla çakışan bütün evleri bul.
+    const doomed=houses.filter(h=>rectsNear(clear,h,0));
+    const removeSet=new Set();
+    for(const h of doomed){for(const o of h.walls)removeSet.add(o);for(const o of h.furn)removeSet.add(o);for(const o of h.chests)removeSet.add(o);}
+    // Ev objeleri + kamp çevresindeki ağaç/kasalar tamamen temizlenir.
+    for(let oi=obs.length-1;oi>=0;oi--){const o=obs[oi];const ox=o.x+o.w/2,oy=o.y+o.h/2;if(removeSet.has(o)||((o.t==='t'||o.t==='c')&&ox>clear.x&&ox<clear.x+clear.w&&oy>clear.y&&oy<clear.y+clear.h))obs.splice(oi,1);}
+    for(let ci=chests.length-1;ci>=0;ci--)if(doomed.some(h=>h.chests.includes(chests[ci])))chests.splice(ci,1);
+    for(let hi=houses.length-1;hi>=0;hi--)if(doomed.includes(houses[hi]))houses.splice(hi,1);
+    // Çadırlar kampın iç kenarlarında; tampon bölge sayesinde komşu bina çatısı üstlerine gelemez.
+    const offsets=[[-125,-82],[115,-82],[-125,82],[115,82]];
+    const tentData=offsets.map(([ox,oy])=>({x:x+ox,y:y+oy,a:0,loot:false,inside:false}));
+    abandonedCamps.push({id:i,x,y,r:rad,tents:tentData,fire:i%2===0,medical:i===1||i===3,discovered:false,plot});
   }
 })();
 
@@ -2826,7 +2831,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v57';
+const GAME_VERSION = 'v58';
 
 function drawHUD() {
   if(player&&abandonedCamps.length&&player.hi<0){let cp=null,bd=1e9;for(const q of abandonedCamps){const d=Math.hypot(q.x-player.x,q.y-player.y);if(d<bd){bd=d;cp=q}}if(cp&&bd>190){ctx.save();ctx.textAlign='center';ctx.font='900 11px '+FONT;ctx.fillStyle='#e3aa45';ctx.fillText('🏕 KAMP  '+Math.round(bd)+'m',W/2,82);ctx.restore();}}
