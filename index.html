@@ -1103,7 +1103,7 @@ let shopPrev = null;
 let level = 1, score = 0, kills = 0, levelKills = 0, money = 0, levelMoney = 0, spec = null, snap = null;
 let player = null, zombies = [], bullets = [], drops = [], decals = [], parts = [], queue = [], bombs = [], floats = [], toasts = [];
 let spawnT = 0, banner = null, shake = 0, anim = 0, last = performance.now(), nearChest = null;
-let dayPhase='night', prepLeft=0, duskFade=0;
+let dayPhase='night', prepLeft=0, duskFade=0, dawnFade=0;
 const cam = { x: 0, y: 0 };
 let uiRects = { slots: [], shop: null, chest: null };
 
@@ -1351,7 +1351,7 @@ function spawnInside(type, hs) {
 }
 
 function beginLevel() {
-  dayPhase='night'; prepLeft=0; duskFade=1;
+  dayPhase='night'; prepLeft=0; dawnFade=0; duskFade=1;
   spec = levelSpec(level);
   levelKills = 0; levelMoney = 0;
   queue = [];
@@ -1389,9 +1389,9 @@ function retryLevel() { restoreSnap(); beginLevel(); }
 function startDayPreparation(){
   state='intermission'; hideOverlay(); mouse.down=false;
   queue=[]; zombies=[]; bullets=[]; bombs=[];
-  dayPhase='day'; prepLeft=120; duskFade=0;
-  banner={title:'SABAH OLDU',sub:'2 dakika hazırlık · kaynak topla ve üssünü güçlendir',t:4,max:4};
-  toast('Sabah oldu · 2 dakika hazırlık süren var');
+  dayPhase='dawn'; prepLeft=120; dawnFade=0; duskFade=0;
+  banner={title:'SABAH OLUYOR',sub:'Gece bitti · gün doğuyor',t:4,max:4};
+  toast('Son zombi öldü · Sabah oluyor');
   setCursor();
 }
 function startNightWave(){
@@ -1875,7 +1875,14 @@ function bossSlam(z) {
 function update(dt) {
   anim += dt;
   if(state==='intermission'){
-    if(dayPhase==='day'){
+    if(dayPhase==='dawn'){
+      dawnFade=Math.min(1,dawnFade+dt/8);
+      if(dawnFade>=1){
+        dayPhase='day';
+        banner={title:'SABAH OLDU',sub:'2 dakika hazırlık · kaynak topla ve üssünü güçlendir',t:3.5,max:3.5};
+        toast('Sabah oldu · 2 dakika hazırlık süren var');
+      }
+    }else if(dayPhase==='day'){
       prepLeft=Math.max(0,prepLeft-dt);
       if(prepLeft<=0)startNightWave();
     }else if(dayPhase==='dusk'){
@@ -2584,7 +2591,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v33';
+const GAME_VERSION = 'v34';
 
 function drawHUD() {
   const p = player, L = spec || levelSpec(1), narrow = W < 760;
@@ -2617,7 +2624,7 @@ function drawHUD() {
   ctx.font = '600 14px ' + FONT; ctx.fillStyle = '#f0b429';
   if(state==='intermission'){
     const sec=Math.max(0,Math.ceil(prepLeft)),mm=Math.floor(sec/60),ss=String(sec%60).padStart(2,'0');
-    ctx.fillText(dayPhase==='dusk'?'AKŞAM OLUYOR · Zombiler yaklaşıyor':'SABAH · Hazırlık '+mm+':'+ss,W/2,ty+22);
+    ctx.fillText(dayPhase==='dawn'?'SABAH OLUYOR...':(dayPhase==='dusk'?'AKŞAM OLUYOR · Zombiler yaklaşıyor':'SABAH · Hazırlık '+mm+':'+ss),W/2,ty+22);
     uiRects.nextWave=null;
   }else{
     ctx.fillText('Kalan zombi: '+(zombies.length+queue.length),W/2,ty+22);
@@ -2779,12 +2786,13 @@ function draw() {
     ctx.restore();
     const g = ctx.createRadialGradient(W / 2, H / 2, Math.min(W, H) * .3, W / 2, H / 2, Math.hypot(W, H) * .62);
     g.addColorStop(0,'rgba(4,8,14,0)');
-    const darkAlpha=state==='intermission'?(dayPhase==='dusk'?(.18+.50*duskFade):.18):.68;
+    const darkAlpha=state==='intermission'?(dayPhase==='dawn'?(.68-.50*dawnFade):(dayPhase==='dusk'?(.18+.50*duskFade):.18)):.68;
     g.addColorStop(1,'rgba(4,8,14,'+darkAlpha+')');
     ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
     if(state==='intermission'){
-      const nightMix=dayPhase==='dusk'?duskFade:0;
-      ctx.fillStyle='rgba(255,224,150,'+(0.16*(1-nightMix))+')';ctx.fillRect(0,0,W,H);
+      const dayMix=dayPhase==='dawn'?dawnFade:(dayPhase==='dusk'?(1-duskFade):1);
+      const nightMix=1-dayMix;
+      ctx.fillStyle='rgba(255,224,150,'+(0.16*dayMix)+')';ctx.fillRect(0,0,W,H);
       ctx.fillStyle='rgba(10,20,40,'+(0.16*nightMix)+')';ctx.fillRect(0,0,W,H);
     }else{
       ctx.fillStyle='rgba(10,20,40,.16)';ctx.fillRect(0,0,W,H);
