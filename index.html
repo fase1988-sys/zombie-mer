@@ -946,7 +946,7 @@ function levelSpec(n) {
 const BLOCK_COST = 6, BLOCK_HP = 120, DOOR_COST = 10, DOOR_HP = 160, TURRET_HP = 220;
 
 /* Mağaza envanteri */
-const inv = { turret: 0, bomb: 0, medkit: 0 };
+const inv = { block: 0, door: 0, turret: 0, bomb: 0, medkit: 0 };
 let up = { wall: 0, turret: 0, hp: 0 };
 let gunUp = Object.fromEntries(GUN_ORDER.map(id => [id, 0]));
 let metaXP=Number(localStorage.getItem('zombieMetaXP')||0), metaLevel=Math.max(1,Math.floor(metaXP/500)+1);
@@ -1106,7 +1106,11 @@ function floatText(x, y, text, col) { floats.push({ x, y, text, t: 0.9, col: col
 function slots() {
   const s = [];
   for (const id of GUN_ORDER) if (player.guns.includes(id)) s.push({ k: 'gun', id });
-  s.push({ k: 'block' }, { k: 'door' }, { k: 'turret' }, { k: 'bomb' }, { k: 'medkit' });
+  if(inv.block>0)s.push({ k:'block' });
+  if(inv.door>0)s.push({ k:'door' });
+  if(inv.turret>0)s.push({ k:'turret' });
+  if(inv.bomb>0)s.push({ k:'bomb' });
+  if(inv.medkit>0)s.push({ k:'medkit' });
   return s;
 }
 function selectSlot(i) {
@@ -1118,6 +1122,27 @@ function newPlayer() {
            guns: ['pistol'], ammo: { pistol: GUNS.pistol.mag }, sel: 0, cd: 0, reload: 0, reloadMax: 1, flash: 0, hurt: 0, hi: -1 };
 }
 
+const CRAFT=[
+ {id:'block',name:'Tahta duvar',cost:8,desc:'1 adet inşa edilebilir duvar'},
+ {id:'door',name:'Tahta kapı',cost:12,desc:'1 adet inşa edilebilir kapı'},
+ {id:'turret',name:'Taret',cost:180,desc:'1 adet otomatik taret'},
+ {id:'bomb',name:'Bomba',cost:55,desc:'1 adet bomba'},
+ {id:'medkit',name:'İlk yardım',cost:80,desc:'1 adet ilk yardım çantası'}
+];
+function nearWorkbench(){const w=built.find(o=>o.t==='workbench');return w&&Math.hypot(w.x+w.w/2-player.x,w.y+w.h/2-player.y)<115?w:null;}
+function openWorkbench(){
+ if(state!=='playing'&&state!=='intermission')return;
+ const w=nearWorkbench();if(!w){toast('Werkbank için kamp alanına yaklaş');return;}
+ const rows=CRAFT.map((it,i)=>(i+1)+'. '+it.name+' — $'+it.cost+' · '+it.desc).join('<br><br>');
+ const prev=state;state='craft';mouse.down=false;
+ showOverlay({title:'WERKBANK',text:'Üs eşyalarını burada üret.',extra:'<div class="note">'+rows+'</div>',btn:'Tahta duvar üret ($8)',onClick:()=>{craftItem('block');state=prev;openWorkbench();},btn2:'Kapat',onClick2:()=>{state=prev;hideOverlay();}});
+}
+function craftItem(id){
+ const it=CRAFT.find(x=>x.id===id);if(!it)return false;
+ if(money<it.cost){toast('Yetersiz para');return false;}
+ money-=it.cost;inv[id]=(inv[id]||0)+1;sfx('buy');toast(it.name+' üretildi');
+ player.sel=Math.min(player.sel,slots().length-1);return true;
+}
 /* =====================================================
    Girdi
    ===================================================== */
@@ -1142,10 +1167,15 @@ window.addEventListener('keydown', e => {
   if (e.code === 'Tab') { if (state === 'shop') closeShop(); else openShop(); return; }
   if (teamMenuOpen) { if (e.code === 'Escape') closeTeamMenu(); return; }
   if (state === 'shop') { if (e.code === 'Escape') closeShop(); return; }
+  if(state==='craft'){
+    if(e.code==='Escape'){state='playing';hideOverlay();return;}
+    if(/^Digit[1-5]$/.test(e.code)){const it=CRAFT[Number(e.code.slice(5))-1];if(it)craftItem(it.id);}
+    return;
+  }
   if (state === 'playing' || state === 'intermission') {
     if (e.code === 'Escape') { openTeamMenu(); return; }
     if (e.code === 'KeyR') startReload();
-    if (e.code === 'KeyE') openChest();
+    if (e.code === 'KeyE') { if(nearWorkbench()) openWorkbench(); else openChest(); }
     if (/^Digit\d$/.test(e.code)) { const n = parseInt(e.code.slice(5), 10); selectSlot(n === 0 ? 9 : n - 1); }
     if (e.code === 'KeyP') pauseGame();
   } else if (state === 'paused' && e.code === 'KeyP') {
@@ -1230,7 +1260,7 @@ const CONTROLS = `
   <dt><kbd>Fare</kbd></dt><dd>Nişan al, sol tıkla ateş et / yerleştir</dd>
   <dt><kbd>1</kbd>…<kbd>0</kbd></dt><dd>Envanterden eşya seç (fare tekerleği de çalışır)</dd>
   <dt><kbd>Tab</kbd></dt><dd>Mağazayı aç: silah, taret, bomba satın al</dd>
-  <dt><kbd>E</kbd></dt><dd>Evlerin içindeki sandıkları aç</dd>
+  <dt><kbd>E</kbd></dt><dd>Sandık aç / kamp alanındaki Werkbank'ı kullan</dd>
   <dt><kbd>Sağ tık</kbd></dt><dd>Duvarı, kapıyı veya tareti kır/sök (yarı para iadesi)</dd>
   <dt><kbd>R</kbd><kbd>Shift</kbd></dt><dd>Şarjör yenile, koş</dd>
   <dt><kbd>P</kbd><kbd>M</kbd></dt><dd>Duraklat, sesi kapat</dd>
@@ -1265,8 +1295,11 @@ function restoreSnap() {
 
 function newGame() {
   money = 100; score = 0; kills = 0; level = 1;
-  up = { wall: 0, turret: 0, hp: 0 }; gunUp=Object.fromEntries(GUN_ORDER.map(id=>[id,0])); perks={damage:0,speed:0,crit:0,lifesteal:0,mag:0,fire:0,fortify:0}; rareLoot=[]; inv.turret = 0; inv.bomb = 0; inv.medkit = 1;
-  player = newPlayer(); built = []; decals = []; rebuildGrid();
+  up = { wall: 0, turret: 0, hp: 0 }; gunUp=Object.fromEntries(GUN_ORDER.map(id=>[id,0])); perks={damage:0,speed:0,crit:0,lifesteal:0,mag:0,fire:0,fortify:0}; rareLoot=[]; inv.block=0; inv.door=0; inv.turret=0; inv.bomb=0; inv.medkit=0;
+  player = newPlayer(); built = [
+    {t:'campfire',x:MID-72,y:MID+108,w:44,h:44,hp:9999,max:9999,sb:false,utility:true},
+    {t:'workbench',x:MID+36,y:MID+105,w:72,h:46,hp:9999,max:9999,sb:false,utility:true}
+  ]; decals = []; rebuildGrid();
   beginLevel();
 }
 
@@ -1488,13 +1521,13 @@ function tryPlace(kind) {
   const gx = Math.floor((mouse.x + cam.x) / 40), gy = Math.floor((mouse.y + cam.y) / 40);
   if (!canPlace(gx, gy)) return false;
   if (kind === 'block') {
-    if (money < BLOCK_COST) { toast('Yetersiz para'); return false; }
-    money -= BLOCK_COST;
+    if (inv.block <= 0) { toast('Werkbankta duvar üretmelisin'); return false; }
+    inv.block--;
     const hp = Math.round(BLOCK_HP * (1 + 0.5 * up.wall) * perkStats().fortify);
     built.push({ t: 'block', x: gx * 40, y: gy * 40, w: 40, h: 40, hp, max: hp, sb: false });
   } else if (kind === 'door') {
-    if (money < DOOR_COST) { toast('Yetersiz para'); return false; }
-    money -= DOOR_COST;
+    if (inv.door <= 0) { toast('Werkbankta kapı üretmelisin'); return false; }
+    inv.door--;
     const hp = Math.round(DOOR_HP * (1 + 0.5 * up.wall) * perkStats().fortify);
     built.push({ t: 'door', x: gx * 40, y: gy * 40, w: 40, h: 40, hp, max: hp, sb: false });
   } else {
@@ -1508,6 +1541,7 @@ function removeBuiltAtMouse() {
   const wx = mouse.x + cam.x, wy = mouse.y + cam.y;
   for (let i = 0; i < built.length; i++) {
     const o = built[i];
+    if(o.utility)continue;
     if (wx >= o.x && wx <= o.x + o.w && wy >= o.y && wy <= o.y + o.h && Math.hypot(o.x + o.w / 2 - player.x, o.y + o.h / 2 - player.y) < 340) {
       const refund = o.t === 'block' ? Math.floor(BLOCK_COST / 2) : o.t === 'door' ? Math.floor(DOOR_COST / 2) : 80;
       money += refund; floatText(o.x + 20, o.y, '+$' + refund);
@@ -1516,6 +1550,7 @@ function removeBuiltAtMouse() {
   }
 }
 function damageBuilt(o, d) {
+  if(o.utility)return;
   o.hp -= d;
   for (let i = 0; i < 3; i++) parts.push({ x: o.x + o.w / 2, y: o.y + o.h / 2, vx: (Math.random() - .5) * 160, vy: (Math.random() - .5) * 160, life: .35, max: .35, col: '#a9773f', s: 4 });
   if (o.hp <= 0) {
@@ -2180,6 +2215,17 @@ function drawBuilt() {
       ctx.strokeStyle = '#5a3518'; ctx.lineWidth = 2;
       ctx.beginPath(); ctx.moveTo(o.x + 8, o.y + 4); ctx.lineTo(o.x + 8, o.y + o.h - 4); ctx.moveTo(o.x + o.w - 8, o.y + 4); ctx.lineTo(o.x + o.w - 8, o.y + o.h - 4); ctx.stroke();
       ctx.fillStyle = '#e7c27d'; ctx.beginPath(); ctx.arc(o.x + o.w - 10, o.y + o.h / 2, 3, 0, TAU); ctx.fill();
+    } else if(o.t==='campfire'){
+      const cx=o.x+o.w/2,cy=o.y+o.h/2;
+      ctx.fillStyle='#555';for(let a=0;a<TAU;a+=TAU/7){ctx.beginPath();ctx.arc(cx+Math.cos(a)*15,cy+Math.sin(a)*10,6,0,TAU);ctx.fill();}
+      ctx.strokeStyle='#5a351d';ctx.lineWidth=7;ctx.beginPath();ctx.moveTo(cx-15,cy+9);ctx.lineTo(cx+14,cy-7);ctx.moveTo(cx-13,cy-8);ctx.lineTo(cx+15,cy+9);ctx.stroke();
+      const fl=4+Math.sin(anim*8)*2;ctx.fillStyle='#ffb12b';ctx.beginPath();ctx.moveTo(cx,cy+5);ctx.quadraticCurveTo(cx-13,cy-5,cx-3,cy-23-fl);ctx.quadraticCurveTo(cx+15,cy-5,cx,cy+5);ctx.fill();
+      ctx.fillStyle='#ffe06a';ctx.beginPath();ctx.moveTo(cx,cy+3);ctx.quadraticCurveTo(cx-6,cy-5,cx+1,cy-14);ctx.quadraticCurveTo(cx+8,cy-4,cx,cy+3);ctx.fill();
+    } else if(o.t==='workbench'){
+      ctx.fillStyle='#6e4929';ctx.fillRect(o.x,o.y+10,o.w,o.h-15);ctx.fillStyle='#a47642';ctx.fillRect(o.x-3,o.y+5,o.w+6,12);
+      ctx.fillStyle='#4c321e';ctx.fillRect(o.x+6,o.y+25,8,26);ctx.fillRect(o.x+o.w-14,o.y+25,8,26);
+      ctx.strokeStyle='#bfc5c8';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(o.x+18,o.y+2);ctx.lineTo(o.x+30,o.y+18);ctx.stroke();
+      ctx.fillStyle='#ece6d6';ctx.font='800 11px '+FONT;ctx.textAlign='center';ctx.fillText('WERKBANK',o.x+o.w/2,o.y-5);
     } else {
       const cx = o.x + o.w / 2, cy = o.y + o.h / 2;
       ctx.fillStyle = 'rgba(0,0,0,.3)'; ctx.beginPath(); ctx.arc(cx + 3, cy + 4, 20, 0, TAU); ctx.fill();
@@ -2191,6 +2237,7 @@ function drawBuilt() {
       ctx.restore();
     }
 
+    if(o.utility)continue;
     // Can çubuğu ve sayısal can HER ZAMAN görünür.
     const by = o.y - 14;
     ctx.fillStyle = 'rgba(0,0,0,.78)'; ctx.fillRect(o.x, by, o.w, 6);
@@ -2431,7 +2478,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v24';
+const GAME_VERSION = 'v25';
 
 function drawHUD() {
   const p = player, L = spec || levelSpec(1), narrow = W < 760;
@@ -2473,6 +2520,7 @@ function drawHUD() {
   if(runEvent)ctx.fillText(runEvent.name,W/2,ty+40);
   if(mission){ctx.fillStyle=mission.done?'#7fbf5a':'#d8d0b7';ctx.fillText('Görev: '+mission.name+' '+Math.min(mission.target,Math.floor(mission.progress))+'/'+mission.target,W/2,ty+(runEvent?56:40));}
   ctx.textAlign='left';ctx.fillStyle='#9fb6a4';ctx.fillText('Survivor Lv.'+metaLevel+' · XP '+metaXP,20,112);
+  if(nearWorkbench()){ctx.fillStyle='#f0d28a';ctx.font='800 14px '+FONT;ctx.fillText('[E] WERKBANK · üretim',20,136);}
 
   // Patron çubuğu
   let boss = null, bc = 0;
