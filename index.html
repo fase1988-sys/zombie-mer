@@ -203,7 +203,7 @@ div:has(> #legacyOnlineMarker){display:none!important}
 
 <div id="menuJumpScare" aria-hidden="true"><div class="jsFace"><div class="jsCrack"></div><div class="jsMouth"></div></div></div>
 
-<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v79</b></div></div></div>
+<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v80</b></div></div></div>
 
 <div id="onlinePanel">
   <b><span id="legacyOnlineMarker">ONLINE CO-OP v8 · CLEAN LOBBY</span></b>
@@ -2405,7 +2405,9 @@ function update(dt) {
     const contact = sameCtx && d < z.r + victim.r + 3;
     if (!contact && !z.atkObj) {
       let v = z.spd * (1 + Math.sin(anim * 3 + z.ph) * 0.22) * (runEvent&&runEvent.id==='blackout'?1.12:1);
-      if (z.dashT > 0) v *= 3.6;
+      // Ev içinde ve kapı geçişinde sabit kontrollü hız: oyuncu eve girince ani sprint yok.
+      if(z.doorPass || (z.hi>=0&&z.hi===victim.hi))v=Math.min(v,z.spd);
+      if (z.dashT > 0 && z.hi<0 && victim.hi<0) v *= 3.6;
       if (z.tele > 0) v *= 0.1;
       const px = z.x, py = z.y;
       const usedHouseDoor = moveZombieThroughHouseDoor(z, dt, v, victim);
@@ -2417,20 +2419,26 @@ function update(dt) {
         z.x += Math.cos(ang) * v * dt; z.y += Math.sin(ang) * v * dt;
         pushOut(z);
       }
-      // Duvara sadece temas etmek saldırı sebebi değildir.
-      // Oyuncuya giden yön gerçekten duvar tarafından kapatılıyorsa kır; aksi halde kenarından ak.
-      const blockingBuilt = builtBlockingPath(z, victim);
-      if (blockingBuilt) z.atkObj = blockingBuilt;
-      else {
-        const touchingBuilt=nearestBuilt(z);
-        if(touchingBuilt){
-          const sidestep=steerAroundBuilt(z,ang,Math.max(z.r+8,v*dt*5));
-          if(sidestep!==ang){
-            z.x=px+Math.cos(sidestep)*v*dt;
-            z.y=py+Math.sin(sidestep)*v*dt;
-            pushOut(z); z.a=sidestep;
+      // v80: Kapı geçişi bu frame'in TEK hareketidir.
+      // Önceden aşağıdaki sidestep ikinci kez z.x/z.y yazıp zombiyi kapıda 2x hareket ettirebiliyordu.
+      if(!usedHouseDoor){
+        // Duvara sadece temas etmek saldırı sebebi değildir.
+        // Oyuncuya giden yön gerçekten duvar tarafından kapatılıyorsa kır; aksi halde kenarından ak.
+        const blockingBuilt = builtBlockingPath(z, victim);
+        if (blockingBuilt) z.atkObj = blockingBuilt;
+        else {
+          const touchingBuilt=nearestBuilt(z);
+          if(touchingBuilt){
+            const sidestep=steerAroundBuilt(z,ang,Math.max(z.r+8,v*dt*5));
+            if(sidestep!==ang){
+              z.x=px+Math.cos(sidestep)*v*dt;
+              z.y=py+Math.sin(sidestep)*v*dt;
+              pushOut(z); z.a=sidestep;
+            }
           }
         }
+      }else{
+        z.atkObj=null;
       }
       const moved = Math.hypot(z.x - px, z.y - py);
       if (!usedHouseDoor && moved < v * dt * 0.35) {
@@ -3054,7 +3062,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v79';
+const GAME_VERSION = 'v80';
 
 function drawHUD() {
   if(player&&abandonedCamps.length&&player.hi<0){let cp=null,bd=1e9;for(const q of abandonedCamps){const d=Math.hypot(q.x-player.x,q.y-player.y);if(d<bd){bd=d;cp=q}}if(cp&&bd>190){ctx.save();ctx.textAlign='center';ctx.font='900 11px '+FONT;ctx.fillStyle='#e3aa45';ctx.fillText('🏕 KAMP  '+Math.round(bd)+'m',W/2,82);ctx.restore();}}
