@@ -195,7 +195,7 @@ div:has(> #legacyOnlineMarker){display:none!important}
 
 <div id="menuJumpScare" aria-hidden="true"><div class="jsFace"><div class="jsCrack"></div><div class="jsMouth"></div></div></div>
 
-<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v110</b></div></div></div>
+<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v111</b></div></div></div>
 
 <div id="onlinePanel">
   <b><span id="legacyOnlineMarker">ONLINE CO-OP v8 · CLEAN LOBBY</span></b>
@@ -274,7 +274,7 @@ function roomCode(){
 }
 function worldSnapshot(){
   return {
-    level, score, kills, money, state, dayPhase, prepLeft, dawnFade, duskFade, worldSeed, firePower, fireBossCountdown, fireBossActive, queue:[...queue],
+    level, score, kills, money, state, dayPhase, prepLeft, dawnFade, duskFade, worldSeed, firePower, fireBossCountdown, fireBossActive, fireBossHunting, queue:[...queue],
     zombies:zombies.map(z=>({type:z.type,x:z.x,y:z.y,hp:z.hp,max:z.max,dead:z.dead,hi:z.hi,sleep:z.sleep,a:z.a,boss:z.boss,atk:z.atk,dmg:z.dmg,r:z.r,spd:z.spd,ph:z.ph,flash:z.flash,stuck:z.stuck,detour:z.detour,dd:z.dd,dashT:z.dashT,skillT:z.skillT,tele:z.tele})),
     built:built.map(o=>({...o})),
     trees:obs.filter(o=>o.t==='t').map(o=>({id:o.treeId,hits:o.woodHits||0,x:o.x,y:o.y,w:o.w,h:o.h,cr:o.cr,shade:o.shade})),
@@ -291,7 +291,7 @@ function applyWorld(w){
     rebuildGrid();rebuildMiniMapBase();
   }
   level=w.level; score=w.score; kills=w.kills; money=w.money;
-  if(Number.isFinite(w.firePower))firePower=w.firePower;if(Number.isFinite(w.fireBossCountdown))fireBossCountdown=w.fireBossCountdown;if(typeof w.fireBossActive==='boolean')fireBossActive=w.fireBossActive;
+  if(Number.isFinite(w.firePower))firePower=w.firePower;if(Number.isFinite(w.fireBossCountdown))fireBossCountdown=w.fireBossCountdown;if(typeof w.fireBossActive==='boolean')fireBossActive=w.fireBossActive;if(typeof w.fireBossHunting==='boolean')fireBossHunting=w.fireBossHunting;
   queue=Array.isArray(w.queue)?w.queue:[];
   if(Array.isArray(w.zombies)){const next=[];for(let i=0;i<w.zombies.length;i++){const q=w.zombies[i],old=zombies[i];if(old&&old.type===q.type){Object.assign(old,q);next.push(old)}else next.push(Object.assign(makeZombie(q.type,q.x,q.y),q))}zombies=next;}
   if(Array.isArray(w.built)){ built=w.built.map(o=>({...o})); rebuildGrid(); }
@@ -1176,33 +1176,40 @@ const BLOCK_COST = 6, BLOCK_HP = 120, DOOR_COST = 10, DOOR_HP = 160, TURRET_HP =
 const inv = { block: 0, door: 0, turret: 0, bomb: 0, medkit: 0, logs: 0, seeds: 0 };
 let plantedTrees=[], treeFalls=[], nextPlantedTreeId=100000, treeNightCounter=0;
 // v109: Kamp ateşi hayatta kalma mekaniği. Ateş sönerse Ateş Avcısı üsse koşar ve 15 sn sonra takımı öldürür.
-const FIRE_MAX=100, FIRE_DRAIN=0.42, FIRE_LOG_POWER=22;
-let firePower=100, fireBossCountdown=-1, fireBossActive=false, fireFeedLatch=false, fireHold=0;
+const FIRE_MAX=100, FIRE_DRAIN=0.42, FIRE_LOG_POWER=22, FIRE_FEED_COST=3;
+let firePower=100, fireBossCountdown=-1, fireBossActive=false, fireBossHunting=false, fireFeedLatch=false, fireHold=0;
 function campfireObject(){return built.find(o=>o.t==='campfire');}
+function removeFireBoss(){
+  for(let i=zombies.length-1;i>=0;i--)if(zombies[i].fireBoss)zombies.splice(i,1);
+  fireBossActive=false;fireBossHunting=false;fireBossCountdown=-1;
+}
 function feedCampfire(){
   if(state!=='playing'&&state!=='intermission')return false;
   const f=campfireObject();if(!f||Math.hypot(player.x-(f.x+f.w/2),player.y-(f.y+f.h/2))>125){toast('Ateşi beslemek için kamp ateşine yaklaş');return false;}
-  if((inv.logs||0)<1){toast('Ateşi güçlendirmek için odun lazım');return false;}
-  inv.logs--;firePower=Math.min(FIRE_MAX,firePower+FIRE_LOG_POWER);sfx('place');floatText(f.x+f.w/2,f.y-20,'+ATEŞ','#ff9a2e');toast('Ateş güçlendi · +'+FIRE_LOG_POWER+'%');return true;
+  if((inv.logs||0)<FIRE_FEED_COST){toast('Ateşi güçlendirmek için 3 odun lazım');return false;}
+  inv.logs-=FIRE_FEED_COST;firePower=Math.min(FIRE_MAX,firePower+FIRE_LOG_POWER);sfx('place');floatText(f.x+f.w/2,f.y-20,'+ATEŞ','#ff9a2e');
+  if(fireBossActive){removeFireBoss();toast('Ateş yeniden yandı · Ateş Avcısı geri çekildi!');}
+  else toast('Ateş güçlendi · 3 odun · +'+FIRE_LOG_POWER+'%');
+  return true;
+}
+function startFireBossWarning(){
+  if(fireBossActive)return;
+  fireBossActive=true;fireBossHunting=false;fireBossCountdown=15;
+  banner={title:'ATEŞ SÖNDÜ!',sub:'15 SANİYE İÇİNDE ATEŞİ YAK!',t:4,max:4};toast('Ateş Avcısı 15 saniye sonra gelecek!');
 }
 function spawnFireBoss(){
-  if(fireBossActive)return;
-  fireBossActive=true;fireBossCountdown=15;
+  if(!fireBossActive||fireBossHunting)return;
+  fireBossHunting=true;fireBossCountdown=0;
   const f=campfireCenter(),a=Math.random()*TAU,d=Math.min(1450,WORLD*.34);
   const x=clamp(f.x+Math.cos(a)*d,100,WORLD-100),y=clamp(f.y+Math.sin(a)*d,100,WORLD-100);
   const z=makeZombie('fireboss',x,y);z.fireBoss=true;z.hp=z.max=999999;z.spd=250;z.sleep=false;z.hi=-1;z.atk=0;
-  zombies.push(z);banner={title:'ATEŞ SÖNDÜ!',sub:'ATEŞ AVCISI GELİYOR · 15 SANİYE',t:4,max:4};toast('ATEŞ AVCISI UYANDI · 15 saniyen var!');
-}
-function fireBossKillTeam(){
-  fireBossCountdown=-1;
-  if(player&&player.hp>0)hurtPlayer(999999);
-  if(net.connected&&net.host&&net.channel)for(const q of net.peers.values())if(q&&!q.dead&&Number(q.hp)>0)net.channel.send({type:'broadcast',event:'player_damage',payload:{target:q.id,damage:999999}});
+  zombies.push(z);banner={title:'ATEŞ AVCISI GELDİ!',sub:'NEREDE OLURSANIZ OLUN PEŞİNİZDE!',t:4,max:4};toast('Ateş Avcısı takıma saldırıyor! Ateşi tekrar yak!');
 }
 function updateCampfireThreat(dt){
   if(state!=='playing'&&state!=='intermission'&&state!=='craft')return;
   if(!net.connected||net.host||net.hostId===net.id){
-    if(!fireBossActive){firePower=Math.max(0,firePower-FIRE_DRAIN*dt);if(firePower<=0)spawnFireBoss();}
-    else if(fireBossCountdown>0){fireBossCountdown=Math.max(0,fireBossCountdown-dt);if(fireBossCountdown<=0)fireBossKillTeam();}
+    if(!fireBossActive){firePower=Math.max(0,firePower-FIRE_DRAIN*dt);if(firePower<=0)startFireBossWarning();}
+    else if(!fireBossHunting&&fireBossCountdown>0){fireBossCountdown=Math.max(0,fireBossCountdown-dt);if(fireBossCountdown<=0)spawnFireBoss();}
   }
 }
 let up = { wall: 0, turret: 0, hp: 0 };
@@ -1634,7 +1641,7 @@ function newGame(seedOverride) {
   clearTimeout(menuScareTimer);const js=document.getElementById('menuJumpScare');if(js)js.classList.remove('show');
   const mm=document.getElementById('mainGameMenu');if(mm)mm.classList.add('hidden');hideOverlay();
   money = 100; score = 0; kills = 0; level = 1;
-  firePower=100;fireBossCountdown=-1;fireBossActive=false;fireFeedLatch=false;fireHold=0;
+  firePower=100;fireBossCountdown=-1;fireBossActive=false;fireBossHunting=false;fireFeedLatch=false;fireHold=0;
   // v102: Her yeni koşuda evler, ağaçlar, kasalar ve terk edilmiş çadır kampları yeni konumlarda doğar.
   // Multiplayer'da hostun seed'i bütün oyunculara gönderilir; herkes aynı haritayı görür.
   const nextSeed=Number.isFinite(Number(seedOverride))?(Number(seedOverride)>>>0):((Date.now()^Math.floor(Math.random()*0xffffffff))>>>0);
@@ -2372,9 +2379,7 @@ function update(dt) {
   for (const z of zombies) {
     if (z.dead) continue;
     let victim=nearestLivingTarget(z);
-    if(z.fireBoss){
-      const f=campfireCenter();victim={id:'campfire',local:false,x:f.x,y:f.y,hi:-1,r:18,hp:999999};
-    }
+    if(z.fireBoss){ victim=nearestLivingTarget(z); }
     if(!victim) continue; // Ölü oyuncular hiçbir zaman hedef değildir.
     const dx = victim.x - z.x, dy = victim.y - z.y, d = Math.hypot(dx, dy) || 1;
     if (z.sleep) {
@@ -2417,7 +2422,7 @@ function update(dt) {
     }
 
     const sameCtx = z.hi === victim.hi;
-    const contact = !z.fireBoss && sameCtx && d < z.r + victim.r + 3;
+    const contact = sameCtx && d < z.r + victim.r + 3;
     if (!contact && !z.atkObj) {
       let v = z.spd * (1 + Math.sin(anim * 3 + z.ph) * 0.22) * (runEvent&&runEvent.id==='blackout'?1.12:1);
       // Ev içinde ve kapı geçişinde sabit kontrollü hız: oyuncu eve girince ani sprint yok.
@@ -3275,7 +3280,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v110';
+const GAME_VERSION = 'v111';
 
 function drawHUD() {
   if(player&&abandonedCamps.length&&player.hi<0){let cp=null,bd=1e9;for(const q of abandonedCamps){const d=Math.hypot(q.x-player.x,q.y-player.y);if(d<bd){bd=d;cp=q}}if(cp&&bd>190){ctx.save();ctx.textAlign='center';ctx.font='900 11px '+FONT;ctx.fillStyle='#e3aa45';ctx.fillText('🏕 KAMP  '+Math.round(bd)+'m',W/2,82);ctx.restore();}}
@@ -3322,10 +3327,10 @@ function drawHUD() {
   ctx.textAlign='left';ctx.fillStyle='#9fb6a4';ctx.fillText('Survivor Lv.'+metaLevel+' · XP '+metaXP,20,112);
   const cf=campfireObject();const nearFire=cf&&Math.hypot(p.x-(cf.x+cf.w/2),p.y-(cf.y+cf.h/2))<125;
   if(nearWorkbench()){ctx.fillStyle='#f0d28a';ctx.font='800 14px '+FONT;ctx.fillText('[E] ÇALIŞMA TEZGÂHI · üretim',20,136);}
-  else if(nearFire&&!fireBossActive){ctx.fillStyle='#ffb04a';ctx.font='800 14px '+FONT;ctx.fillText('[E] 5 SN BASILI TUT · ATEŞE 1 ODUN',20,136);if(fireHold>0){bar(20,144,190,8,fireHold/5,'#e88724');}}
+  else if(nearFire&&!fireBossActive){ctx.fillStyle='#ffb04a';ctx.font='800 14px '+FONT;ctx.fillText('[E] 5 SN BASILI TUT · ATEŞE 3 ODUN',20,136);if(fireHold>0){bar(20,144,190,8,fireHold/5,'#e88724');}}
   const fw=Math.min(280,W-40),fx=W/2-fw/2,fy=ty+76;
   ctx.textAlign='center';ctx.font='900 11px '+FONT;ctx.fillStyle=fireBossActive?'#ff5145':'#ffb04a';
-  ctx.fillText(fireBossActive?'☠ ATEŞ AVCISI · '+Math.ceil(Math.max(0,fireBossCountdown))+' sn':'🔥 KAMP ATEŞİ · '+Math.ceil(firePower)+'%',W/2,fy-5);
+  ctx.fillText(fireBossActive?(fireBossHunting?'☠ ATEŞ AVCISI PEŞİNİZDE · ATEŞİ YAK!':'☠ ATEŞ AVCISI · '+Math.ceil(Math.max(0,fireBossCountdown))+' sn sonra geliyor'):'🔥 KAMP ATEŞİ · '+Math.ceil(firePower)+'%',W/2,fy-5);
   bar(fx,fy,fw,9,fireBossActive?Math.max(0,fireBossCountdown)/15:firePower/FIRE_MAX,fireBossActive?'#d6332c':'#e88724');
 
   // Patron çubuğu
