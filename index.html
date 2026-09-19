@@ -1517,6 +1517,33 @@ function nearestBuilt(z) {
   for (const o of built) { const d = distToRect(z.x, z.y, o); if (d < bd) { bd = d; best = o; } }
   return best;
 }
+function builtBlockingPath(z, victim) {
+  // Sadece oyuncuya giden hattı gerçekten kapatan savunmaya saldır.
+  // Böylece zombi base duvarının yanına değdi diye orada kilitlenmez.
+  const dx=victim.x-z.x,dy=victim.y-z.y,d=Math.hypot(dx,dy)||1, ux=dx/d,uy=dy/d;
+  let best=null,bd=Infinity;
+  for(const o of built){
+    if(o.t!=='block'&&o.t!=='door'&&o.t!=='turret')continue;
+    const od=distToRect(z.x,z.y,o);
+    if(od>z.r+12)continue;
+    const cx=o.x+o.w/2-z.x,cy=o.y+o.h/2-z.y;
+    const forward=cx*ux+cy*uy,side=Math.abs(cx*uy-cy*ux);
+    if(forward<-8||side>z.r+Math.max(o.w,o.h)*.72)continue;
+    if(od<bd){bd=od;best=o;}
+  }
+  return best;
+}
+function steerAroundBuilt(z, desired, step) {
+  // Base'in dış kenarına sürtünen zombiye kısa bir yan kaçış ver.
+  const side=z.dd||1;
+  for(const off of [0.55,-0.55,0.9,-0.9,1.25,-1.25]){
+    const a=desired+off*side,nx=z.x+Math.cos(a)*step,ny=z.y+Math.sin(a)*step;
+    let blocked=false;
+    for(const o of built)if(distToRect(nx,ny,o)<z.r+3){blocked=true;break;}
+    if(!blocked&&zombieMoveClear(z,a,step)){z.dd=off>=0?side:-side;return a;}
+  }
+  return desired;
+}
 
 /* Zombi çevre navigasyonu: ev/ağaç gibi sabit engellerde takılmayı önler.
    Oyuncunun inşa ettiği savunmalar bu kontrolden hariçtir; zombiler onları kırmaya devam eder. */
@@ -1938,14 +1965,26 @@ function update(dt) {
         z.x += Math.cos(ang) * v * dt; z.y += Math.sin(ang) * v * dt;
         pushOut(z);
       }
-      // Bir savunmaya temas ettiği anda onu hedefle; sadece "stuck" zamanlayıcısını bekleme.
-      const touchingBuilt = nearestBuilt(z);
-      if (touchingBuilt) z.atkObj = touchingBuilt;
+      // Duvara sadece temas etmek saldırı sebebi değildir.
+      // Oyuncuya giden yön gerçekten duvar tarafından kapatılıyorsa kır; aksi halde kenarından ak.
+      const blockingBuilt = builtBlockingPath(z, victim);
+      if (blockingBuilt) z.atkObj = blockingBuilt;
+      else {
+        const touchingBuilt=nearestBuilt(z);
+        if(touchingBuilt){
+          const sidestep=steerAroundBuilt(z,ang,Math.max(z.r+8,v*dt*5));
+          if(sidestep!==ang){
+            z.x=px+Math.cos(sidestep)*v*dt;
+            z.y=py+Math.sin(sidestep)*v*dt;
+            pushOut(z); z.a=sidestep;
+          }
+        }
+      }
       const moved = Math.hypot(z.x - px, z.y - py);
       if (!usedHouseDoor && moved < v * dt * 0.35) {
         z.stuck += dt;
         if (z.stuck > 0.25) {
-          const bo = nearestBuilt(z);
+          const bo = builtBlockingPath(z, victim);
           if (bo) z.atkObj = bo;
           else if (z.stuck > 0.45) { z.detour = 1.6; z.dd = Math.random() < 0.5 ? -1 : 1; z.stuck = 0; }
         }
@@ -1953,8 +1992,8 @@ function update(dt) {
       if (usedHouseDoor) z.stuck = 0;
     }
     if (z.atkObj) {
-      const o = z.atkObj;
-      if (o.hp <= 0 || built.indexOf(o) < 0 || distToRect(z.x, z.y, o) > z.r + 14) { z.atkObj = null; z.stuck = 0; }
+      const o = z.atkObj, stillBlocking=builtBlockingPath(z,victim)===o;
+      if (o.hp <= 0 || built.indexOf(o) < 0 || distToRect(z.x, z.y, o) > z.r + 14 || !stillBlocking) { z.atkObj = null; z.stuck = 0; }
       else if (z.atk <= 0) { damageBuilt(o, z.dmg * 1.4); z.atk = 0.8; }
     }
     if (contact && z.atk <= 0) {
@@ -2381,7 +2420,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v22';
+const GAME_VERSION = 'v23';
 
 function drawHUD() {
   const p = player, L = spec || levelSpec(1), narrow = W < 760;
