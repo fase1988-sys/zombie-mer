@@ -196,14 +196,14 @@ div:has(> #legacyOnlineMarker){display:none!important}
 <section><div class="adminSectionTitle"><span>🏗️</span><div><b>ÜS KONTROLÜ</b><small>Yapıları yönet</small></div></div><div class="adminInline"><button id="adminRepair">TÜMÜNÜ TAMİR ET</button><button id="adminDeleteBuilds">SAVUNMALARI SİL</button></div><button id="adminMaxBase">ÜS / TARET MAX UPGRADE</button></section>
 <section><div class="adminSectionTitle"><span>🌐</span><div><b>MULTIPLAYER</b><small>Host ve oda durumu</small></div></div><div id="adminNetInfo" class="adminInfo">Offline</div><div class="adminInline"><button id="adminTeleportPeer">TAKIM ARKADAŞINA IŞINLAN</button><button id="adminRevive">KENDİNİ DİRİLT</button></div></section>
 <section><div class="adminSectionTitle"><span>📊</span><div><b>DEBUG</b><small>Canlı oyun bilgileri</small></div></div><div id="adminDebug" class="adminInfo">Hazırlanıyor…</div></section>
-<section><div class="adminSectionTitle"><span>😱</span><div><b>JUMPSCARE TESTİ</b><small>Menü korkutmasını anında kontrol et</small></div></div><button id="adminJumpScare">JUMPSCARE ÇALIŞTIR</button></section>
+<section><div class="adminSectionTitle"><span>😱</span><div><b>JUMPSCARE KONTROLÜ</b><small>Kendinde test et veya online oyuncuya gönder</small></div></div><button id="adminJumpScare">KENDİNDE TEST ET</button><select id="adminScareTarget"><option value="">ONLINE OYUNCU SEÇ</option></select><button id="adminSendJumpScare">SEÇİLEN OYUNCUYA GÖNDER</button><div id="adminScareInfo" class="adminInfo">Multiplayer odasında oyuncular burada görünür.</div></section>
 <section class="devSection"><div class="adminSectionTitle"><span>🚨</span><div><b>DEV MODE</b><small>Tüm test yetkilerini tek seferde aç</small></div></div><button id="adminDev">DEV MODE'U AKTİF ET</button></section>
 </div><div class="adminFooter"><span>● ADMIN ACCESS</span><span>v48 CONTROL CONSOLE</span></div></div></div></div>
 
 
 <div id="menuJumpScare" aria-hidden="true"><div class="jsFace"><div class="jsCrack"></div><div class="jsMouth"></div></div></div>
 
-<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v71</b></div></div></div>
+<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v72</b></div></div></div>
 
 <div id="onlinePanel">
   <b><span id="legacyOnlineMarker">ONLINE CO-OP v8 · CLEAN LOBBY</span></b>
@@ -404,6 +404,10 @@ async function connectRoom(code, asHost){
     if(typeof renderMainLobby==='function')renderMainLobby();
   });
   ch.on('broadcast',{event:'player'},({payload})=>{ upsertRemotePlayer(payload); });
+  ch.on('broadcast',{event:'admin_jumpscare'},({payload})=>{
+    if(!payload || payload.target!==net.id) return;
+    triggerMenuJumpScare(true);
+  });
   ch.on('broadcast',{event:'kick'},async ({payload})=>{
     if(payload && payload.target===net.id){
       netStatus('Oda lideri seni takımdan çıkardı.');
@@ -1069,8 +1073,27 @@ $a('adminMaxBase').onclick=()=>{if(!adminUnlocked)return;up.wall=5;up.turret=5;f
 $a('adminTeleportPeer').onclick=()=>{if(!adminUnlocked||!player)return;const q=[...net.peers.values()].find(x=>x&&!x.dead);if(q){player.x=q.x+35;player.y=q.y;toast('Takım arkadaşına ışınlandın')}else toast('Aktif takım arkadaşı yok')};
 $a('adminRevive').onclick=()=>{if(adminUnlocked&&player){player.hp=player.max;state='playing';hideOverlay();toast('Diriltildin')}};
 $a('adminJumpScare').onclick=()=>{if(!adminUnlocked)return;triggerMenuJumpScare(true)};
+function refreshAdminScareTargets(){
+  const sel=$a('adminScareTarget'),info=$a('adminScareInfo');if(!sel)return;
+  const keep=sel.value;
+  sel.innerHTML='<option value="">ONLINE OYUNCU SEÇ</option>';
+  for(const [id,q] of net.peers){
+    const o=document.createElement('option');o.value=id;o.textContent=(q&&q.name?q.name:'Oyuncu')+(q&&q.host?' · HOST':'');sel.appendChild(o);
+  }
+  if([...sel.options].some(o=>o.value===keep))sel.value=keep;
+  if(info)info.textContent=net.connected?(net.peers.size?net.peers.size+' online oyuncu seçilebilir':'Odada başka oyuncu yok'):'Multiplayer bağlantısı yok';
+}
+$a('adminSendJumpScare').onclick=()=>{
+  if(!adminUnlocked)return;
+  if(!net.connected||!net.channel){toast('Önce multiplayer odasına bağlan');return}
+  const target=$a('adminScareTarget').value;
+  if(!target||!net.peers.has(target)){toast('Online oyuncu seç');refreshAdminScareTargets();return}
+  const q=net.peers.get(target);
+  net.channel.send({type:'broadcast',event:'admin_jumpscare',payload:{target,from:net.id}});
+  toast('Jumpscare gönderildi: '+(q&&q.name?q.name:'Oyuncu'));
+};
 $a('adminDev').onclick=()=>{if(!adminUnlocked||!player)return;adminGodMode=adminInfStamina=adminSpeed2=adminInfAmmo=true;money+=100000;inv.logs+=999;for(const k of ['block','door','turret','bomb','medkit'])inv[k]+=99;for(const id of GUN_ORDER){if(!player.guns.includes(id))player.guns.push(id);gunUp[id]=3;player.ammo[id]=gunStats(id).mag}player.hp=player.max;tog($a('adminGod'),true,'GOD MODE');tog($a('adminStamina'),true,'SINIRSIZ STAMINA');tog($a('adminSpeed'),true,'HIZ ×2');tog($a('adminAmmo'),true,'SONSUZ MERMİ');toast('DEV MODE aktif')};
-setInterval(()=>{if(!adminUnlocked)return;const d=$a('adminDebug'),n=$a('adminNetInfo');if(d)d.textContent='State: '+state+' | Gün: '+dayPhase+' | Bölüm: '+level+' | Zombi: '+zombies.length+' | Queue: '+queue.length+' | Mermi: '+bullets.length+' | Yapı: '+built.length;if(n)n.textContent=net.connected?('ONLINE · '+(net.host?'HOST':'GUEST')+' · Oda: '+net.room+' · Oyuncu: '+(net.peers.size+1)):'OFFLINE · Tek oyuncu'},500)},0);
+setInterval(()=>{if(!adminUnlocked)return;refreshAdminScareTargets();const d=$a('adminDebug'),n=$a('adminNetInfo');if(d)d.textContent='State: '+state+' | Gün: '+dayPhase+' | Bölüm: '+level+' | Zombi: '+zombies.length+' | Queue: '+queue.length+' | Mermi: '+bullets.length+' | Yapı: '+built.length;if(n)n.textContent=net.connected?('ONLINE · '+(net.host?'HOST':'GUEST')+' · Oda: '+net.room+' · Oyuncu: '+(net.peers.size+1)):'OFFLINE · Tek oyuncu'},500)},0);
 const ZT = {
   n:  { hp: 70,   spd: 64,  r: 16, dmg: 11, score: 10,  money: 8,   col: '#6f8c57', arm: '#5c7848', head: '#82a068' },
   f:  { hp: 42,   spd: 122, r: 14, dmg: 8,  score: 15,  money: 12,  col: '#98a355', arm: '#7f8a45', head: '#aab566' },
@@ -2923,7 +2946,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v71';
+const GAME_VERSION = 'v72';
 
 function drawHUD() {
   if(player&&abandonedCamps.length&&player.hi<0){let cp=null,bd=1e9;for(const q of abandonedCamps){const d=Math.hypot(q.x-player.x,q.y-player.y);if(d<bd){bd=d;cp=q}}if(cp&&bd>190){ctx.save();ctx.textAlign='center';ctx.font='900 11px '+FONT;ctx.fillStyle='#e3aa45';ctx.fillText('🏕 KAMP  '+Math.round(bd)+'m',W/2,82);ctx.restore();}}
