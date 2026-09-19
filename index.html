@@ -1305,6 +1305,32 @@ function nearestBuilt(z) {
   return best;
 }
 
+/* Zombi çevre navigasyonu: ev/ağaç gibi sabit engellerde takılmayı önler.
+   Oyuncunun inşa ettiği savunmalar bu kontrolden hariçtir; zombiler onları kırmaya devam eder. */
+function zombieMoveClear(z, ang, step) {
+  const nx = z.x + Math.cos(ang) * step, ny = z.y + Math.sin(ang) * step;
+  const x0 = clamp(Math.floor((nx - z.r - 3) / CELL), 0, GN - 1), x1 = clamp(Math.floor((nx + z.r + 3) / CELL), 0, GN - 1);
+  const y0 = clamp(Math.floor((ny - z.r - 3) / CELL), 0, GN - 1), y1 = clamp(Math.floor((ny + z.r + 3) / CELL), 0, GN - 1);
+  for (let gy = y0; gy <= y1; gy++) for (let gx = x0; gx <= x1; gx++) {
+    const cell = grid[gy * GN + gx];
+    for (const o of cell) {
+      if (built.indexOf(o) >= 0) continue;
+      if (distToRect(nx, ny, o) < z.r + 3) return false;
+    }
+  }
+  return nx > z.r && ny > z.r && nx < WORLD - z.r && ny < WORLD - z.r;
+}
+function zombieSteerAngle(z, desired, step) {
+  if (zombieMoveClear(z, desired, step)) return desired;
+  const side = z.dd || 1;
+  const tries = [0.45, -0.45, 0.8, -0.8, 1.15, -1.15, 1.5, -1.5];
+  for (const off of tries) {
+    const a = desired + off * side;
+    if (zombieMoveClear(z, a, step)) { z.dd = off >= 0 ? side : -side; return a; }
+  }
+  return desired + side * 1.7;
+}
+
 function throwBomb() {
   const p = player, tx = mouse.x + cam.x, ty = mouse.y + cam.y;
   const dx = tx - p.x, dy = ty - p.y, d = Math.hypot(dx, dy) || 1, m = Math.min(d, 420);
@@ -1581,6 +1607,11 @@ function update(dt) {
       if (z.dashT > 0) v *= 3.6;
       if (z.tele > 0) v *= 0.1;
       const px = z.x, py = z.y;
+      // Sabit çevre engellerini önceden görüp etrafından yönlen.
+      // Böylece kapı çerçevesi, bina duvarı ve ağaçlarda sürekli itilip takılmaz.
+      const step = Math.max(z.r + 8, v * dt * 4);
+      ang = zombieSteerAngle(z, ang, step);
+      z.a = ang;
       z.x += Math.cos(ang) * v * dt; z.y += Math.sin(ang) * v * dt;
       pushOut(z);
       // Bir savunmaya temas ettiği anda onu hedefle; sadece "stuck" zamanlayıcısını bekleme.
@@ -1592,7 +1623,7 @@ function update(dt) {
         if (z.stuck > 0.25) {
           const bo = nearestBuilt(z);
           if (bo) z.atkObj = bo;
-          else if (z.stuck > 0.45) { z.detour = 1.2; z.dd = Math.random() < 0.5 ? -1 : 1; z.stuck = 0; }
+          else if (z.stuck > 0.45) { z.detour = 1.6; z.dd = Math.random() < 0.5 ? -1 : 1; z.stuck = 0; }
         }
       } else z.stuck = 0;
     }
