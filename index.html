@@ -732,10 +732,38 @@ function houseDoorAt(x, y, r = 0) {
     const rx = x - d.x, ry = y - d.y;
     const along = rx * d.nx + ry * d.ny;
     const lat = -rx * d.ny + ry * d.nx;
-    // Kapının gerçek açıklığını kullan; eşikte iç/dış houseAt değişimine bağlı kalma.
-    if (Math.abs(lat) < d.w / 2 - Math.min(r * 0.15, 6) && along > -105 && along < 105) return i;
+    // Geniş yaklaşma koridoru: zombi kapı pervazına çarpmadan önce yakalanır.
+    if (Math.abs(lat) < d.w / 2 + r + 18 && along > -135 && along < 135) return i;
   }
   return -1;
+}
+function moveZombieThroughHouseDoor(z, dt, v) {
+  const hid = houseDoorAt(z.x, z.y, z.r);
+  if (hid < 0) return false;
+  const h = houses[hid], d = h.door;
+  const rx = z.x - d.x, ry = z.y - d.y;
+  const along = rx * d.nx + ry * d.ny;
+  const lat = -rx * d.ny + ry * d.nx;
+
+  // Oyuncu bu evdeyse içeri doğru; değilse ve zombi içerideyse dışarı doğru.
+  let dir = 0;
+  if (player.hi === hid) dir = -1;
+  else if (z.hi === hid) dir = 1;
+  else return false;
+
+  // Önce kapı merkez çizgisine kuvvetlice hizala.
+  const align = clamp(10 * dt, 0, 1);
+  z.x -= (-d.ny) * lat * align;
+  z.y -= ( d.nx) * lat * align;
+
+  // Eşikte statik duvar çarpışmasını kullanmadan doğrudan kapı koridorunda ilerle.
+  const speed = Math.max(v, 90);
+  z.x += d.nx * dir * speed * dt;
+  z.y += d.ny * dir * speed * dt;
+  z.a = Math.atan2(d.ny * dir, d.nx * dir);
+  z.detour = 0;
+  z.stuck = 0;
+  return true;
 }
 function circleHitsObs(x, y, r) {
   const x0 = clamp(Math.floor((x - r) / CELL), 0, GN - 1), x1 = clamp(Math.floor((x + r) / CELL), 0, GN - 1);
@@ -1638,18 +1666,20 @@ function update(dt) {
       if (z.dashT > 0) v *= 3.6;
       if (z.tele > 0) v *= 0.1;
       const px = z.x, py = z.y;
-      // Sabit çevre engellerini önceden görüp etrafından yönlen.
-      // Böylece kapı çerçevesi, bina duvarı ve ağaçlarda sürekli itilip takılmaz.
-      const step = Math.max(z.r + 8, v * dt * 4);
-      ang = zombieSteerAngle(z, ang, step);
-      z.a = ang;
-      z.x += Math.cos(ang) * v * dt; z.y += Math.sin(ang) * v * dt;
-      pushOut(z);
+      const usedHouseDoor = moveZombieThroughHouseDoor(z, dt, v);
+      if (!usedHouseDoor) {
+        // Normal çevre navigasyonu: bina ve ağaçların etrafından dolaş.
+        const step = Math.max(z.r + 8, v * dt * 4);
+        ang = zombieSteerAngle(z, ang, step);
+        z.a = ang;
+        z.x += Math.cos(ang) * v * dt; z.y += Math.sin(ang) * v * dt;
+        pushOut(z);
+      }
       // Bir savunmaya temas ettiği anda onu hedefle; sadece "stuck" zamanlayıcısını bekleme.
       const touchingBuilt = nearestBuilt(z);
       if (touchingBuilt) z.atkObj = touchingBuilt;
       const moved = Math.hypot(z.x - px, z.y - py);
-      if (moved < v * dt * 0.35) {
+      if (!usedHouseDoor && moved < v * dt * 0.35) {
         z.stuck += dt;
         if (z.stuck > 0.25) {
           const bo = nearestBuilt(z);
@@ -1657,6 +1687,7 @@ function update(dt) {
           else if (z.stuck > 0.45) { z.detour = 1.6; z.dd = Math.random() < 0.5 ? -1 : 1; z.stuck = 0; }
         }
       } else z.stuck = 0;
+      if (usedHouseDoor) z.stuck = 0;
     }
     if (z.atkObj) {
       const o = z.atkObj;
@@ -2085,7 +2116,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v3';
+const GAME_VERSION = 'v4';
 
 function drawHUD() {
   const p = player, L = spec || levelSpec(1), narrow = W < 760;
