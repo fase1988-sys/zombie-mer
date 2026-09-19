@@ -22,7 +22,7 @@ html, body, #artifacts-component-root-html {
 .gunPhoto{height:112px;margin:8px 0 9px;border:1px solid #314238;border-radius:7px;background:radial-gradient(circle at 50% 45%,#25332c 0,#0c1712 58%,#06100b 100%);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;box-shadow:inset 0 0 28px rgba(0,0,0,.48)}
 .gunPhoto:after{content:"";position:absolute;left:8%;right:8%;bottom:11px;height:8px;border-radius:50%;background:rgba(0,0,0,.36);filter:blur(5px)}
 .gunPhoto img{position:relative;z-index:1;display:block;max-width:92%;max-height:94px;width:auto;height:auto;object-fit:contain;filter:drop-shadow(0 8px 5px rgba(0,0,0,.72)) contrast(1.12) saturate(.92)}
-.gunPhoto.inlineGun svg{position:relative;z-index:1;width:94%;height:100px;display:block;filter:drop-shadow(0 8px 5px rgba(0,0,0,.72))}
+.gunPhoto img.minigunPhoto{width:94%;height:94px;max-width:none;max-height:none;object-fit:cover;object-position:center 46%;border-radius:3px;mix-blend-mode:screen;filter:contrast(1.18) brightness(.88) saturate(.78) drop-shadow(0 8px 5px rgba(0,0,0,.72))}
 </style>
 
 <title>Zombi İstilası</title>
@@ -1372,52 +1372,15 @@ function renderShop() {
         };
         const preview=document.createElement('div');
         preview.className='gunPhoto';
-        const inlineGunSvg={
-          sniper:`<svg viewBox="0 0 620 170" xmlns="http://www.w3.org/2000/svg" aria-label="Keskin nişancı tüfeği">
-            <defs><linearGradient id="m" x1="0" x2="1"><stop stop-color="#303638"/><stop offset=".45" stop-color="#899092"/><stop offset="1" stop-color="#202526"/></linearGradient><linearGradient id="w" x1="0" x2="1"><stop stop-color="#493729"/><stop offset=".55" stop-color="#85664a"/><stop offset="1" stop-color="#38291f"/></linearGradient></defs>
-            <g stroke="#111" stroke-width="5" stroke-linejoin="round">
-              <path fill="url(#w)" d="M35 92 L126 77 181 83 174 112 112 116 73 137 37 132 63 111 35 108Z"/>
-              <path fill="url(#m)" d="M165 76 L372 72 400 86 370 104 167 108Z"/>
-              <path fill="#22292a" d="M251 104 L302 105 287 143 251 139Z"/>
-              <path fill="#171b1c" d="M372 80 L558 80 586 88 558 95 372 96Z"/>
-              <path fill="#2a3031" d="M585 83 L615 82 615 96 584 95Z"/>
-              <rect fill="#202526" x="213" y="43" width="143" height="26" rx="8"/>
-              <rect fill="#586164" x="238" y="34" width="83" height="14" rx="7"/>
-              <circle fill="#15191a" cx="230" cy="56" r="20"/><circle fill="#687b80" cx="230" cy="56" r="10"/>
-              <circle fill="#15191a" cx="344" cy="56" r="18"/><circle fill="#687b80" cx="344" cy="56" r="8"/>
-              <path fill="#1d2223" d="M318 106 L344 107 359 145 338 148Z"/>
-              <path fill="none" d="M393 102 L430 151 M447 101 L470 151"/>
-            </g>
-          </svg>`,
-          minigun:`<svg viewBox="0 0 620 190" xmlns="http://www.w3.org/2000/svg" aria-label="Minigun">
-            <defs><linearGradient id="g" x1="0" x2="1"><stop stop-color="#171b1c"/><stop offset=".35" stop-color="#687174"/><stop offset=".65" stop-color="#24292a"/><stop offset="1" stop-color="#0f1213"/></linearGradient></defs>
-            <g stroke="#0b0d0e" stroke-width="5" stroke-linejoin="round">
-              <path fill="url(#g)" d="M55 67 L184 50 251 68 263 127 191 145 83 128 44 103Z"/>
-              <circle fill="#333a3c" cx="187" cy="97" r="54"/><circle fill="#111516" cx="187" cy="97" r="31"/><circle fill="#777f81" cx="187" cy="97" r="13"/>
-              <path fill="#252b2c" d="M80 121 L129 128 111 174 67 169Z"/>
-              <path fill="#1b2021" d="M214 137 L260 126 286 164 245 176Z"/>
-              <rect fill="#4e5658" x="242" y="70" width="70" height="54" rx="12"/>
-              <g fill="#454d4f">
-                <rect x="290" y="61" width="280" height="11" rx="5"/><rect x="290" y="79" width="294" height="11" rx="5"/>
-                <rect x="290" y="97" width="300" height="11" rx="5"/><rect x="290" y="115" width="294" height="11" rx="5"/>
-                <rect x="290" y="133" width="280" height="11" rx="5"/>
-              </g>
-              <ellipse fill="#171b1c" cx="584" cy="103" rx="21" ry="49"/>
-              <ellipse fill="#697275" cx="584" cy="103" rx="9" ry="36"/>
-              <path fill="#2a3032" d="M109 53 L139 21 184 22 196 51Z"/>
-              <rect fill="#111516" x="116" y="14" width="73" height="18" rx="8"/>
-            </g>
-          </svg>`
+        const realisticLower={
+          sniper:'https://pngimg.com/uploads/sniper_rifle/sniper_rifle_PNG51.png',
+          minigun:'https://i.shgcdn.com/6592278b-fe1d-4d3a-b8f2-afa9db7856d8/-/format/auto/-/preview/3000x3000/-/quality/lighter/'
         };
-        if(inlineGunSvg[it.gun]){
-          preview.classList.add('inlineGun');
-          preview.innerHTML=inlineGunSvg[it.gun];
-        }else{
-          const img=document.createElement('img');
-          img.src=gunPhotos[it.gun]||gunPhotos.pistol; img.alt=it.name;
-          img.loading='lazy'; img.referrerPolicy='no-referrer';
-          preview.appendChild(img);
-        }
+        const img=document.createElement('img');
+        img.src=realisticLower[it.gun]||gunPhotos[it.gun]||gunPhotos.pistol;
+        img.alt=it.name; img.loading='lazy'; img.referrerPolicy='no-referrer';
+        if(it.gun==='minigun') img.className='photoCrop minigunPhoto';
+        preview.appendChild(img);
         card.insertBefore(preview,card.children[1]);
       }
       const b = document.createElement('button');
@@ -2368,7 +2331,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v19';
+const GAME_VERSION = 'v20';
 
 function drawHUD() {
   const p = player, L = spec || levelSpec(1), narrow = W < 760;
