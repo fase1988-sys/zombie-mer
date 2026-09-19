@@ -2594,7 +2594,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v37';
+const GAME_VERSION = 'v38';
 
 function drawHUD() {
   const p = player, L = spec || levelSpec(1), narrow = W < 760;
@@ -2625,7 +2625,7 @@ function drawHUD() {
   ctx.fillStyle = '#ece6d6'; ctx.font = '900 22px ' + HEAD;
   ctx.fillText('Bölüm ' + level + ' · ' + L.name, W / 2, ty);
   ctx.font = '600 14px ' + FONT; ctx.fillStyle = '#f0b429';
-  if(state==='intermission'){
+  if(state==='intermission'||state==='craft'){
     const sec=Math.max(0,Math.ceil(prepLeft)),mm=Math.floor(sec/60),ss=String(sec%60).padStart(2,'0');
     ctx.fillText(dayPhase==='dawn'?'SABAH OLUYOR...':(dayPhase==='dusk'?'AKŞAM OLUYOR · Zombiler yaklaşıyor':'SABAH · Hazırlık '+mm+':'+ss),W/2,ty+22);
     uiRects.nextWave=null;
@@ -2789,10 +2789,11 @@ function draw() {
     ctx.restore();
     const g = ctx.createRadialGradient(W / 2, H / 2, Math.min(W, H) * .3, W / 2, H / 2, Math.hypot(W, H) * .62);
     g.addColorStop(0,'rgba(4,8,14,0)');
-    const darkAlpha=state==='intermission'?(dayPhase==='dawn'?(.68-.50*dawnFade):(dayPhase==='dusk'?(.18+.50*duskFade):.18)):.68;
+    const dayCycleState=(state==='intermission'||state==='craft');
+    const darkAlpha=dayCycleState?(dayPhase==='dawn'?(.68-.50*dawnFade):(dayPhase==='dusk'?(.18+.50*duskFade):.18)):.68;
     g.addColorStop(1,'rgba(4,8,14,'+darkAlpha+')');
     ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
-    if(state==='intermission'){
+    if(dayCycleState){
       const dayMix=dayPhase==='dawn'?dawnFade:(dayPhase==='dusk'?(1-duskFade):1);
       const nightMix=1-dayMix;
       ctx.fillStyle='rgba(255,224,150,'+(0.16*dayMix)+')';ctx.fillRect(0,0,W,H);
@@ -2818,7 +2819,7 @@ function draw() {
    ===================================================== */
 function frame(now) {
   const dt = Math.min(0.05, (now - last) / 1000); last = now;
-  if (state === 'playing' || state === 'dead_wait' || state === 'intermission') update(dt);
+  if (state === 'playing' || state === 'dead_wait' || state === 'intermission' || state === 'craft') update(dt);
   else anim += dt;
   netTick(now);
   smoothRemotePlayers(typeof dt==='number'?dt:1/60);
