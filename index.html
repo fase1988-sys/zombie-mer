@@ -144,6 +144,7 @@ div:has(> #legacyOnlineMarker){display:none!important}
 .craftStock em{font-style:normal;font-size:11px;line-height:1.45;color:#aeb8ad;margin-top:9px}.craftStock em strong{color:#f0b429}@media(max-width:650px){.craftLayout{grid-template-columns:1fr}.craftStock{grid-row:1;position:static}.craftLayout .craftGrid{margin-top:0}}
 </style>
 
+<style id="adminFinalStyle">#adminBtn{display:block!important;visibility:visible!important;opacity:1!important;position:fixed!important;right:0!important;top:50%!important;transform:translateY(-50%)!important;z-index:2147483000!important;width:96px!important;height:50px!important;padding:0!important;margin:0!important;background:#a87316!important;color:#fff!important;border:2px solid #f0c35a!important;border-right:0!important;border-radius:9px 0 0 9px!important;font:900 14px system-ui,sans-serif!important;cursor:pointer!important;box-shadow:0 4px 20px #000!important}#adminPanel{position:fixed!important;inset:0!important;z-index:2147483001!important}#adminPanel.show{display:grid!important}</style>
 </head>
 <body id="artifacts-component-root-html">
 <canvas id="game" width="580" height="843" class=""></canvas><button id="adminBtn">ADMIN</button><div id="adminPanel"><div class="adminBox"><h2>ADMIN PANELİ</h2><div id="adminLogin"><input id="adminPass" type="password" placeholder="Şifre"><button id="adminLoginBtn">GİRİŞ</button><small id="adminLoginMsg"></small></div><div id="adminTools" hidden><input id="adminMoney" type="number" value="1000"><button id="adminGiveMoney">PARA EKLE</button><select id="adminGun"><option value="shotgun">Pompalı</option><option value="smg">SMG</option><option value="rifle">Tüfek</option><option value="sniper">Sniper</option><option value="minigun">Minigun</option></select><button id="adminGiveGun">SİLAH VER</button><button id="adminGiveAll">TÜM SİLAHLAR</button><button id="adminHeal">CAN DOLDUR</button></div><button id="adminClose">KAPAT</button></div></div>
@@ -2637,7 +2638,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v43';
+const GAME_VERSION = 'v44';
 
 function drawHUD() {
   const p = player, L = spec || levelSpec(1), narrow = W < 760;
