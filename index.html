@@ -195,7 +195,7 @@ div:has(> #legacyOnlineMarker){display:none!important}
 
 <div id="menuJumpScare" aria-hidden="true"><div class="jsFace"><div class="jsCrack"></div><div class="jsMouth"></div></div></div>
 
-<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v104</b></div></div></div>
+<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v105</b></div></div></div>
 
 <div id="onlinePanel">
   <b><span id="legacyOnlineMarker">ONLINE CO-OP v8 · CLEAN LOBBY</span></b>
@@ -2744,35 +2744,50 @@ function drawBuilt() {
       ctx.beginPath(); ctx.moveTo(o.x + 8, o.y + 4); ctx.lineTo(o.x + 8, o.y + o.h - 4); ctx.moveTo(o.x + o.w - 8, o.y + 4); ctx.lineTo(o.x + o.w - 8, o.y + o.h - 4); ctx.stroke();
       ctx.fillStyle = '#e7c27d'; ctx.beginPath(); ctx.arc(o.x + o.w - 10, o.y + o.h / 2, 3, 0, TAU); ctx.fill();
     } else if(o.t==='campfire'){
-      const cx=o.x+o.w/2,cy=o.y+o.h/2, flick=Math.sin(anim*11)*2+Math.sin(anim*17);
-      // taş çemberi + köz
-      ctx.fillStyle='rgba(0,0,0,.28)';ctx.beginPath();ctx.ellipse(cx+3,cy+8,27,16,0,0,TAU);ctx.fill();
-      for(let i=0;i<10;i++){const a=i*TAU/10;ctx.fillStyle=i%2?'#69645b':'#80786c';ctx.beginPath();ctx.ellipse(cx+Math.cos(a)*20,cy+Math.sin(a)*12,7,5,a,0,TAU);ctx.fill();}
-      ctx.fillStyle='#7b2818';ctx.beginPath();ctx.ellipse(cx,cy+3,14,8,0,0,TAU);ctx.fill();
-      // çapraz odunlar
-      ctx.strokeStyle='#402718';ctx.lineWidth=8;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(cx-15,cy+8);ctx.lineTo(cx+15,cy-8);ctx.moveTo(cx-15,cy-7);ctx.lineTo(cx+15,cy+9);ctx.stroke();ctx.lineCap='butt';
-      // üç katmanlı hareketli alev
-      ctx.fillStyle='rgba(218,55,18,.92)';ctx.beginPath();ctx.moveTo(cx-13,cy+5);ctx.quadraticCurveTo(cx-18,cy-10,cx-4,cy-31-flick);ctx.quadraticCurveTo(cx+2,cy-20,cx+7,cy-38+flick);ctx.quadraticCurveTo(cx+20,cy-12,cx+12,cy+5);ctx.closePath();ctx.fill();
-      ctx.fillStyle='#ff9f1c';ctx.beginPath();ctx.moveTo(cx-9,cy+5);ctx.quadraticCurveTo(cx-9,cy-9,cx+1,cy-26+flick);ctx.quadraticCurveTo(cx+13,cy-7,cx+8,cy+5);ctx.closePath();ctx.fill();
-      ctx.fillStyle='#ffe17a';ctx.beginPath();ctx.moveTo(cx-4,cy+4);ctx.quadraticCurveTo(cx-5,cy-5,cx+2,cy-16-flick*.4);ctx.quadraticCurveTo(cx+8,cy-4,cx+4,cy+4);ctx.closePath();ctx.fill();
-      // hafif sıcak ışık
-      const glow=ctx.createRadialGradient(cx,cy,2,cx,cy,54);glow.addColorStop(0,'rgba(255,153,45,.20)');glow.addColorStop(1,'rgba(255,100,20,0)');ctx.fillStyle=glow;ctx.fillRect(cx-54,cy-54,108,108);
+      const cx=o.x+o.w/2,cy=o.y+o.h/2;
+      const f1=Math.sin(anim*13)*2.2+Math.sin(anim*21)*1.2, f2=Math.sin(anim*17+1.7)*2;
+      // v105: daha doğal taş çemberi, yanmış odunlar, köz, kıvılcım, duman ve dinamik ışık.
+      ctx.fillStyle='rgba(0,0,0,.34)';ctx.beginPath();ctx.ellipse(cx+4,cy+10,31,18,0,0,TAU);ctx.fill();
+      ctx.fillStyle='rgba(42,20,12,.72)';ctx.beginPath();ctx.ellipse(cx,cy+4,21,12,0,0,TAU);ctx.fill();
+      for(let i=0;i<12;i++){const aa=i*TAU/12,rx=22+Math.sin(i*3.7)*2,ry=13+Math.cos(i*2.1);ctx.fillStyle=i%3===0?'#948a79':i%2?'#625d55':'#797166';ctx.beginPath();ctx.ellipse(cx+Math.cos(aa)*rx,cy+Math.sin(aa)*ry,6.5,4.7,aa+.2,0,TAU);ctx.fill();ctx.strokeStyle='rgba(35,30,26,.55)';ctx.lineWidth=1;ctx.stroke();}
+      // kömürleşmiş üç odun
+      ctx.lineCap='round';ctx.strokeStyle='#2b1b13';ctx.lineWidth=8;ctx.beginPath();ctx.moveTo(cx-16,cy+8);ctx.lineTo(cx+16,cy-8);ctx.moveTo(cx-17,cy-6);ctx.lineTo(cx+16,cy+9);ctx.moveTo(cx-13,cy+11);ctx.lineTo(cx+11,cy+11);ctx.stroke();
+      ctx.strokeStyle='#704126';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(cx-14,cy+6);ctx.lineTo(cx+13,cy-7);ctx.moveTo(cx-14,cy-5);ctx.lineTo(cx+13,cy+8);ctx.stroke();ctx.lineCap='butt';
+      // kızgın közler
+      for(let i=0;i<7;i++){const aa=i*2.4,rrr=4+(i%3)*4;ctx.fillStyle=i%2?'#ff6a18':'#d53b14';ctx.globalAlpha=.55+.35*Math.sin(anim*8+i);ctx.beginPath();ctx.arc(cx+Math.cos(aa)*rrr,cy+5+Math.sin(aa)*4,1.7+(i%2),0,TAU);ctx.fill();}ctx.globalAlpha=1;
+      // alevler
+      ctx.fillStyle='rgba(198,45,14,.94)';ctx.beginPath();ctx.moveTo(cx-14,cy+6);ctx.quadraticCurveTo(cx-19,cy-11,cx-6,cy-29-f1);ctx.quadraticCurveTo(cx-1,cy-21,cx+5,cy-42+f2);ctx.quadraticCurveTo(cx+21,cy-13,cx+13,cy+6);ctx.closePath();ctx.fill();
+      ctx.fillStyle='#ff8b16';ctx.beginPath();ctx.moveTo(cx-10,cy+6);ctx.quadraticCurveTo(cx-11,cy-9,cx,cy-29+f2);ctx.quadraticCurveTo(cx+14,cy-8,cx+9,cy+6);ctx.closePath();ctx.fill();
+      ctx.fillStyle='#ffe08a';ctx.beginPath();ctx.moveTo(cx-5,cy+5);ctx.quadraticCurveTo(cx-5,cy-5,cx+2,cy-18-f1*.35);ctx.quadraticCurveTo(cx+8,cy-4,cx+5,cy+5);ctx.closePath();ctx.fill();
+      // kıvılcımlar + ince duman
+      for(let i=0;i<4;i++){const sy=cy-24-((anim*24+i*17)%42),sx=cx+Math.sin(anim*4+i*2.2)*8;ctx.globalAlpha=Math.max(0,1-(cy-24-sy)/45);ctx.fillStyle='#ffc45a';ctx.beginPath();ctx.arc(sx,sy,1.2,0,TAU);ctx.fill();}ctx.globalAlpha=1;
+      for(let i=0;i<3;i++){const sy=cy-39-((anim*10+i*23)%48),sx=cx+Math.sin(anim*1.2+i)*9;ctx.fillStyle='rgba(110,110,105,.08)';ctx.beginPath();ctx.arc(sx,sy,7+i*2,0,TAU);ctx.fill();}
+      const glow=ctx.createRadialGradient(cx,cy,3,cx,cy,72+f1);glow.addColorStop(0,'rgba(255,166,60,.25)');glow.addColorStop(.45,'rgba(255,105,25,.10)');glow.addColorStop(1,'rgba(255,80,15,0)');ctx.fillStyle=glow;ctx.fillRect(cx-80,cy-80,160,160);
     } else if(o.t==='workbench'){
-      // daha gerçekçi ahşap çalışma tezgâhı
-      ctx.fillStyle='rgba(0,0,0,.28)';ctx.fillRect(o.x+5,o.y+15,o.w,o.h-5);
-      ctx.fillStyle='#4a2d18';ctx.fillRect(o.x+5,o.y+18,9,o.h-8);ctx.fillRect(o.x+o.w-14,o.y+18,9,o.h-8);
-      ctx.fillStyle='#6a4325';ctx.fillRect(o.x+3,o.y+17,o.w-6,10);
-      ctx.fillStyle='#9a6838';ctx.fillRect(o.x-4,o.y+5,o.w+8,14);
-      ctx.fillStyle='#b27a43';ctx.fillRect(o.x-2,o.y+6,o.w+4,4);
-      // mengene
-      ctx.fillStyle='#555d60';ctx.fillRect(o.x+8,o.y+1,17,10);ctx.fillStyle='#7d8588';ctx.fillRect(o.x+11,o.y-3,12,6);
-      ctx.strokeStyle='#31383b';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(o.x+23,o.y+7);ctx.lineTo(o.x+31,o.y+14);ctx.stroke();
-      // çekiç + testere/aletler
-      ctx.strokeStyle='#bfc4c5';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(o.x+39,o.y+3);ctx.lineTo(o.x+51,o.y+17);ctx.stroke();
-      ctx.fillStyle='#43494b';ctx.fillRect(o.x+34,o.y,12,6);
-      ctx.strokeStyle='#80522d';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(o.x+58,o.y+3);ctx.lineTo(o.x+64,o.y+16);ctx.stroke();
-      ctx.fillStyle='#d5d9d8';ctx.beginPath();ctx.moveTo(o.x+55,o.y+2);ctx.lineTo(o.x+67,o.y+1);ctx.lineTo(o.x+63,o.y+6);ctx.closePath();ctx.fill();
-      ctx.fillStyle='#f4ead4';ctx.font='900 12px '+FONT;ctx.textAlign='center';ctx.shadowColor='#000';ctx.shadowBlur=4;ctx.fillText('ÇALIŞMA TEZGÂHI',o.x+o.w/2,o.y-10);ctx.shadowBlur=0;
+      // v105: kalın ahşap tabla, ayaklar, raf, mengene ve gerçek alet detayları.
+      ctx.fillStyle='rgba(0,0,0,.34)';ctx.beginPath();ctx.ellipse(o.x+o.w/2+5,o.y+o.h-1,o.w*.55,12,0,0,TAU);ctx.fill();
+      // sağlam ayaklar ve alt bağlantı kirişi
+      ctx.fillStyle='#422817';ctx.fillRect(o.x+7,o.y+18,10,o.h-5);ctx.fillRect(o.x+o.w-17,o.y+18,10,o.h-5);
+      ctx.fillStyle='#5a361d';ctx.fillRect(o.x+12,o.y+32,o.w-24,7);
+      ctx.strokeStyle='#2d1b11';ctx.lineWidth=2;ctx.strokeRect(o.x+12,o.y+32,o.w-24,7);
+      // alt rafta kutu ve odun parçaları
+      ctx.fillStyle='#6d492b';ctx.fillRect(o.x+21,o.y+29,18,8);ctx.strokeStyle='#342217';ctx.strokeRect(o.x+21,o.y+29,18,8);
+      ctx.strokeStyle='#7d512c';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(o.x+43,o.y+35);ctx.lineTo(o.x+61,o.y+31);ctx.stroke();
+      // kalın, çizgili çalışma tablası
+      ctx.fillStyle='#6d4324';ctx.fillRect(o.x-4,o.y+7,o.w+8,15);
+      ctx.fillStyle='#a56e3b';ctx.fillRect(o.x-5,o.y+3,o.w+10,13);
+      ctx.fillStyle='#bd8248';ctx.fillRect(o.x-3,o.y+4,o.w+6,4);
+      ctx.strokeStyle='#5c371e';ctx.lineWidth=1;for(let xx=o.x+5;xx<o.x+o.w;xx+=15){ctx.beginPath();ctx.moveTo(xx,o.y+4);ctx.lineTo(xx-4,o.y+15);ctx.stroke();}
+      // metal mengene
+      ctx.fillStyle='#444d50';ctx.fillRect(o.x+6,o.y-2,20,11);ctx.fillStyle='#788185';ctx.fillRect(o.x+8,o.y-5,16,6);ctx.fillStyle='#9aa0a1';ctx.fillRect(o.x+9,o.y-4,14,2);
+      ctx.strokeStyle='#303638';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(o.x+25,o.y+4);ctx.lineTo(o.x+33,o.y+10);ctx.stroke();ctx.fillStyle='#697174';ctx.beginPath();ctx.arc(o.x+34,o.y+11,3,0,TAU);ctx.fill();
+      // çekiç
+      ctx.strokeStyle='#7b4a28';ctx.lineWidth=4;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(o.x+38,o.y+4);ctx.lineTo(o.x+49,o.y+16);ctx.stroke();ctx.fillStyle='#4a5052';ctx.fillRect(o.x+34,o.y+1,14,6);
+      // el testeresi
+      ctx.strokeStyle='#8a552d';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(o.x+57,o.y+3);ctx.lineTo(o.x+64,o.y+15);ctx.stroke();ctx.fillStyle='#c7ccca';ctx.beginPath();ctx.moveTo(o.x+52,o.y+3);ctx.lineTo(o.x+68,o.y+2);ctx.lineTo(o.x+64,o.y+9);ctx.closePath();ctx.fill();ctx.strokeStyle='#6b7273';ctx.lineWidth=1;ctx.stroke();
+      // birkaç çivi / metal parça
+      ctx.fillStyle='#c0c5c4';for(let i=0;i<3;i++)ctx.fillRect(o.x+29+i*5,o.y+17-(i%2)*2,4,1.5);
+      ctx.fillStyle='#f4ead4';ctx.font='900 12px '+FONT;ctx.textAlign='center';ctx.shadowColor='#000';ctx.shadowBlur=4;ctx.fillText('ÇALIŞMA TEZGÂHI',o.x+o.w/2,o.y-12);ctx.shadowBlur=0;ctx.lineCap='butt';
     } else {
       const cx = o.x + o.w / 2, cy = o.y + o.h / 2;
       ctx.fillStyle = 'rgba(0,0,0,.3)'; ctx.beginPath(); ctx.arc(cx + 3, cy + 4, 20, 0, TAU); ctx.fill();
@@ -3214,7 +3229,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v104';
+const GAME_VERSION = 'v105';
 
 function drawHUD() {
   if(player&&abandonedCamps.length&&player.hi<0){let cp=null,bd=1e9;for(const q of abandonedCamps){const d=Math.hypot(q.x-player.x,q.y-player.y);if(d<bd){bd=d;cp=q}}if(cp&&bd>190){ctx.save();ctx.textAlign='center';ctx.font='900 11px '+FONT;ctx.fillStyle='#e3aa45';ctx.fillText('🏕 KAMP  '+Math.round(bd)+'m',W/2,82);ctx.restore();}}
