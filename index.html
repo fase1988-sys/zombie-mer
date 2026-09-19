@@ -719,7 +719,7 @@ function makeHouse(c, id, roofs) {
     houses.push(makeHouse(c, houses.length, roofs));
   }
   let t = 0; tries = 0;
-  while (t < 145 && tries++ < 6000) {
+  while (t < 240 && tries++ < 6000) {
     const s = 26, x = rr(90, WORLD - 120), y = rr(90, WORLD - 120);
     const c = { x, y, w: s, h: s, t: 't', sb: true, cr: rr(34, 56), shade: Math.floor(R() * 3) };
     if (onRoad(x - 40, y - 40, s + 80, s + 80, 0)) continue;
@@ -727,17 +727,6 @@ function makeHouse(c, id, roofs) {
     if (houses.some(o => rectsNear(c, o, 70))) continue;
     if (obs.some(o => o.t === 't' && rectsNear(c, o, 50))) continue;
     obs.push(c); t++;
-  }
-  // Ağaçların bir kısmı kaldırıldı; yerlerine toplanabilir taş kaynakları eklendi.
-  let rck=0; tries=0;
-  while(rck<80 && tries++<5000){
-    const s=34,x=rr(90,WORLD-130),y=rr(90,WORLD-130);
-    const c={x,y,w:s,h:s,t:'rock',sb:true,hits:3};
-    if(onRoad(x-24,y-24,s+48,s+48,0))continue;
-    if(distToRect(MID,MID,c)<260)continue;
-    if(houses.some(o=>rectsNear(c,o,60)))continue;
-    if(obs.some(o=>(o.t==='t'||o.t==='rock')&&rectsNear(c,o,38)))continue;
-    obs.push(c);rck++;
   }
   let k = 0; tries = 0;
   while (k < 34 && tries++ < 4000) {
@@ -957,7 +946,7 @@ function levelSpec(n) {
 const BLOCK_COST = 6, BLOCK_HP = 120, DOOR_COST = 10, DOOR_HP = 160, TURRET_HP = 220;
 
 /* Mağaza envanteri */
-const inv = { turret: 0, bomb: 0, medkit: 0, wood: 0, stone: 0 };
+const inv = { turret: 0, bomb: 0, medkit: 0 };
 let up = { wall: 0, turret: 0, hp: 0 };
 let gunUp = Object.fromEntries(GUN_ORDER.map(id => [id, 0]));
 let metaXP=Number(localStorage.getItem('zombieMetaXP')||0), metaLevel=Math.max(1,Math.floor(metaXP/500)+1);
@@ -1007,6 +996,7 @@ const SHOP = [
   { cat: 'Silahlar', items: GUN_ORDER.filter(g => GUNS[g].price > 0).map(g => ({ id: g, gun: g, name: GUNS[g].name, price: GUNS[g].price, desc: GUNS[g].desc })) },
   { cat: 'Savunma', items: [
     { id: 'turret', name: 'Otomatik taret', price: 160, desc: 'Yakınındaki zombilere kendi kendine ateş eder. Envanterden seçip yerleştir; canı bölüm sonunda yenilenir.', count: () => inv.turret },
+    { id: 'wallup', name: 'Bina / duvar geliştirme', price: 220, max: 5, desc: 'Kurulu ve yeni duvar/kapıları güçlendirir. Her seviye +%50 HP; görünüşü de güçlenir.', lvl: () => up.wall },
     { id: 'turretup', name: 'Taret ateş gücü', price: 260, max: 3, desc: 'Taretlerin hasarını %40 artırır.', lvl: () => up.turret }
   ] },
   { cat: 'Sarf malzeme', items: [
@@ -1116,7 +1106,7 @@ function floatText(x, y, text, col) { floats.push({ x, y, text, t: 0.9, col: col
 function slots() {
   const s = [];
   for (const id of GUN_ORDER) if (player.guns.includes(id)) s.push({ k: 'gun', id });
-  s.push({ k: 'hammer' }, { k: 'block' }, { k: 'door' }, { k: 'turret' }, { k: 'bomb' }, { k: 'medkit' });
+  s.push({ k: 'block' }, { k: 'door' }, { k: 'turret' }, { k: 'bomb' }, { k: 'medkit' });
   return s;
 }
 function selectSlot(i) {
@@ -1155,7 +1145,7 @@ window.addEventListener('keydown', e => {
   if (state === 'playing' || state === 'intermission') {
     if (e.code === 'Escape') { openTeamMenu(); return; }
     if (e.code === 'KeyR') startReload();
-    if (e.code === 'KeyE' && nearChest) openChest();
+    if (e.code === 'KeyE') openChest();
     if (/^Digit\d$/.test(e.code)) { const n = parseInt(e.code.slice(5), 10); selectSlot(n === 0 ? 9 : n - 1); }
     if (e.code === 'KeyP') pauseGame();
   } else if (state === 'paused' && e.code === 'KeyP') {
@@ -1275,7 +1265,7 @@ function restoreSnap() {
 
 function newGame() {
   money = 100; score = 0; kills = 0; level = 1;
-  up = { wall: 0, turret: 0, hp: 0 }; inv.wood=0; inv.stone=0; gunUp=Object.fromEntries(GUN_ORDER.map(id=>[id,0])); perks={damage:0,speed:0,crit:0,lifesteal:0,mag:0,fire:0,fortify:0}; rareLoot=[]; inv.turret = 0; inv.bomb = 0; inv.medkit = 1;
+  up = { wall: 0, turret: 0, hp: 0 }; gunUp=Object.fromEntries(GUN_ORDER.map(id=>[id,0])); perks={damage:0,speed:0,crit:0,lifesteal:0,mag:0,fire:0,fortify:0}; rareLoot=[]; inv.turret = 0; inv.bomb = 0; inv.medkit = 1;
   player = newPlayer(); built = []; decals = []; rebuildGrid();
   beginLevel();
 }
@@ -1338,9 +1328,15 @@ function levelClear() {
   let bonus = 40 + level * 15; if(runEvent&&runEvent.id==='horde')bonus+=100;if(runEvent&&runEvent.id==='supply')bonus+=150; money += bonus; levelMoney += bonus;
   for (const o of built) o.hp = o.max;
   player.hp = Math.min(player.max, player.hp + 30);
-  // Bölüm biter bitmez oyuncuyu durdurmadan doğrudan hazırlık moduna geçir.
-  startIntermission();
-  toast('Bölüm '+level+' tamamlandı · +$'+bonus+' · Hazırlık zamanı');
+  const note = built.length ? `<div class="note">Bölüm ödülü: <b>$${bonus}</b>. Savunmalar onarıldı. Hazırlık sırasında haritada dolaşıp duvar/kapı/taret kurabilirsin.</div>`
+                            : `<div class="note">Bölüm ödülü: <b>$${bonus}</b>. Hazırlık sırasında üssünü kurabilirsin.</div>`;
+  showOverlay({
+    title: 'Bölüm ' + level + ' temizlendi',
+    text: 'Sonraki bölüm otomatik başlamaz. İstediğin kadar hazırlan, sonra sen başlat.',
+    extra: `<div class="stats"><div><b>${levelKills}</b>Bu bölümde öldürülen</div><div><b>$${money}</b>Paran</div><div><b>${score}</b>Puan</div></div>${note}`,
+    btn: 'Hazırlık moduna geç', onClick: startIntermission,
+    btn2: 'Mağaza', keep2: true, onClick2: openShop
+  });
 }
 function gameOver() {
   state = 'over';
@@ -1396,6 +1392,10 @@ function buy(it) {
   else if (it.id === 'bomb') inv.bomb++;
   else if (it.id === 'bomb5') inv.bomb += 5;
   else if (it.id === 'medkit') inv.medkit++;
+  else if (it.id === 'wallup') {
+    up.wall++;
+    for (const o of built) if (o.t === 'block'||o.t==='door') { const base=o.t==='door'?DOOR_HP:BLOCK_HP,nm=Math.round(base*(1+0.5*up.wall)*perkStats().fortify); o.hp += nm-o.max; o.max=nm; }
+  }
   else if (it.id === 'turretup') up.turret++;
   else if (it.id === 'maxhp') { up.hp++; player.max += 25; player.hp += 25; }
   renderShop();
@@ -1483,50 +1483,15 @@ function canPlace(gx, gy) {
   for (const z of zombies) if (distToRect(z.x, z.y, rect) < z.r) return false;
   return true;
 }
-let gatherHold={target:null,t:0};
-function nearestResource(maxD=78){
-  let best=null,bd=maxD;
-  for(const o of obs){
-    if(o.t!=='t'&&o.t!=='rock')continue;
-    const d=Math.hypot(o.x+o.w/2-player.x,o.y+o.h/2-player.y);
-    if(d<bd){bd=d;best=o;}
-  }
-  return best;
-}
-function harvestResource(o){
-  if(!o)return;
-  if(o.t==='rock'){inv.stone++;o.hits=(o.hits||3)-1;floatText(o.x,o.y,'+1 taş','#c7c7c7');}
-  else {inv.wood++;o.hits=(o.hits||3)-1;floatText(o.x,o.y,'+1 odun','#c9995b');}
-  sfx('break');
-  if(o.hits<=0){const i=obs.indexOf(o);if(i>=0)obs.splice(i,1);rebuildGrid();}
-}
-function hammerHit(){
-  const wx=mouse.x+cam.x,wy=mouse.y+cam.y;
-  let wall=null,bd=85;
-  for(const o of built){
-    if(o.t!=='block'&&o.t!=='door')continue;
-    const d=Math.hypot(o.x+o.w/2-player.x,o.y+o.h/2-player.y);
-    if(d<bd&&wx>=o.x-20&&wx<=o.x+o.w+20&&wy>=o.y-20&&wy<=o.y+o.h+20){bd=d;wall=o;}
-  }
-  if(!wall){toast('Çekiç: geliştirmek için duvara yaklaş');return;}
-  const lv=wall.wallLevel||1;
-  if(lv>=3){toast('Bu duvar maksimum seviye');return;}
-  const need=lv===1?{wood:0,stone:5,name:'Taş'}:{wood:8,stone:10,name:'Güçlendirilmiş taş'};
-  if(inv.wood<need.wood||inv.stone<need.stone){toast('Gerekli: '+need.wood+' odun · '+need.stone+' taş');return;}
-  inv.wood-=need.wood;inv.stone-=need.stone;wall.wallLevel=lv+1;
-  const base=wall.t==='door'?DOOR_HP:BLOCK_HP,mult=wall.wallLevel===2?2.1:3.4;
-  wall.max=Math.round(base*mult*perkStats().fortify);wall.hp=wall.max;
-  sfx('place');floatText(wall.x+20,wall.y,'DUVAR Lv.'+wall.wallLevel,'#e6d19a');
-}
 function tryPlace(kind) {
   if (player.hi >= 0) { toast('Evlerin içine üs kurulamaz'); return false; }
   const gx = Math.floor((mouse.x + cam.x) / 40), gy = Math.floor((mouse.y + cam.y) / 40);
   if (!canPlace(gx, gy)) return false;
   if (kind === 'block') {
-    if (inv.wood < 5) { toast('Duvar için 5 odun gerekli'); return false; }
-    inv.wood -= 5;
-    const hp = Math.round(BLOCK_HP * perkStats().fortify);
-    built.push({ t: 'block', x: gx * 40, y: gy * 40, w: 40, h: 40, hp, max: hp, wallLevel:1, sb: false });
+    if (money < BLOCK_COST) { toast('Yetersiz para'); return false; }
+    money -= BLOCK_COST;
+    const hp = Math.round(BLOCK_HP * (1 + 0.5 * up.wall) * perkStats().fortify);
+    built.push({ t: 'block', x: gx * 40, y: gy * 40, w: 40, h: 40, hp, max: hp, sb: false });
   } else if (kind === 'door') {
     if (money < DOOR_COST) { toast('Yetersiz para'); return false; }
     money -= DOOR_COST;
@@ -1881,9 +1846,7 @@ function update(dt) {
     } else if (p.ammo[sl.id] <= 0) startReload();
     const fire = w.auto ? want : mouse.buf > 0;
     if (fire && p.reload <= 0 && p.cd <= 0 && p.ammo[sl.id] > 0) { shoot(sl.id); mouse.buf = 0; }
-  } else if (sl.k==='hammer' && want && p.cd<=0) {
-    hammerHit(); p.cd=.45; mouse.buf=0;
-
+  } else if (want && p.cd <= 0) {
     if (sl.k === 'block') { if (tryPlace('block')) p.cd = 0.07; else if (mouse.buf > 0) mouse.buf = 0; }
     else if (sl.k === 'door') { if (tryPlace('door')) p.cd = 0.12; else if (mouse.buf > 0) mouse.buf = 0; }
     else if (sl.k === 'turret') {
@@ -1907,14 +1870,6 @@ function update(dt) {
       }
     }
   }
-
-  // Kaynak toplama: ağaca/taşa yaklaş ve E'ye 5 saniye basılı tut.
-  const res=nearestResource();
-  if(keys.KeyE && res && !nearChest){
-    if(gatherHold.target!==res){gatherHold.target=res;gatherHold.t=0;}
-    gatherHold.t+=dt;
-    if(gatherHold.t>=5){harvestResource(res);gatherHold.target=null;gatherHold.t=0;}
-  }else if(!keys.KeyE){gatherHold.target=null;gatherHold.t=0;}
 
   // Sandık yakınlığı
   nearChest = null;
@@ -2212,9 +2167,7 @@ function drawBuilt() {
     const f = clamp(o.hp / o.max, 0, 1);
     if (o.t === 'block') {
       ctx.fillStyle = 'rgba(0,0,0,.3)'; ctx.fillRect(o.x + 4, o.y + 5, o.w, o.h);
-      const wl=o.wallLevel||1;
-      ctx.fillStyle = wl>=3 ? (f>.5?'#59636a':'#41494e') : wl===2 ? (f>.5?'#7d7f78':'#60615c') : (f>.5?'#a9773f':f>.25?'#8f6234':'#74502a'); ctx.fillRect(o.x,o.y,o.w,o.h);
-      if(wl>=2){ctx.strokeStyle=wl>=3?'#aeb8bd':'#aaa89e';ctx.lineWidth=2;for(let yy=8;yy<40;yy+=12){ctx.beginPath();ctx.moveTo(o.x,o.y+yy);ctx.lineTo(o.x+o.w,o.y+yy);ctx.stroke();}}
+      ctx.fillStyle = f > .5 ? '#a9773f' : f > .25 ? '#8f6234' : '#74502a'; ctx.fillRect(o.x, o.y, o.w, o.h);
       ctx.strokeStyle = '#5a3d1e'; ctx.lineWidth = 2;
       for (let i = 1; i < 4; i++) { ctx.beginPath(); ctx.moveTo(o.x, o.y + i * 10); ctx.lineTo(o.x + o.w, o.y + i * 10); ctx.stroke(); }
       ctx.strokeRect(o.x + 1, o.y + 1, o.w - 2, o.h - 2);
@@ -2247,15 +2200,6 @@ function drawBuilt() {
     ctx.fillStyle = '#ffffff'; ctx.shadowColor = '#000'; ctx.shadowBlur = 3;
     ctx.fillText(Math.max(0, Math.ceil(o.hp)) + '/' + o.max, o.x + o.w / 2, by - 1);
     ctx.shadowBlur = 0; ctx.textBaseline = 'alphabetic';
-  }
-}
-function drawRocks(){
-  for(const o of obs){
-    if(o.t!=='rock')continue;
-    const cx=o.x+o.w/2,cy=o.y+o.h/2;if(!vis(o.x-10,o.y-10,o.w+20,o.h+20))continue;
-    ctx.fillStyle='rgba(0,0,0,.28)';ctx.beginPath();ctx.ellipse(cx+5,cy+8,24,15,0,0,TAU);ctx.fill();
-    ctx.fillStyle='#747a7d';ctx.beginPath();ctx.moveTo(o.x+2,o.y+25);ctx.lineTo(o.x+8,o.y+7);ctx.lineTo(o.x+25,o.y+1);ctx.lineTo(o.x+34,o.y+14);ctx.lineTo(o.x+29,o.y+32);ctx.lineTo(o.x+9,o.y+34);ctx.closePath();ctx.fill();
-    ctx.strokeStyle='#a4aaac';ctx.lineWidth=2;ctx.stroke();
   }
 }
 function drawTrees() {
@@ -2455,9 +2399,6 @@ function drawItemIcon(sl, cx, cy, s) {
     else if(id==='rifle'){ctx.fillStyle='#485157';ctx.fillRect(-s*.31,-s*.11,s*.53,s*.15);ctx.fillRect(-s*.05,s*.02,s*.11,s*.25);ctx.fillStyle='#c7cdd0';ctx.fillRect(s*.18,-s*.08,s*.25,s*.05);ctx.fillStyle='#7a512d';ctx.beginPath();ctx.moveTo(-s*.30,-s*.05);ctx.lineTo(-s*.46,s*.10);ctx.lineTo(-s*.24,s*.10);ctx.closePath();ctx.fill();}
     else if(id==='sniper'){ctx.fillStyle='#59656b';ctx.fillRect(-s*.43,-s*.06,s*.72,s*.09);ctx.fillStyle='#c7cdd0';ctx.fillRect(s*.25,-s*.04,s*.25,s*.04);ctx.fillStyle='#73a7c7';ctx.fillRect(-s*.10,-s*.21,s*.30,s*.09);ctx.beginPath();ctx.arc(-s*.02,-s*.165,s*.07,0,TAU);ctx.fill();ctx.fillStyle='#4d5559';ctx.fillRect(-s*.12,s*.01,s*.09,s*.22);}
     else {ctx.fillStyle='#444d52';ctx.fillRect(-s*.28,-s*.12,s*.34,s*.22);ctx.beginPath();ctx.arc(-s*.18,s*.13,s*.14,0,TAU);ctx.fill();ctx.fillStyle='#c7cdd0';for(let k=-1;k<=1;k++)ctx.fillRect(s*.02,k*s*.065,s*.43,s*.03);ctx.fillStyle='#596166';ctx.fillRect(-s*.02,s*.05,s*.10,s*.23);}
-  } else if (sl.k === 'hammer') {
-    ctx.strokeStyle='#8b5a2b';ctx.lineWidth=Math.max(4,s*.09);ctx.beginPath();ctx.moveTo(-s*.18,s*.28);ctx.lineTo(s*.12,-s*.12);ctx.stroke();
-    ctx.fillStyle='#aeb4b7';ctx.fillRect(-s*.08,-s*.27,s*.42,s*.16);ctx.strokeStyle='#555';ctx.lineWidth=2;ctx.strokeRect(-s*.08,-s*.27,s*.42,s*.16);
   } else if (sl.k === 'block') {
     ctx.fillStyle = '#a9773f'; ctx.fillRect(-s * .3, -s * .3, s * .6, s * .6);
     ctx.strokeStyle = '#5a3d1e'; ctx.lineWidth = 2; ctx.strokeRect(-s * .3, -s * .3, s * .6, s * .6);
@@ -2490,7 +2431,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v26';
+const GAME_VERSION = 'v24';
 
 function drawHUD() {
   const p = player, L = spec || levelSpec(1), narrow = W < 760;
@@ -2514,9 +2455,6 @@ function drawHUD() {
   bar(20, 58, 230, 6, p.stam / 100, p.tired ? '#8a6a3a' : '#5aa0d6');
   ctx.fillStyle = '#f0b429'; ctx.font = '800 22px ' + FONT;
   ctx.fillText('$' + money, 20, 92);
-  ctx.font='700 13px '+FONT;ctx.fillStyle='#c9995b';ctx.fillText('Odun '+inv.wood,20,132);
-  ctx.fillStyle='#bfc4c6';ctx.fillText('Taş '+inv.stone,20,150);
-  if(gatherHold.target&&keys.KeyE){const gf=clamp(gatherHold.t/5,0,1);ctx.fillStyle='#ece6d6';ctx.fillText('Toplanıyor... '+Math.ceil(gatherHold.t)+' / 5 sn',20,172);bar(20,178,180,7,gf,'#d0b36b');}
 
   // Bölüm bilgisi
   ctx.textAlign = 'center';
@@ -2677,7 +2615,7 @@ function draw() {
   } else {
     ctx.save();
     ctx.translate(-cam.x + sx, -cam.y + sy);
-    drawGround(); drawDecals(); drawDrops(); drawCrates(); drawBuilt(); drawRocks(); drawTrees();
+    drawGround(); drawDecals(); drawDrops(); drawCrates(); drawBuilt(); drawTrees();
     for (const h of houses) drawRoof(h);
     for (const z of zombies) if (z.hi < 0) drawZombie(z);
     drawBombs(); drawPlayer(); drawPeers(); drawBulletsParts(); drawGhost();
