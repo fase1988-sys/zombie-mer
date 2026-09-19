@@ -195,7 +195,7 @@ div:has(> #legacyOnlineMarker){display:none!important}
 
 <div id="menuJumpScare" aria-hidden="true"><div class="jsFace"><div class="jsCrack"></div><div class="jsMouth"></div></div></div>
 
-<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v90</b></div></div></div>
+<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v91</b></div></div></div>
 
 <div id="onlinePanel">
   <b><span id="legacyOnlineMarker">ONLINE CO-OP v8 · CLEAN LOBBY</span></b>
@@ -286,7 +286,7 @@ function applyWorld(w){
   if(!w || net.host) return;
   level=w.level; score=w.score; kills=w.kills; money=w.money;
   queue=Array.isArray(w.queue)?w.queue:[];
-  if(Array.isArray(w.zombies)) zombies=w.zombies.map(q=>Object.assign(makeZombie(q.type,q.x,q.y),q));
+  if(Array.isArray(w.zombies)){const next=[];for(let i=0;i<w.zombies.length;i++){const q=w.zombies[i],old=zombies[i];if(old&&old.type===q.type){Object.assign(old,q);next.push(old)}else next.push(Object.assign(makeZombie(q.type,q.x,q.y),q))}zombies=next;}
   if(Array.isArray(w.built)){ built=w.built.map(o=>({...o})); rebuildGrid(); }
   if(Array.isArray(w.trees)){
     const live=new Map(w.trees.map(t=>[String(t.id),t]));
@@ -405,6 +405,7 @@ async function connectRoom(code, asHost){
     }
   });
   ch.on('broadcast',{event:'world'},({payload})=>applyWorld(payload));
+  ch.on('broadcast',{event:'world_request'},()=>{if(net.host&&net.channel)net.channel.send({type:'broadcast',event:'world',payload:worldSnapshot()});});
   ch.on('broadcast',{event:'shot'},({payload})=>{
     if(!net.host || !payload) return;
     // Misafir atışını host dünyasında gerçek mermiye çevir.
@@ -444,7 +445,7 @@ async function connectRoom(code, asHost){
   ch.on('broadcast',{event:'game_start'},({payload})=>{
     if(!payload||net.host)return;
     const mm=document.getElementById('mainGameMenu');if(mm)mm.classList.add('hidden');
-    if(state==='menu'){newGame();}
+    if(state==='menu'){newGame();zombies=[];queue=[];state='playing';hideOverlay();if(net.channel)net.channel.send({type:'broadcast',event:'world_request',payload:{from:net.id}});}
   });
   ch.on('broadcast',{event:'level_start'},({payload})=>{
     if(!payload || net.host) return;
@@ -2102,16 +2103,10 @@ function killZombie(z) {
 }
 
 /* Hedef seçimi: oyuncu bir evdeyse kapıdan girmek, zombi evdeyse kapıdan çıkmak gerekir */
-function zombieTarget(z) {
-  const p=player,pb=p.hi,zb=z.hi;
-  if(zb>=0&&zb!==pb&&houses[zb]){
-    const s=houseDoorSides(houses[zb],z.r);
-    return {x:s.outsideX,y:s.outsideY};
-  }
-  if(pb>=0&&zb!==pb&&houses[pb]){
-    const s=houseDoorSides(houses[pb],z.r);
-    return {x:s.insideX,y:s.insideY};
-  }
+function zombieTarget(z,target=player) {
+  const p=target||player,pb=Number.isFinite(p&&p.hi)?p.hi:houseAt(p.x,p.y),zb=z.hi;
+  if(zb>=0&&zb!==pb&&houses[zb]){const s=houseDoorSides(houses[zb],z.r);return {x:s.outsideX,y:s.outsideY};}
+  if(pb>=0&&zb!==pb&&houses[pb]){const s=houseDoorSides(houses[pb],z.r);return {x:s.insideX,y:s.insideY};}
   return {x:p.x,y:p.y};
 }
 function bossSlam(z) {
@@ -2314,9 +2309,8 @@ function update(dt) {
     z.flash -= dt; z.atk -= dt;
     if(ZT[z.type].ranged&&d>150&&d<520&&z.atk<=0){if(victim.local)hurtPlayer(z.dmg*.7);z.atk=2.2;floatText(z.x,z.y-z.r,'TÜKÜRÜK','#82b96b');}
     if(ZT[z.type].poison&&d<z.r+victim.r+8&&z.atk<=0&&victim.local){hurtPlayer(z.dmg*1.25);z.atk=1.2;}
-    const realPlayer=player;
-    if(!victim.local) player={...realPlayer,x:victim.x,y:victim.y,hi:victim.hi,hp:victim.hp,r:victim.r};
-    const tgt = zombieTarget(z);
+    // v91: hedef oyuncu doğrudan kullanılır; global player değiştirilmez.
+    const tgt = zombieTarget(z,victim);
     let ang = Math.atan2(tgt.y - z.y, tgt.x - z.x);
     const targetHouse=victim.hi>=0?houses[victim.hi]:null;
     const exitHouse=z.hi>=0&&z.hi!==victim.hi?houses[z.hi]:null;
@@ -2429,7 +2423,7 @@ function update(dt) {
         net.channel.send({type:'broadcast',event:'player_damage',payload:{target:victim.id,damage:z.dmg}});
       z.atk = 0.85;
     }
-    player=realPlayer;
+
   }
   for (let i = 0; i < zombies.length; i++) {
     const a = zombies[i]; if (a.dead) continue;
@@ -3101,7 +3095,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v90';
+const GAME_VERSION = 'v91';
 
 function drawHUD() {
   if(player&&abandonedCamps.length&&player.hi<0){let cp=null,bd=1e9;for(const q of abandonedCamps){const d=Math.hypot(q.x-player.x,q.y-player.y);if(d<bd){bd=d;cp=q}}if(cp&&bd>190){ctx.save();ctx.textAlign='center';ctx.font='900 11px '+FONT;ctx.fillStyle='#e3aa45';ctx.fillText('🏕 KAMP  '+Math.round(bd)+'m',W/2,82);ctx.restore();}}
