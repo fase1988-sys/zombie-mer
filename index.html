@@ -1487,6 +1487,19 @@ let player = null, zombies = [], bullets = [], drops = [], decals = [], parts = 
 let spawnT = 0, banner = null, shake = 0, anim = 0, last = performance.now(), nearChest = null;
 let dayPhase='night', prepLeft=0, duskFade=0, dawnFade=0;
 const cam = { x: 0, y: 0 };
+let demo3D=false;
+// v148: Deneysel 3D hissi. Gerçek WebGL dönüşümüne geçmeden mevcut oyunu koruyan,
+// açılı perspektif/zoom prototipi. V ile aç/kapat.
+function apply3DDemoTransform(){
+  if(!demo3D||!player)return;
+  const cx=W/2,cy=H/2;
+  // Oyuncuyu ekranın altına yaklaştır, dünyayı büyütüp dikey sıkıştır:
+  // izometrik/omuz kamerasına yakın bir derinlik hissi verir.
+  ctx.translate(cx,cy+H*.13);
+  ctx.scale(1.48,1.02);
+  ctx.translate(-cx,-cy);
+}
+
 let uiRects = { slots: [], shop: null, chest: null };
 
 function toast(text) {
@@ -1592,6 +1605,7 @@ window.addEventListener('keydown', e => {
   if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space', 'Tab'].includes(e.code)) e.preventDefault();
   const rep = e.repeat; keys[e.code] = true; if (rep) return;
   if (e.code === 'KeyM') muted = !muted;
+  if (e.code === 'KeyV' && (state === 'playing' || state === 'intermission')) { demo3D=!demo3D; toast(demo3D?'3D DENEME AÇIK · V ile kapat':'3D DENEME KAPALI'); }
   if (e.code === 'Tab') { if (state === 'shop') closeShop(); else openShop(); return; }
   if (state === 'shop') { if (e.code === 'Escape') closeShop(); return; }
   if(state==='craft'){
@@ -3634,6 +3648,7 @@ function drawItemIcon(sl, cx, cy, s) {
 const GAME_VERSION = 'v144';
 
 function drawHUD() {
+  if(demo3D){ctx.save();ctx.textAlign='center';ctx.font='900 12px '+FONT;ctx.fillStyle='#f0b429';ctx.fillText('3D DENEME · V İLE KAPAT',W/2,H-38);ctx.restore();}
   if(player&&abandonedCamps.length&&player.hi<0){let cp=null,bd=1e9;for(const q of abandonedCamps){const d=Math.hypot(q.x-player.x,q.y-player.y);if(d<bd){bd=d;cp=q}}if(cp&&bd>190){ctx.save();ctx.textAlign='center';ctx.font='900 11px '+FONT;ctx.fillStyle='#e3aa45';ctx.fillText('🏕 KAMP  '+Math.round(bd)+'m',W/2,82);ctx.restore();}}
   const p = player, L = spec || levelSpec(1), narrow = W < 760;
   uiRects = { slots: [], shop: null, chest: null };
@@ -3821,7 +3836,7 @@ function draw() {
 
   if(tentInterior){
     ctx.fillStyle='#050604';ctx.fillRect(0,0,W,H);
-    ctx.save();ctx.translate(-cam.x+sx,-cam.y+sy);
+    ctx.save();apply3DDemoTransform();ctx.translate(-cam.x+sx,-cam.y+sy);
     ctx.fillStyle='#24261f';ctx.beginPath();ctx.ellipse(tentInterior.tent.x,tentInterior.tent.y,72,58,0,0,TAU);ctx.fill();
     ctx.strokeStyle='#77715c';ctx.lineWidth=7;ctx.beginPath();ctx.ellipse(tentInterior.tent.x,tentInterior.tent.y,70,56,0,0,TAU);ctx.stroke();
     drawTentInterior(tentInterior.tent);drawPlayer();drawBulletsParts();ctx.restore();
@@ -3830,6 +3845,7 @@ function draw() {
     // Evin içindeyken yalnızca evin içi görünür
     ctx.fillStyle = '#040505'; ctx.fillRect(0, 0, W, H);
     ctx.save();
+    apply3DDemoTransform();
     ctx.translate(-cam.x + sx, -cam.y + sy);
     ctx.beginPath(); ctx.rect(inside.x, inside.y, inside.w, inside.h); ctx.clip();
     drawInteriorScene(inside);
@@ -3842,6 +3858,7 @@ function draw() {
     ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
   } else {
     ctx.save();
+    apply3DDemoTransform();
     ctx.translate(-cam.x + sx, -cam.y + sy);
     drawGround(); drawAbandonedCamps(); drawDecals(); drawDrops(); drawCrates(); drawBaseDangerCircle(); drawBuilt(); drawPlantedSeeds(); drawTrees(); drawTreeFalls();
     for (const h of houses) drawRoof(h);
@@ -4314,6 +4331,7 @@ window.addEventListener('keydown', e => {
   if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space', 'Tab'].includes(e.code)) e.preventDefault();
   const rep = e.repeat; keys[e.code] = true; if (rep) return;
   if (e.code === 'KeyM') muted = !muted;
+  if (e.code === 'KeyV' && (state === 'playing' || state === 'intermission')) { demo3D=!demo3D; toast(demo3D?'3D DENEME AÇIK · V ile kapat':'3D DENEME KAPALI'); }
   if (e.code === 'Tab') { if (state === 'shop') closeShop(); else openShop(); return; }
   if (state === 'shop') { if (e.code === 'Escape') closeShop(); return; }
   if(state==='craft'){
@@ -6516,7 +6534,7 @@ function draw() {
 
   if(tentInterior){
     ctx.fillStyle='#050604';ctx.fillRect(0,0,W,H);
-    ctx.save();ctx.translate(-cam.x+sx,-cam.y+sy);
+    ctx.save();apply3DDemoTransform();ctx.translate(-cam.x+sx,-cam.y+sy);
     ctx.fillStyle='#24261f';ctx.beginPath();ctx.ellipse(tentInterior.tent.x,tentInterior.tent.y,72,58,0,0,TAU);ctx.fill();
     ctx.strokeStyle='#77715c';ctx.lineWidth=7;ctx.beginPath();ctx.ellipse(tentInterior.tent.x,tentInterior.tent.y,70,56,0,0,TAU);ctx.stroke();
     drawTentInterior(tentInterior.tent);drawPlayer();drawBulletsParts();ctx.restore();
@@ -6525,6 +6543,7 @@ function draw() {
     // Evin içindeyken yalnızca evin içi görünür
     ctx.fillStyle = '#040505'; ctx.fillRect(0, 0, W, H);
     ctx.save();
+    apply3DDemoTransform();
     ctx.translate(-cam.x + sx, -cam.y + sy);
     ctx.beginPath(); ctx.rect(inside.x, inside.y, inside.w, inside.h); ctx.clip();
     drawInteriorScene(inside);
@@ -6537,6 +6556,7 @@ function draw() {
     ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
   } else {
     ctx.save();
+    apply3DDemoTransform();
     ctx.translate(-cam.x + sx, -cam.y + sy);
     drawGround(); drawAbandonedCamps(); drawDecals(); drawDrops(); drawCrates(); drawBaseDangerCircle(); drawBuilt(); drawPlantedSeeds(); drawTrees(); drawTreeFalls();
     for (const h of houses) drawRoof(h);
@@ -7004,6 +7024,7 @@ window.addEventListener('keydown', e => {
   if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space', 'Tab'].includes(e.code)) e.preventDefault();
   const rep = e.repeat; keys[e.code] = true; if (rep) return;
   if (e.code === 'KeyM') muted = !muted;
+  if (e.code === 'KeyV' && (state === 'playing' || state === 'intermission')) { demo3D=!demo3D; toast(demo3D?'3D DENEME AÇIK · V ile kapat':'3D DENEME KAPALI'); }
   if (e.code === 'Tab') { if (state === 'shop') closeShop(); else openShop(); return; }
   if (state === 'shop') { if (e.code === 'Escape') closeShop(); return; }
   if(state==='craft'){
@@ -9206,7 +9227,7 @@ function draw() {
 
   if(tentInterior){
     ctx.fillStyle='#050604';ctx.fillRect(0,0,W,H);
-    ctx.save();ctx.translate(-cam.x+sx,-cam.y+sy);
+    ctx.save();apply3DDemoTransform();ctx.translate(-cam.x+sx,-cam.y+sy);
     ctx.fillStyle='#24261f';ctx.beginPath();ctx.ellipse(tentInterior.tent.x,tentInterior.tent.y,72,58,0,0,TAU);ctx.fill();
     ctx.strokeStyle='#77715c';ctx.lineWidth=7;ctx.beginPath();ctx.ellipse(tentInterior.tent.x,tentInterior.tent.y,70,56,0,0,TAU);ctx.stroke();
     drawTentInterior(tentInterior.tent);drawPlayer();drawBulletsParts();ctx.restore();
@@ -9215,6 +9236,7 @@ function draw() {
     // Evin içindeyken yalnızca evin içi görünür
     ctx.fillStyle = '#040505'; ctx.fillRect(0, 0, W, H);
     ctx.save();
+    apply3DDemoTransform();
     ctx.translate(-cam.x + sx, -cam.y + sy);
     ctx.beginPath(); ctx.rect(inside.x, inside.y, inside.w, inside.h); ctx.clip();
     drawInteriorScene(inside);
@@ -9227,6 +9249,7 @@ function draw() {
     ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
   } else {
     ctx.save();
+    apply3DDemoTransform();
     ctx.translate(-cam.x + sx, -cam.y + sy);
     drawGround(); drawAbandonedCamps(); drawDecals(); drawDrops(); drawCrates(); drawBaseDangerCircle(); drawBuilt(); drawPlantedSeeds(); drawTrees(); drawTreeFalls();
     for (const h of houses) drawRoof(h);
