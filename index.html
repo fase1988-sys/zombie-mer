@@ -48,8 +48,20 @@ pbox(.19,.12,.62,0x24282b,0,.08,-.08);pbox(.17,.075,.72,0x111416,0,.155,-.12);pb
 pbox(.025,.045,.035,0x090a0b,0,.235,-.38);pbox(.055,.035,.035,0x090a0b,0,.225,.17);
 const guard=new THREE.Mesh(new THREE.TorusGeometry(.07,.014,8,18,Math.PI*1.45),vmMat(0x111315,.5,.35));guard.rotation.set(Math.PI/2,0,.18);guard.position.set(0,-.035,-.02);guard.renderOrder=22;pistol.add(guard);
 const skin=vmMat(0xb67c58,.05,.8),glove=vmMat(0x17191a,.05,.9);
-function hand(x,y,z,side){const g=new THREE.Group();const palm=new THREE.Mesh(new THREE.BoxGeometry(.17,.18,.20),glove);palm.renderOrder=21;g.add(palm);const wrist=new THREE.Mesh(new THREE.CylinderGeometry(.085,.105,.28,10),glove);wrist.rotation.x=Math.PI/2;wrist.position.z=.18;wrist.renderOrder=21;g.add(wrist);g.position.set(x,y,z);g.rotation.set(.15,side*.18,side*.12);viewModel.add(g);return g}
-const rightHand=hand(.06,-.12,.16,1),leftHand=hand(-.08,-.10,-.02,-1);
+function hand(x,y,z,side){
+ const g=new THREE.Group();
+ const palm=new THREE.Mesh(new THREE.BoxGeometry(.17,.16,.18),glove);palm.renderOrder=21;g.add(palm);
+ const wrist=new THREE.Mesh(new THREE.CylinderGeometry(.075,.095,.26,12),glove);wrist.rotation.x=Math.PI/2;wrist.position.z=.18;wrist.renderOrder=21;g.add(wrist);
+ // Five articulated-looking fingers. Right hand wraps the pistol grip; left hand supports it.
+ const fingerMat=glove;
+ const fingerLengths=[.105,.12,.115,.105];
+ for(let i=0;i<4;i++){const fg=new THREE.Group();const f1=new THREE.Mesh(new THREE.CapsuleGeometry(.018,fingerLengths[i],5,8),fingerMat);f1.rotation.x=Math.PI/2;f1.renderOrder=23;fg.add(f1);const f2=new THREE.Mesh(new THREE.CapsuleGeometry(.017,.065,5,8),fingerMat);f2.position.set(0,-.025,-.075);f2.rotation.x=Math.PI/3;f2.renderOrder=23;fg.add(f2);fg.position.set((i-1.5)*.038,.035,-.105);fg.rotation.z=side*(i-1.5)*.035;g.add(fg)}
+ const thumb=new THREE.Mesh(new THREE.CapsuleGeometry(.022,.105,5,8),fingerMat);thumb.position.set(side*.095,.015,-.035);thumb.rotation.set(Math.PI/2,0,side*.65);thumb.renderOrder=24;g.add(thumb);
+ g.position.set(x,y,z);g.rotation.set(.15,side*.18,side*.12);viewModel.add(g);return g
+}
+const rightHand=hand(.055,-.115,.145,1),leftHand=hand(-.075,-.095,-.015,-1);
+// Pose both hands around the pistol instead of below it.
+rightHand.rotation.set(.08,-.08,.05);leftHand.rotation.set(.16,.20,-.14);
 const muzzleFlash=new THREE.PointLight(0xffb34d,0,2);muzzleFlash.position.set(0,.13,-.52);pistol.add(muzzleFlash);
 const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;host.appendChild(renderer.domElement);
 scene.add(new THREE.HemisphereLight(0xb7c9b4,0x28301e,1.55));const moon=new THREE.DirectionalLight(0xdbe5ff,2.5);moon.position.set(8,18,6);moon.castShadow=true;scene.add(moon);
