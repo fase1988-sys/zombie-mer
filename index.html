@@ -181,7 +181,7 @@ div:has(> #legacyOnlineMarker){display:none!important}
 </div><div class="adminFooter"><span>● ADMIN ACCESS</span><span>v48 CONTROL CONSOLE</span></div></div></div></div>
 
 
-<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v52</b></div></div></div>
+<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v53</b></div></div></div>
 
 <div id="onlinePanel">
   <b><span id="legacyOnlineMarker">ONLINE CO-OP v8 · CLEAN LOBBY</span></b>
@@ -813,8 +813,21 @@ function makeHouse(c, id, roofs) {
   // Terk edilmiş kamplar: haritada keşfedilebilen küçük survivor alanları.
   const campSpots=[[520,520],[WORLD-650,610],[650,WORLD-650],[WORLD-620,WORLD-620],[MID+520,MID-610],[MID-650,MID+520]];
   for(let i=0;i<campSpots.length;i++){
-    const [x,y]=campSpots[i], tents=2+(i%3);
-    abandonedCamps.push({id:i,x,y,r:115,tents,fire:i%2===0,medical:i===2||i===5,looted:false});
+    const base=campSpots[i],rad=145;let found=null;
+    for(let ring=0;ring<9&&!found;ring++)for(let step=0;step<16&&!found;step++){
+      const a=step*TAU/16,off=ring*90,x=clamp(base[0]+Math.cos(a)*off,rad+40,WORLD-rad-40),y=clamp(base[1]+Math.sin(a)*off,rad+40,WORLD-rad-40);
+      const box={x:x-rad,y:y-rad,w:rad*2,h:rad*2};
+      if(onRoad(box.x,box.y,box.w,box.h,35))continue;
+      if(houses.some(h=>rectsNear(box,h,90)))continue;
+      if(obs.some(o=>(o.t==='t'||o.t==='c')&&rectsNear(box,o,55)))continue;
+      if(abandonedCamps.some(cp=>Math.hypot(cp.x-x,cp.y-y)<rad*2+100))continue;
+      found={x,y};
+    }
+    if(found){
+      const tents=2+(i%3),tentData=[];
+      for(let ti=0;ti<tents;ti++){const a=-1.8+ti*1.35;tentData.push({x:found.x+Math.cos(a)*72,y:found.y+Math.sin(a)*56,a,open:false,loot:false});}
+      abandonedCamps.push({id:i,x:found.x,y:found.y,r:rad,tents:tentData,fire:i%2===0,medical:i===2||i===5,discovered:false});
+    }
   }
 })();
 
@@ -1451,7 +1464,7 @@ function newGame() {
   const mm=document.getElementById('mainGameMenu');if(mm)mm.classList.add('hidden');hideOverlay();
   money = 100; score = 0; kills = 0; level = 1;
   up = { wall: 0, turret: 0, hp: 0 }; gunUp=Object.fromEntries(GUN_ORDER.map(id=>[id,0])); perks={damage:0,speed:0,crit:0,lifesteal:0,mag:0,fire:0,fortify:0}; rareLoot=[]; inv.block=0; inv.door=0; inv.turret=0; inv.bomb=0; inv.medkit=0; inv.logs=0;
-  for(const c of abandonedCamps)c.discovered=false;
+  for(const c of abandonedCamps){c.discovered=false;for(const t of c.tents){t.open=false;t.loot=false;t.eLatch=false;}}
   player = newPlayer(); built = [
     // Başlangıç kampı ana yol kavşağının tam merkezinde; oyuncunun doğduğu noktadan ayrı.
     {t:'campfire',x:MID-22,y:MID-22,w:44,h:44,hp:9999,max:9999,sb:false,utility:true},
@@ -1997,6 +2010,21 @@ function bossSlam(z) {
 /* =====================================================
    Güncelleme
    ===================================================== */
+function nearestCampTent(maxD=62){
+ if(!player)return null;let best=null,bd=maxD;
+ for(const cp of abandonedCamps)for(const t of cp.tents){const d=Math.hypot(player.x-t.x,player.y-t.y);if(d<bd){bd=d;best={camp:cp,tent:t};}}
+ return best;
+}
+function lootCampTent(t){
+ if(t.loot){toast('Bu çadır zaten arandı');return}
+ t.open=true;t.loot=true;sfx('chest');
+ const r=Math.random();
+ if(r<.28){const n=2+Math.floor(Math.random()*4);inv.logs+=n;toast('Çadırdan '+n+' odun bulundu');}
+ else if(r<.50){inv.medkit++;toast('Çadırdan ilk yardım çantası bulundu');}
+ else if(r<.68){inv.bomb++;toast('Çadırdan bomba bulundu');}
+ else if(r<.86){const m=35+Math.floor(Math.random()*66);money+=m;levelMoney+=m;toast('Çadırdan $'+m+' bulundu');}
+ else {inv.turret++;toast('Nadir buluntu: taret parçası bulundu');}
+}
 function update(dt) {
   if(player){for(const cp of abandonedCamps){if(!cp.discovered&&Math.hypot(player.x-cp.x,player.y-cp.y)<150){cp.discovered=true;toast('Terk edilmiş kamp keşfedildi');}}}
   anim += dt;
@@ -2056,6 +2084,12 @@ function update(dt) {
     cam.y = clamp(p.y + lookY - H / 2, 0, Math.max(0, WORLD - H));
     p.ang = Math.atan2(mouse.y + cam.y - p.y, mouse.x + cam.x - p.x);
   }
+
+  // Terk edilmiş kamp çadırı: E ile aç / içine girip lootla.
+  const ct=nearestCampTent();
+  if(ct&&!ct.tent.open&&keys.KeyE&&!ct.tent.eLatch){ct.tent.eLatch=true;ct.tent.open=true;toast('Çadır açıldı · içine yaklaş ve E ile ara');}
+  else if(ct&&ct.tent.open&&!ct.tent.loot&&keys.KeyE&&!ct.tent.eLatch){ct.tent.eLatch=true;lootCampTent(ct.tent);}
+  for(const cp of abandonedCamps)for(const t of cp.tents)if(!keys.KeyE)t.eLatch=false;
 
   // Eylemler
   p.cd -= dt; p.flash -= dt; p.hurt -= dt; mouse.buf -= dt;
@@ -2402,7 +2436,7 @@ function drawAbandonedCamps(){
     // ezilmiş kamp zemini
     ctx.fillStyle='rgba(72,58,39,.30)';ctx.beginPath();ctx.ellipse(x,y,105,82,-.15,0,TAU);ctx.fill();
     // çadırlar
-    for(let i=0;i<camp.tents;i++){const a=-1.8+i*1.35,tx=x+Math.cos(a)*62,ty=y+Math.sin(a)*48;ctx.fillStyle=i%2?'#596047':'#67634a';ctx.beginPath();ctx.moveTo(tx-28,ty+18);ctx.lineTo(tx,ty-25);ctx.lineTo(tx+30,ty+18);ctx.closePath();ctx.fill();ctx.strokeStyle='#2e3028';ctx.lineWidth=3;ctx.stroke();ctx.fillStyle='#171b16';ctx.beginPath();ctx.moveTo(tx-7,ty+17);ctx.lineTo(tx,ty-5);ctx.lineTo(tx+8,ty+17);ctx.fill();}
+    for(let i=0;i<camp.tents.length;i++){const t=camp.tents[i],tx=t.x,ty=t.y;ctx.save();ctx.translate(tx,ty);if(t.open){ctx.fillStyle='#292b23';ctx.beginPath();ctx.ellipse(0,4,34,27,0,0,TAU);ctx.fill();ctx.strokeStyle='#67634a';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(-31,18);ctx.lineTo(-24,-20);ctx.lineTo(0,-29);ctx.moveTo(31,18);ctx.lineTo(24,-20);ctx.lineTo(0,-29);ctx.stroke();ctx.fillStyle='#3a3328';ctx.fillRect(-22,-3,44,18);ctx.fillStyle='#75664c';ctx.fillRect(-18,1,25,10);ctx.fillStyle=t.loot?'#34342f':'#8a6736';ctx.fillRect(10,2,13,10);ctx.strokeStyle='#191914';ctx.strokeRect(10,2,13,10);ctx.fillStyle='#b7aa86';ctx.font='700 8px '+FONT;ctx.textAlign='center';ctx.fillText(t.loot?'BOŞ':'LOOT',0,35);}else{ctx.fillStyle=i%2?'#596047':'#67634a';ctx.beginPath();ctx.moveTo(-32,20);ctx.lineTo(0,-30);ctx.lineTo(34,20);ctx.closePath();ctx.fill();ctx.strokeStyle='#2e3028';ctx.lineWidth=3;ctx.stroke();ctx.fillStyle='#171b16';ctx.beginPath();ctx.moveTo(-8,19);ctx.lineTo(0,-7);ctx.lineTo(9,19);ctx.fill();}ctx.restore();}
     // terk edilmiş ateş çemberi
     ctx.fillStyle='#55534c';for(let i=0;i<8;i++){const a=i*TAU/8;ctx.beginPath();ctx.arc(x+Math.cos(a)*17,y+Math.sin(a)*11,5,0,TAU);ctx.fill();}
     ctx.fillStyle=camp.fire?'#5c2918':'#24221e';ctx.beginPath();ctx.ellipse(x,y,12,7,0,0,TAU);ctx.fill();
@@ -2754,7 +2788,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v52';
+const GAME_VERSION = 'v53';
 
 function drawHUD() {
   const p = player, L = spec || levelSpec(1), narrow = W < 760;
