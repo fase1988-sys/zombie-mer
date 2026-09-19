@@ -203,7 +203,7 @@ div:has(> #legacyOnlineMarker){display:none!important}
 
 <div id="menuJumpScare" aria-hidden="true"><div class="jsFace"><div class="jsCrack"></div><div class="jsMouth"></div></div></div>
 
-<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v72</b></div></div></div>
+<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v73</b></div></div></div>
 
 <div id="onlinePanel">
   <b><span id="legacyOnlineMarker">ONLINE CO-OP v8 · CLEAN LOBBY</span></b>
@@ -402,10 +402,11 @@ async function connectRoom(code, asHost){
     if(ri) ri.textContent='Oda: '+code+' · '+(net.peers.size+1)+' oyuncu'+(net.host?' · HOST':'');
     renderTeamMenu();
     if(typeof renderMainLobby==='function')renderMainLobby();
+    if(typeof refreshAdminScareTargets==='function')refreshAdminScareTargets();
   });
   ch.on('broadcast',{event:'player'},({payload})=>{ upsertRemotePlayer(payload); });
   ch.on('broadcast',{event:'admin_jumpscare'},({payload})=>{
-    if(!payload || payload.target!==net.id) return;
+    if(!payload || String(payload.target)!==String(net.id)) return;
     triggerMenuJumpScare(true);
   });
   ch.on('broadcast',{event:'kick'},async ({payload})=>{
@@ -1051,7 +1052,7 @@ function giveAdminGun(id){if(!player||!GUNS[id])return;if(!player.guns.includes(
 function adminSpawn(type){if(!player||!ZT[type])return;const a=Math.random()*TAU,d=220;const z=makeZombie(type,clamp(player.x+Math.cos(a)*d,50,WORLD-50),clamp(player.y+Math.sin(a)*d,50,WORLD-50));z.sleep=false;zombies.push(z);}
 function adminWorldBroadcast(){if(net.connected&&net.host&&net.channel)net.channel.send({type:'broadcast',event:'world',payload:worldSnapshot()});}
 function adminDay(mode){hideOverlay();if(mode==='morning'){state='intermission';dayPhase='day';prepLeft=120;dawnFade=1;duskFade=0;queue=[];zombies=[];}else if(mode==='evening'){state='intermission';dayPhase='dusk';prepLeft=0;duskFade=0;}else{state='playing';dayPhase='night';prepLeft=0;duskFade=1;if(!queue.length&&!zombies.length){spec=levelSpec(level);queue=[];for(let i=0;i<spec.n;i++)queue.push('n');for(let i=0;i<spec.f;i++)queue.push('f');for(let i=0;i<spec.t;i++)queue.push('t');}}adminWorldBroadcast();}
-setTimeout(()=>{const $a=id=>document.getElementById(id),p=$a('adminPanel');$a('adminBtn').onclick=()=>p.classList.add('show');$a('adminClose').onclick=()=>p.classList.remove('show');$a('adminLoginBtn').onclick=()=>{if($a('adminPass').value!==ADMIN_PASSWORD){$a('adminLoginMsg').textContent='Şifre yanlış';return}adminUnlocked=true;$a('adminLogin').hidden=true;$a('adminTools').hidden=false};$a('adminGiveMoney').onclick=()=>{if(!adminUnlocked)return;const n=Math.max(1,Math.min(1e6,Math.floor(+$a('adminMoney').value||0)));money+=n;if(net.connected&&!net.host&&net.channel)net.channel.send({type:'broadcast',event:'money_delta',payload:{delta:n,from:net.id}});toast('Admin: +$'+n)};$a('adminGiveGun').onclick=()=>adminUnlocked&&giveAdminGun($a('adminGun').value);$a('adminGiveAll').onclick=()=>{if(adminUnlocked)for(const id of GUN_ORDER)giveAdminGun(id)};$a('adminHeal').onclick=()=>{if(adminUnlocked&&player){player.hp=player.max;toast('Admin: can doldu')}};$a('adminGod').onclick=()=>{if(!adminUnlocked)return;adminGodMode=!adminGodMode;$a('adminGod').textContent='GOD MODE: '+(adminGodMode?'AÇIK':'KAPALI');$a('adminGod').classList.toggle('adminGodOn',adminGodMode);if(adminGodMode&&player)player.hp=player.max;toast('God Mode '+(adminGodMode?'açıldı':'kapatıldı'))};$a('adminGoLevel').onclick=()=>{if(!adminUnlocked||!player)return;const n=Math.max(1,Math.min(999,Math.floor(+$a('adminLevel').value||1)));level=n;state='playing';hideOverlay();p.classList.remove('show');beginLevel();toast('Admin: Bölüm '+n+' başlatıldı');adminWorldBroadcast()};
+setTimeout(()=>{const $a=id=>document.getElementById(id),p=$a('adminPanel');$a('adminBtn').onclick=()=>{p.classList.add('show');if(typeof refreshAdminScareTargets==='function')refreshAdminScareTargets()};$a('adminClose').onclick=()=>p.classList.remove('show');$a('adminLoginBtn').onclick=()=>{if($a('adminPass').value!==ADMIN_PASSWORD){$a('adminLoginMsg').textContent='Şifre yanlış';return}adminUnlocked=true;$a('adminLogin').hidden=true;$a('adminTools').hidden=false;if(typeof refreshAdminScareTargets==='function')refreshAdminScareTargets()};$a('adminGiveMoney').onclick=()=>{if(!adminUnlocked)return;const n=Math.max(1,Math.min(1e6,Math.floor(+$a('adminMoney').value||0)));money+=n;if(net.connected&&!net.host&&net.channel)net.channel.send({type:'broadcast',event:'money_delta',payload:{delta:n,from:net.id}});toast('Admin: +$'+n)};$a('adminGiveGun').onclick=()=>adminUnlocked&&giveAdminGun($a('adminGun').value);$a('adminGiveAll').onclick=()=>{if(adminUnlocked)for(const id of GUN_ORDER)giveAdminGun(id)};$a('adminHeal').onclick=()=>{if(adminUnlocked&&player){player.hp=player.max;toast('Admin: can doldu')}};$a('adminGod').onclick=()=>{if(!adminUnlocked)return;adminGodMode=!adminGodMode;$a('adminGod').textContent='GOD MODE: '+(adminGodMode?'AÇIK':'KAPALI');$a('adminGod').classList.toggle('adminGodOn',adminGodMode);if(adminGodMode&&player)player.hp=player.max;toast('God Mode '+(adminGodMode?'açıldı':'kapatıldı'))};$a('adminGoLevel').onclick=()=>{if(!adminUnlocked||!player)return;const n=Math.max(1,Math.min(999,Math.floor(+$a('adminLevel').value||1)));level=n;state='playing';hideOverlay();p.classList.remove('show');beginLevel();toast('Admin: Bölüm '+n+' başlatıldı');adminWorldBroadcast()};
 $a('adminSpawnZombie').onclick=()=>{if(adminUnlocked){adminSpawn($a('adminZombie').value);adminWorldBroadcast()}};
 $a('adminKillAll').onclick=()=>{if(!adminUnlocked)return;for(const z of zombies.slice())if(!z.dead)killZombie(z);zombies=[];queue=[];toast('Tüm zombiler öldürüldü');adminWorldBroadcast()};
 $a('adminClearZombies').onclick=()=>{if(!adminUnlocked)return;zombies=[];queue=[];toast('Zombiler temizlendi');adminWorldBroadcast()};
@@ -1073,24 +1074,44 @@ $a('adminMaxBase').onclick=()=>{if(!adminUnlocked)return;up.wall=5;up.turret=5;f
 $a('adminTeleportPeer').onclick=()=>{if(!adminUnlocked||!player)return;const q=[...net.peers.values()].find(x=>x&&!x.dead);if(q){player.x=q.x+35;player.y=q.y;toast('Takım arkadaşına ışınlandın')}else toast('Aktif takım arkadaşı yok')};
 $a('adminRevive').onclick=()=>{if(adminUnlocked&&player){player.hp=player.max;state='playing';hideOverlay();toast('Diriltildin')}};
 $a('adminJumpScare').onclick=()=>{if(!adminUnlocked)return;triggerMenuJumpScare(true)};
+function getAdminScarePlayers(){
+  const out=new Map();
+  if(net.channel){
+    try{
+      const ps=net.channel.presenceState();
+      for(const entries of Object.values(ps||{}))for(const q of entries||[]){
+        if(q&&q.id&&q.id!==net.id)out.set(String(q.id),{id:String(q.id),name:q.name||'Oyuncu',host:!!q.host});
+      }
+    }catch(e){}
+  }
+  for(const [id,q] of net.peers)if(id!==net.id&&!out.has(String(id)))out.set(String(id),{id:String(id),name:q&&q.name||'Oyuncu',host:!!(q&&q.host)});
+  return [...out.values()];
+}
 function refreshAdminScareTargets(){
   const sel=$a('adminScareTarget'),info=$a('adminScareInfo');if(!sel)return;
-  const keep=sel.value;
+  const keep=sel.value,players=getAdminScarePlayers();
   sel.innerHTML='<option value="">ONLINE OYUNCU SEÇ</option>';
-  for(const [id,q] of net.peers){
-    const o=document.createElement('option');o.value=id;o.textContent=(q&&q.name?q.name:'Oyuncu')+(q&&q.host?' · HOST':'');sel.appendChild(o);
+  for(const q of players){
+    const o=document.createElement('option');o.value=q.id;o.textContent=q.name+(q.host?' · HOST':'');sel.appendChild(o);
   }
   if([...sel.options].some(o=>o.value===keep))sel.value=keep;
-  if(info)info.textContent=net.connected?(net.peers.size?net.peers.size+' online oyuncu seçilebilir':'Odada başka oyuncu yok'):'Multiplayer bağlantısı yok';
+  if(info)info.textContent=net.connected?(players.length?players.length+' online oyuncu seçilebilir':'Odada başka oyuncu yok'):'Multiplayer bağlantısı yok';
 }
-$a('adminSendJumpScare').onclick=()=>{
+$a('adminSendJumpScare').onclick=async()=>{
   if(!adminUnlocked)return;
   if(!net.connected||!net.channel){toast('Önce multiplayer odasına bağlan');return}
+  refreshAdminScareTargets();
   const target=$a('adminScareTarget').value;
-  if(!target||!net.peers.has(target)){toast('Online oyuncu seç');refreshAdminScareTargets();return}
-  const q=net.peers.get(target);
-  net.channel.send({type:'broadcast',event:'admin_jumpscare',payload:{target,from:net.id}});
-  toast('Jumpscare gönderildi: '+(q&&q.name?q.name:'Oyuncu'));
+  const q=getAdminScarePlayers().find(x=>x.id===target);
+  if(!target||!q){toast('Online oyuncu seç');return}
+  try{
+    const res=await net.channel.send({type:'broadcast',event:'admin_jumpscare',payload:{target:String(target),from:String(net.id),nonce:Date.now()}});
+    if(res==='error'||res==='timed out')throw new Error(String(res));
+    toast('Jumpscare gönderildi: '+q.name);
+  }catch(e){
+    console.error('Jumpscare send error:',e);
+    toast('Jumpscare gönderilemedi · tekrar dene');
+  }
 };
 $a('adminDev').onclick=()=>{if(!adminUnlocked||!player)return;adminGodMode=adminInfStamina=adminSpeed2=adminInfAmmo=true;money+=100000;inv.logs+=999;for(const k of ['block','door','turret','bomb','medkit'])inv[k]+=99;for(const id of GUN_ORDER){if(!player.guns.includes(id))player.guns.push(id);gunUp[id]=3;player.ammo[id]=gunStats(id).mag}player.hp=player.max;tog($a('adminGod'),true,'GOD MODE');tog($a('adminStamina'),true,'SINIRSIZ STAMINA');tog($a('adminSpeed'),true,'HIZ ×2');tog($a('adminAmmo'),true,'SONSUZ MERMİ');toast('DEV MODE aktif')};
 setInterval(()=>{if(!adminUnlocked)return;refreshAdminScareTargets();const d=$a('adminDebug'),n=$a('adminNetInfo');if(d)d.textContent='State: '+state+' | Gün: '+dayPhase+' | Bölüm: '+level+' | Zombi: '+zombies.length+' | Queue: '+queue.length+' | Mermi: '+bullets.length+' | Yapı: '+built.length;if(n)n.textContent=net.connected?('ONLINE · '+(net.host?'HOST':'GUEST')+' · Oda: '+net.room+' · Oyuncu: '+(net.peers.size+1)):'OFFLINE · Tek oyuncu'},500)},0);
@@ -1525,9 +1546,8 @@ function triggerMenuJumpScare(force=false){
   setTimeout(()=>{el.classList.remove('show');menuScareBusy=false;document.body.style.transform='';if(state==='menu')scheduleMenuJumpScare();},1120);
 }
 function scheduleMenuJumpScare(){
-  clearTimeout(menuScareTimer);
-  if(state!=='menu')return;
-  menuScareTimer=setTimeout(triggerMenuJumpScare,7000+Math.random()*15000);
+  // v73: Menüde/oda oluştururken otomatik jumpscare yok. Sadece admin manuel tetikler.
+  clearTimeout(menuScareTimer);menuScareTimer=0;
 }
 function showMenu() {
   state='menu'; hideOverlay();
@@ -2946,7 +2966,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v72';
+const GAME_VERSION = 'v73';
 
 function drawHUD() {
   if(player&&abandonedCamps.length&&player.hi<0){let cp=null,bd=1e9;for(const q of abandonedCamps){const d=Math.hypot(q.x-player.x,q.y-player.y);if(d<bd){bd=d;cp=q}}if(cp&&bd>190){ctx.save();ctx.textAlign='center';ctx.font='900 11px '+FONT;ctx.fillStyle='#e3aa45';ctx.fillText('🏕 KAMP  '+Math.round(bd)+'m',W/2,82);ctx.restore();}}
