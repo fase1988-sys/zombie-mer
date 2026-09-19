@@ -1127,6 +1127,7 @@ const touch = { stick: null, aim: null, on: false };
 
 function uiHit(px, py) {
   const inR = r => r && px >= r.x && px <= r.x + r.w && py >= r.y && py <= r.y + r.h;
+  if (inR(uiRects.nextWave) && state==='intermission') { startNextWave(); return true; }
   if (inR(uiRects.shop)) { openShop(); return true; }
   if (inR(uiRects.chest)) { openChest(); return true; }
   for (let i = 0; i < uiRects.slots.length; i++) if (inR(uiRects.slots[i])) { selectSlot(i); return true; }
@@ -1141,7 +1142,7 @@ window.addEventListener('keydown', e => {
   if (e.code === 'Tab') { if (state === 'shop') closeShop(); else openShop(); return; }
   if (teamMenuOpen) { if (e.code === 'Escape') closeTeamMenu(); return; }
   if (state === 'shop') { if (e.code === 'Escape') closeShop(); return; }
-  if (state === 'playing') {
+  if (state === 'playing' || state === 'intermission') {
     if (e.code === 'Escape') { openTeamMenu(); return; }
     if (e.code === 'KeyR') startReload();
     if (e.code === 'KeyE') openChest();
@@ -1158,7 +1159,7 @@ cv.addEventListener('contextmenu', e => e.preventDefault());
 cv.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; touch.on = false; });
 cv.addEventListener('mousedown', e => {
   audio(); mouse.x = e.clientX; mouse.y = e.clientY; touch.on = false;
-  if (state !== 'playing') return;
+  if (state !== 'playing' && state !== 'intermission') return;
   if (e.button === 2) { removeBuiltAtMouse(); return; }
   if (e.button !== 0) return;
   if (uiHit(e.clientX, e.clientY)) return;
@@ -1166,7 +1167,7 @@ cv.addEventListener('mousedown', e => {
 });
 window.addEventListener('mouseup', () => { mouse.down = false; });
 cv.addEventListener('wheel', e => {
-  if (state !== 'playing') return;
+  if (state !== 'playing' && state !== 'intermission') return;
   e.preventDefault();
   const n = slots().length;
   selectSlot((player.sel + (e.deltaY > 0 ? 1 : -1) + n) % n);
@@ -1174,7 +1175,7 @@ cv.addEventListener('wheel', e => {
 
 cv.addEventListener('touchstart', e => {
   e.preventDefault(); audio(); touch.on = true;
-  if (state !== 'playing') return;
+  if (state !== 'playing' && state !== 'intermission') return;
   for (const t of e.changedTouches) {
     if (uiHit(t.clientX, t.clientY)) continue;
     if (t.clientX < W / 2 && !touch.stick) touch.stick = { id: t.identifier, ox: t.clientX, oy: t.clientY, x: t.clientX, y: t.clientY };
@@ -1203,7 +1204,7 @@ cv.addEventListener('touchcancel', touchEnd);
 /* =====================================================
    Oyun akışı ve ekranlar
    ===================================================== */
-function setCursor() { cv.classList.toggle('playing', state === 'playing'); }
+function setCursor() { cv.classList.toggle('playing', state === 'playing' || state === 'intermission'); }
 
 function hideOverlay(){ $('overlay').classList.remove('show'); setCursor(); }
 
@@ -1314,18 +1315,26 @@ function beginLevel() {
 }
 function retryLevel() { restoreSnap(); beginLevel(); }
 
+function startIntermission(){
+  state='intermission'; hideOverlay(); mouse.down=false;
+  queue=[]; zombies=[]; bullets=[]; bombs=[];
+  banner={title:'HAZIRLIK ZAMANI',sub:'Üssünü geliştir · Hazır olduğunda sonraki bölümü başlat',t:3.2,max:3.2};
+  toast('Hazırlık modu · Zombi gelmez · Üssünü istediğin kadar geliştir');
+  setCursor();
+}
+function startNextWave(){ choosePerk(); }
 function levelClear() {
   state = 'clear'; hideOverlay(); sfx('clear');
   let bonus = 40 + level * 15; if(runEvent&&runEvent.id==='horde')bonus+=100;if(runEvent&&runEvent.id==='supply')bonus+=150; money += bonus; levelMoney += bonus;
-  for (const o of built) o.hp = o.max;           // odunlar ve taretler onarılır
+  for (const o of built) o.hp = o.max;
   player.hp = Math.min(player.max, player.hp + 30);
-  const note = built.length ? `<div class="note">Bölüm ödülü: <b>$${bonus}</b>. Tüm duvarların, kapıların ve taretlerin canı yenilendi.</div>`
-                            : `<div class="note">Bölüm ödülü: <b>$${bonus}</b>. Mağazadan silah ve savunma alabilirsin.</div>`;
+  const note = built.length ? `<div class="note">Bölüm ödülü: <b>$${bonus}</b>. Savunmalar onarıldı. Hazırlık sırasında haritada dolaşıp duvar/kapı/taret kurabilirsin.</div>`
+                            : `<div class="note">Bölüm ödülü: <b>$${bonus}</b>. Hazırlık sırasında üssünü kurabilirsin.</div>`;
   showOverlay({
     title: 'Bölüm ' + level + ' temizlendi',
-    text: 'Bölgede canlı zombi kalmadı. Sonraki dalga daha güçlü olacak. Mağazada alışveriş yap, üssünü güçlendir.',
+    text: 'Sonraki bölüm otomatik başlamaz. İstediğin kadar hazırlan, sonra sen başlat.',
     extra: `<div class="stats"><div><b>${levelKills}</b>Bu bölümde öldürülen</div><div><b>$${money}</b>Paran</div><div><b>${score}</b>Puan</div></div>${note}`,
-    btn: 'Perk seç →', onClick: () => { choosePerk(); },
+    btn: 'Hazırlık moduna geç', onClick: startIntermission,
     btn2: 'Mağaza', keep2: true, onClick2: openShop
   });
 }
@@ -1342,6 +1351,7 @@ function gameOver() {
 /* ---------- Mağaza ---------- */
 function openShop() {
   if (state === 'playing') { shopPrev = 'playing'; state = 'shop'; mouse.down = false; touch.stick = null; touch.aim = null; }
+  else if (state === 'intermission') { shopPrev='intermission'; state='shop'; mouse.down=false; touch.stick=null; touch.aim=null; }
   else if (state === 'clear') shopPrev = 'clear';
   else return;
   renderShop(); $('shop').classList.add('show'); setCursor();
@@ -1350,6 +1360,7 @@ function openShop() {
 function closeShop() {
   $('shop').classList.remove('show');
   if (shopPrev === 'playing') { state = 'playing'; last = performance.now(); }
+  else if (shopPrev === 'intermission') { state='intermission'; last=performance.now(); }
   else if (shopPrev === 'clear') setTimeout(() => $('ovBtn').focus(), 30);
   shopPrev = null; setCursor();
 }
@@ -1785,7 +1796,7 @@ function bossSlam(z) {
    ===================================================== */
 function update(dt) {
   anim += dt;
-  if(mission&&mission.id==='survive'&&!mission.done) missionTick('survive',dt);
+  if(state==='playing'&&mission&&mission.id==='survive'&&!mission.done) missionTick('survive',dt);
   const p = player;
   p.hi = houseAt(p.x, p.y);
 
@@ -2420,7 +2431,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v23';
+const GAME_VERSION = 'v24';
 
 function drawHUD() {
   const p = player, L = spec || levelSpec(1), narrow = W < 760;
@@ -2451,7 +2462,13 @@ function drawHUD() {
   ctx.fillStyle = '#ece6d6'; ctx.font = '900 22px ' + HEAD;
   ctx.fillText('Bölüm ' + level + ' · ' + L.name, W / 2, ty);
   ctx.font = '600 14px ' + FONT; ctx.fillStyle = '#f0b429';
-  ctx.fillText('Kalan zombi: ' + (zombies.length + queue.length), W / 2, ty + 22);
+  ctx.fillText(state==='intermission'?'HAZIRLIK MODU · Zombi gelmez':'Kalan zombi: ' + (zombies.length + queue.length), W / 2, ty + 22);
+  if(state==='intermission'){
+    const bw=220,bh=38,bx=W/2-bw/2,by=ty+48;
+    ctx.fillStyle='#7f2f28';ctx.fillRect(bx,by,bw,bh);ctx.strokeStyle='#d8b36a';ctx.lineWidth=2;ctx.strokeRect(bx,by,bw,bh);
+    ctx.fillStyle='#fff';ctx.font='900 14px '+FONT;ctx.textAlign='center';ctx.fillText('SONRAKİ BÖLÜMÜ BAŞLAT',W/2,by+24);
+    uiRects.nextWave={x:bx,y:by,w:bw,h:bh};
+  }else uiRects.nextWave=null;
   ctx.font='700 12px '+FONT;ctx.fillStyle=runEvent?'#ffb347':'#9fb6a4';
   if(runEvent)ctx.fillText(runEvent.name,W/2,ty+40);
   if(mission){ctx.fillStyle=mission.done?'#7fbf5a':'#d8d0b7';ctx.fillText('Görev: '+mission.name+' '+Math.min(mission.target,Math.floor(mission.progress))+'/'+mission.target,W/2,ty+(runEvent?56:40));}
@@ -2619,7 +2636,7 @@ function draw() {
   if (player.hp > 0 && player.hp < 30) { ctx.fillStyle = 'rgba(160,20,20,' + (0.06 + Math.sin(anim * 6) * 0.04) + ')'; ctx.fillRect(0, 0, W, H); }
 
   drawHUD();
-  if (state === 'playing') drawCrosshair();
+  if (state === 'playing' || state === 'intermission') drawCrosshair();
 }
 
 /* =====================================================
@@ -2627,7 +2644,7 @@ function draw() {
    ===================================================== */
 function frame(now) {
   const dt = Math.min(0.05, (now - last) / 1000); last = now;
-  if (state === 'playing' || state === 'dead_wait') update(dt);
+  if (state === 'playing' || state === 'dead_wait' || state === 'intermission') update(dt);
   else anim += dt;
   netTick(now);
   smoothRemotePlayers(typeof dt==='number'?dt:1/60);
