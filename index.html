@@ -2054,11 +2054,21 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
+const GAME_VERSION = 'v1';
+
 function drawHUD() {
   const p = player, L = spec || levelSpec(1), narrow = W < 760;
   uiRects = { slots: [], shop: null, chest: null };
   ctx.textBaseline = 'alphabetic';
   ctx.shadowColor = 'rgba(0,0,0,.8)'; ctx.shadowBlur = 4;
+
+  // Oyun sürümü: her yayınlanan güncellemede v1 -> v2 -> v3 şeklinde artırılacak.
+  ctx.save();
+  ctx.textAlign = 'right';
+  ctx.font = '800 12px ' + FONT;
+  ctx.fillStyle = 'rgba(236,230,214,.72)';
+  ctx.fillText(GAME_VERSION, W - 16, H - 14);
+  ctx.restore();
 
   // Can, dayanıklılık, para
   const f = p.hp / p.max;
