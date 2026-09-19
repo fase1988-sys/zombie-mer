@@ -195,7 +195,7 @@ div:has(> #legacyOnlineMarker){display:none!important}
 
 <div id="menuJumpScare" aria-hidden="true"><div class="jsFace"><div class="jsCrack"></div><div class="jsMouth"></div></div></div>
 
-<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v108</b></div></div></div>
+<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v109</b></div></div></div>
 
 <div id="onlinePanel">
   <b><span id="legacyOnlineMarker">ONLINE CO-OP v8 · CLEAN LOBBY</span></b>
@@ -274,7 +274,7 @@ function roomCode(){
 }
 function worldSnapshot(){
   return {
-    level, score, kills, money, state, dayPhase, prepLeft, dawnFade, duskFade, worldSeed, queue:[...queue],
+    level, score, kills, money, state, dayPhase, prepLeft, dawnFade, duskFade, worldSeed, firePower, fireBossCountdown, fireBossActive, queue:[...queue],
     zombies:zombies.map(z=>({type:z.type,x:z.x,y:z.y,hp:z.hp,max:z.max,dead:z.dead,hi:z.hi,sleep:z.sleep,a:z.a,boss:z.boss,atk:z.atk,dmg:z.dmg,r:z.r,spd:z.spd,ph:z.ph,flash:z.flash,stuck:z.stuck,detour:z.detour,dd:z.dd,dashT:z.dashT,skillT:z.skillT,tele:z.tele})),
     built:built.map(o=>({...o})),
     trees:obs.filter(o=>o.t==='t').map(o=>({id:o.treeId,hits:o.woodHits||0,x:o.x,y:o.y,w:o.w,h:o.h,cr:o.cr,shade:o.shade})),
@@ -291,6 +291,7 @@ function applyWorld(w){
     rebuildGrid();rebuildMiniMapBase();
   }
   level=w.level; score=w.score; kills=w.kills; money=w.money;
+  if(Number.isFinite(w.firePower))firePower=w.firePower;if(Number.isFinite(w.fireBossCountdown))fireBossCountdown=w.fireBossCountdown;if(typeof w.fireBossActive==='boolean')fireBossActive=w.fireBossActive;
   queue=Array.isArray(w.queue)?w.queue:[];
   if(Array.isArray(w.zombies)){const next=[];for(let i=0;i<w.zombies.length;i++){const q=w.zombies[i],old=zombies[i];if(old&&old.type===q.type){Object.assign(old,q);next.push(old)}else next.push(Object.assign(makeZombie(q.type,q.x,q.y),q))}zombies=next;}
   if(Array.isArray(w.built)){ built=w.built.map(o=>({...o})); rebuildGrid(); }
@@ -1140,7 +1141,8 @@ const ZT = {
   s:  { hp: 105,  spd: 62,  r: 16, dmg: 10, score: 32,  money: 22,  col: '#506f78', arm: '#3e5960', head: '#6e929d', ranged: 1 },
   b1: { hp: 1300, spd: 68,  r: 36, dmg: 38, score: 300, money: 150, col: '#8a3a3a', arm: '#6e2c2c', head: '#a24c4c', boss: 1, name: 'Kasap' },
   b2: { hp: 1700, spd: 56,  r: 38, dmg: 30, score: 400, money: 220, col: '#5c3a7a', arm: '#472c5f', head: '#7650a0', boss: 1, name: 'Çağırıcı' },
-  b3: { hp: 3200, spd: 46,  r: 50, dmg: 50, score: 600, money: 320, col: '#3f5060', arm: '#2f3d4b', head: '#566b7f', boss: 1, name: 'Yıkıcı' }
+  b3: { hp: 3200, spd: 46,  r: 50, dmg: 50, score: 600, money: 320, col: '#3f5060', arm: '#2f3d4b', head: '#566b7f', boss: 1, name: 'Yıkıcı' },
+  fireboss: { hp: 999999, spd: 250, r: 82, dmg: 9999, score: 0, money: 0, col: '#401719', arm: '#241013', head: '#6d2424', boss: 1, name: 'ATEŞ AVCISI' }
 };
 const NAMES = ['Şehir merkezi', 'Terk edilmiş sokaklar', 'Kan izi', 'Son hat', 'Sürünün başı', 'Karanlık saat', 'Çürüme', 'Kıyamet'];
 function levelSpec(n) {
@@ -1173,6 +1175,36 @@ const BLOCK_COST = 6, BLOCK_HP = 120, DOOR_COST = 10, DOOR_HP = 160, TURRET_HP =
 /* Mağaza envanteri */
 const inv = { block: 0, door: 0, turret: 0, bomb: 0, medkit: 0, logs: 0, seeds: 0 };
 let plantedTrees=[], treeFalls=[], nextPlantedTreeId=100000, treeNightCounter=0;
+// v109: Kamp ateşi hayatta kalma mekaniği. Ateş sönerse Ateş Avcısı üsse koşar ve 15 sn sonra takımı öldürür.
+const FIRE_MAX=100, FIRE_DRAIN=0.42, FIRE_LOG_POWER=22;
+let firePower=100, fireBossCountdown=-1, fireBossActive=false, fireFeedLatch=false;
+function campfireObject(){return built.find(o=>o.t==='campfire');}
+function feedCampfire(){
+  if(state!=='playing'&&state!=='intermission')return false;
+  const f=campfireObject();if(!f||Math.hypot(player.x-(f.x+f.w/2),player.y-(f.y+f.h/2))>125){toast('Ateşi beslemek için kamp ateşine yaklaş');return false;}
+  if((inv.logs||0)<1){toast('Ateşi güçlendirmek için odun lazım');return false;}
+  inv.logs--;firePower=Math.min(FIRE_MAX,firePower+FIRE_LOG_POWER);sfx('place');floatText(f.x+f.w/2,f.y-20,'+ATEŞ','#ff9a2e');toast('Ateş güçlendi · +'+FIRE_LOG_POWER+'%');return true;
+}
+function spawnFireBoss(){
+  if(fireBossActive)return;
+  fireBossActive=true;fireBossCountdown=15;
+  const f=campfireCenter(),a=Math.random()*TAU,d=Math.min(1450,WORLD*.34);
+  const x=clamp(f.x+Math.cos(a)*d,100,WORLD-100),y=clamp(f.y+Math.sin(a)*d,100,WORLD-100);
+  const z=makeZombie('fireboss',x,y);z.fireBoss=true;z.hp=z.max=999999;z.spd=250;z.sleep=false;z.hi=-1;z.atk=0;
+  zombies.push(z);banner={title:'ATEŞ SÖNDÜ!',sub:'ATEŞ AVCISI GELİYOR · 15 SANİYE',t:4,max:4};toast('ATEŞ AVCISI UYANDI · 15 saniyen var!');
+}
+function fireBossKillTeam(){
+  fireBossCountdown=-1;
+  if(player&&player.hp>0)hurtPlayer(999999);
+  if(net.connected&&net.host&&net.channel)for(const q of net.peers.values())if(q&&!q.dead&&Number(q.hp)>0)net.channel.send({type:'broadcast',event:'player_damage',payload:{target:q.id,damage:999999}});
+}
+function updateCampfireThreat(dt){
+  if(state!=='playing'&&state!=='intermission'&&state!=='craft')return;
+  if(!net.connected||net.host||net.hostId===net.id){
+    if(!fireBossActive){firePower=Math.max(0,firePower-FIRE_DRAIN*dt);if(firePower<=0)spawnFireBoss();}
+    else if(fireBossCountdown>0){fireBossCountdown=Math.max(0,fireBossCountdown-dt);if(fireBossCountdown<=0)fireBossKillTeam();}
+  }
+}
 let up = { wall: 0, turret: 0, hp: 0 };
 let gunUp = Object.fromEntries(GUN_ORDER.map(id => [id, 0]));
 let metaXP=Number(localStorage.getItem('zombieMetaXP')||0), metaLevel=Math.max(1,Math.floor(metaXP/500)+1);
@@ -1437,7 +1469,7 @@ window.addEventListener('keydown', e => {
   if (state === 'playing' || state === 'intermission') {
     if (e.code === 'Escape') { openEscapeMenu(); return; }
     if (e.code === 'KeyR') startReload();
-    if (e.code === 'KeyE') { if(nearWorkbench()) openWorkbench(); else openChest(); }
+    if (e.code === 'KeyE') { const cf=campfireObject();if(cf&&Math.hypot(player.x-(cf.x+cf.w/2),player.y-(cf.y+cf.h/2))<125){feedCampfire();} else if(nearWorkbench()) openWorkbench(); else openChest(); }
     if (e.code === 'KeyF') chopTree();
     if (e.code === 'KeyG') plantTreeSeed();
     if (/^Digit\d$/.test(e.code)) { const n = parseInt(e.code.slice(5), 10); selectSlot(n === 0 ? 9 : n - 1); }
@@ -1602,6 +1634,7 @@ function newGame(seedOverride) {
   clearTimeout(menuScareTimer);const js=document.getElementById('menuJumpScare');if(js)js.classList.remove('show');
   const mm=document.getElementById('mainGameMenu');if(mm)mm.classList.add('hidden');hideOverlay();
   money = 100; score = 0; kills = 0; level = 1;
+  firePower=100;fireBossCountdown=-1;fireBossActive=false;fireFeedLatch=false;
   // v102: Her yeni koşuda evler, ağaçlar, kasalar ve terk edilmiş çadır kampları yeni konumlarda doğar.
   // Multiplayer'da hostun seed'i bütün oyunculara gönderilir; herkes aynı haritayı görür.
   const nextSeed=Number.isFinite(Number(seedOverride))?(Number(seedOverride)>>>0):((Date.now()^Math.floor(Math.random()*0xffffffff))>>>0);
@@ -2170,6 +2203,7 @@ function update(dt) {
   if(player){for(const cp of abandonedCamps){if(!cp.discovered&&Math.hypot(player.x-cp.x,player.y-cp.y)<campRadius(cp)){cp.discovered=true;toast('Terk edilmiş kamp keşfedildi');}}}
   anim += dt;
   updateTreeFalls(dt);
+  updateCampfireThreat(dt);
   if(state==='craft')updateCraftPrepClock();
   if(state==='intermission'||state==='craft'){
     if(dayPhase==='dawn'){
@@ -2330,7 +2364,10 @@ function update(dt) {
   for (const z of zombies) if (!z.dead) z.hi = houseAt(z.x, z.y);
   for (const z of zombies) {
     if (z.dead) continue;
-    const victim=nearestLivingTarget(z);
+    let victim=nearestLivingTarget(z);
+    if(z.fireBoss){
+      const f=campfireCenter();victim={id:'campfire',local:false,x:f.x,y:f.y,hi:-1,r:18,hp:999999};
+    }
     if(!victim) continue; // Ölü oyuncular hiçbir zaman hedef değildir.
     const dx = victim.x - z.x, dy = victim.y - z.y, d = Math.hypot(dx, dy) || 1;
     if (z.sleep) {
@@ -2373,7 +2410,7 @@ function update(dt) {
     }
 
     const sameCtx = z.hi === victim.hi;
-    const contact = sameCtx && d < z.r + victim.r + 3;
+    const contact = !z.fireBoss && sameCtx && d < z.r + victim.r + 3;
     if (!contact && !z.atkObj) {
       let v = z.spd * (1 + Math.sin(anim * 3 + z.ph) * 0.22) * (runEvent&&runEvent.id==='blackout'?1.12:1);
       // Ev içinde ve kapı geçişinde sabit kontrollü hız: oyuncu eve girince ani sprint yok.
@@ -2442,6 +2479,7 @@ function update(dt) {
       } else z.stuck = 0;
       if (usedHouseDoor) z.stuck = 0;
     }
+    if(z.fireBoss){z.atkObj=null;}
     if (z.atkObj) {
       const o = z.atkObj, stillBlocking=builtBlockingPath(z,victim)===o;
       if (o.hp <= 0 || built.indexOf(o) < 0 || distToRect(z.x, z.y, o) > z.r + 14 || !stillBlocking) { z.atkObj = null; z.stuck = 0; }
@@ -2745,7 +2783,7 @@ function drawBuilt() {
       ctx.fillStyle = '#e7c27d'; ctx.beginPath(); ctx.arc(o.x + o.w - 10, o.y + o.h / 2, 3, 0, TAU); ctx.fill();
     } else if(o.t==='campfire'){
       const cx=o.x+o.w/2,cy=o.y+o.h/2;
-      const f1=Math.sin(anim*13)*2.2+Math.sin(anim*21)*1.2, f2=Math.sin(anim*17+1.7)*2;
+      const flameScale=fireBossActive?0:clamp(firePower/FIRE_MAX,.08,1), f1=(Math.sin(anim*13)*2.2+Math.sin(anim*21)*1.2)*flameScale, f2=Math.sin(anim*17+1.7)*2*flameScale;
       // v105: daha doğal taş çemberi, yanmış odunlar, köz, kıvılcım, duman ve dinamik ışık.
       ctx.fillStyle='rgba(0,0,0,.34)';ctx.beginPath();ctx.ellipse(cx+4,cy+10,31,18,0,0,TAU);ctx.fill();
       ctx.fillStyle='rgba(42,20,12,.72)';ctx.beginPath();ctx.ellipse(cx,cy+4,21,12,0,0,TAU);ctx.fill();
@@ -2756,7 +2794,7 @@ function drawBuilt() {
       // kızgın közler
       for(let i=0;i<7;i++){const aa=i*2.4,rrr=4+(i%3)*4;ctx.fillStyle=i%2?'#ff6a18':'#d53b14';ctx.globalAlpha=.55+.35*Math.sin(anim*8+i);ctx.beginPath();ctx.arc(cx+Math.cos(aa)*rrr,cy+5+Math.sin(aa)*4,1.7+(i%2),0,TAU);ctx.fill();}ctx.globalAlpha=1;
       // alevler
-      ctx.fillStyle='rgba(198,45,14,.94)';ctx.beginPath();ctx.moveTo(cx-14,cy+6);ctx.quadraticCurveTo(cx-19,cy-11,cx-6,cy-29-f1);ctx.quadraticCurveTo(cx-1,cy-21,cx+5,cy-42+f2);ctx.quadraticCurveTo(cx+21,cy-13,cx+13,cy+6);ctx.closePath();ctx.fill();
+      ctx.fillStyle='rgba(198,45,14,.94)';ctx.beginPath();ctx.moveTo(cx-14,cy+6);ctx.quadraticCurveTo(cx-19,cy-11*flameScale,cx-6,cy-(8+21*flameScale)-f1);ctx.quadraticCurveTo(cx-1,cy-21*flameScale,cx+5,cy-(8+34*flameScale)+f2);ctx.quadraticCurveTo(cx+21,cy-13,cx+13,cy+6);ctx.closePath();ctx.fill();
       ctx.fillStyle='#ff8b16';ctx.beginPath();ctx.moveTo(cx-10,cy+6);ctx.quadraticCurveTo(cx-11,cy-9,cx,cy-29+f2);ctx.quadraticCurveTo(cx+14,cy-8,cx+9,cy+6);ctx.closePath();ctx.fill();
       ctx.fillStyle='#ffe08a';ctx.beginPath();ctx.moveTo(cx-5,cy+5);ctx.quadraticCurveTo(cx-5,cy-5,cx+2,cy-18-f1*.35);ctx.quadraticCurveTo(cx+8,cy-4,cx+5,cy+5);ctx.closePath();ctx.fill();
       // kıvılcımlar + ince duman
@@ -3051,7 +3089,8 @@ function drawZombie(z) {
   const gait=z.sleep?0:Math.sin(anim*7+z.ph)*Math.min(2.2,z.r*.1);
   ctx.translate(z.x, z.y+gait);
   ctx.fillStyle = 'rgba(0,0,0,.34)'; ctx.beginPath(); ctx.ellipse(4, 7-gait, z.r*1.05, z.r * .72, 0, 0, TAU); ctx.fill();
-  if (z.boss) { ctx.strokeStyle = 'rgba(255,80,60,' + (0.35 + 0.2 * Math.sin(anim * 4)) + ')'; ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(0, 0, z.r + 7, 0, TAU); ctx.stroke(); }
+  if (z.boss) { ctx.strokeStyle = z.fireBoss?'rgba(255,45,20,'+(0.6+0.3*Math.sin(anim*9))+')':'rgba(255,80,60,' + (0.35 + 0.2 * Math.sin(anim * 4)) + ')'; ctx.lineWidth = z.fireBoss?8:4; ctx.beginPath(); ctx.arc(0, 0, z.r + 7, 0, TAU); ctx.stroke(); }
+  if(z.fireBoss){ctx.fillStyle='rgba(20,0,0,.48)';ctx.beginPath();ctx.arc(0,0,z.r*1.32,0,TAU);ctx.fill();}
   ctx.rotate(z.a);
   const sw = z.sleep ? 0 : Math.sin(anim * 4 + z.ph) * 4;
   // v94: bacaklar ve yırtık kıyafet silueti zombiyi daire görünümünden çıkarır.
@@ -3229,7 +3268,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v108';
+const GAME_VERSION = 'v109';
 
 function drawHUD() {
   if(player&&abandonedCamps.length&&player.hi<0){let cp=null,bd=1e9;for(const q of abandonedCamps){const d=Math.hypot(q.x-player.x,q.y-player.y);if(d<bd){bd=d;cp=q}}if(cp&&bd>190){ctx.save();ctx.textAlign='center';ctx.font='900 11px '+FONT;ctx.fillStyle='#e3aa45';ctx.fillText('🏕 KAMP  '+Math.round(bd)+'m',W/2,82);ctx.restore();}}
@@ -3274,7 +3313,13 @@ function drawHUD() {
   if(runEvent)ctx.fillText(runEvent.name,W/2,ty+40);
   if(mission){ctx.fillStyle=mission.done?'#7fbf5a':'#d8d0b7';ctx.fillText('Görev: '+mission.name+' '+Math.min(mission.target,Math.floor(mission.progress))+'/'+mission.target,W/2,ty+(runEvent?56:40));}
   ctx.textAlign='left';ctx.fillStyle='#9fb6a4';ctx.fillText('Survivor Lv.'+metaLevel+' · XP '+metaXP,20,112);
+  const cf=campfireObject();const nearFire=cf&&Math.hypot(p.x-(cf.x+cf.w/2),p.y-(cf.y+cf.h/2))<125;
   if(nearWorkbench()){ctx.fillStyle='#f0d28a';ctx.font='800 14px '+FONT;ctx.fillText('[E] ÇALIŞMA TEZGÂHI · üretim',20,136);}
+  else if(nearFire&&!fireBossActive){ctx.fillStyle='#ffb04a';ctx.font='800 14px '+FONT;ctx.fillText('[E] ATEŞE ODUN AT · 1 odun',20,136);}
+  const fw=Math.min(280,W-40),fx=W/2-fw/2,fy=ty+76;
+  ctx.textAlign='center';ctx.font='900 11px '+FONT;ctx.fillStyle=fireBossActive?'#ff5145':'#ffb04a';
+  ctx.fillText(fireBossActive?'☠ ATEŞ AVCISI · '+Math.ceil(Math.max(0,fireBossCountdown))+' sn':'🔥 KAMP ATEŞİ · '+Math.ceil(firePower)+'%',W/2,fy-5);
+  bar(fx,fy,fw,9,fireBossActive?Math.max(0,fireBossCountdown)/15:firePower/FIRE_MAX,fireBossActive?'#d6332c':'#e88724');
 
   // Patron çubuğu
   let boss = null, bc = 0;
