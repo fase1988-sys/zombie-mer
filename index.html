@@ -274,7 +274,7 @@ function roomCode(){
 }
 function worldSnapshot(){
   return {
-    level, score, kills, money, state, dayPhase, prepLeft, dawnFade, duskFade, queue:[...queue],
+    level, score, kills, money, state, dayPhase, prepLeft, dawnFade, duskFade, worldSeed, queue:[...queue],
     zombies:zombies.map(z=>({type:z.type,x:z.x,y:z.y,hp:z.hp,max:z.max,dead:z.dead,hi:z.hi,sleep:z.sleep,a:z.a,boss:z.boss,atk:z.atk,dmg:z.dmg,r:z.r,spd:z.spd,ph:z.ph,flash:z.flash,stuck:z.stuck,detour:z.detour,dd:z.dd,dashT:z.dashT,skillT:z.skillT,tele:z.tele})),
     built:built.map(o=>({...o})),
     trees:obs.filter(o=>o.t==='t').map(o=>({id:o.treeId,hits:o.woodHits||0,x:o.x,y:o.y,w:o.w,h:o.h,cr:o.cr,shade:o.shade})),
@@ -284,6 +284,12 @@ function worldSnapshot(){
 }
 function applyWorld(w){
   if(!w || net.host) return;
+  if(Number.isFinite(w.worldSeed) && (w.worldSeed>>>0)!==worldSeed){
+    buildWorld(w.worldSeed>>>0);
+    for(let i=0;i<chests.length;i++)chests[i].netId=i;
+    treeSeq=0;for(const o of obs)if(o.t==='t')o.treeId=treeSeq++;
+    rebuildGrid();rebuildMiniMapBase();
+  }
   level=w.level; score=w.score; kills=w.kills; money=w.money;
   queue=Array.isArray(w.queue)?w.queue:[];
   if(Array.isArray(w.zombies)){const next=[];for(let i=0;i<w.zombies.length;i++){const q=w.zombies[i],old=zombies[i];if(old&&old.type===q.type){Object.assign(old,q);next.push(old)}else next.push(Object.assign(makeZombie(q.type,q.x,q.y),q))}zombies=next;}
@@ -448,7 +454,7 @@ async function connectRoom(code, asHost){
     if(!payload||net.host)return;
     if(payload.hostId)net.hostId=payload.hostId;
     const mm=document.getElementById('mainGameMenu');if(mm)mm.classList.add('hidden');
-    if(state==='menu'){newGame();zombies=[];queue=[];state='playing';hideOverlay();if(net.channel)net.channel.send({type:'broadcast',event:'world_request',payload:{from:net.id}});}
+    if(state==='menu'){newGame(payload.worldSeed);zombies=[];queue=[];state='playing';hideOverlay();if(net.channel)net.channel.send({type:'broadcast',event:'world_request',payload:{from:net.id}});}
   });
   ch.on('broadcast',{event:'level_start'},({payload})=>{
     if(!payload || net.host) return;
@@ -685,7 +691,8 @@ function seeded(seed) {
    Dünya: evler (içi olan), ağaçlar, sandıklar
    ===================================================== */
 const WORLD = 3600, MID = WORLD / 2, ROAD = 170, CELL = 160, GN = Math.ceil(WORLD / CELL);
-const R = seeded(90210);
+let R = seeded(90210);
+let worldSeed = 90210;
 const rr = (a, b) => a + R() * (b - a);
 const houses = [], obs = [], chests = [], tufts = [], patches = [], abandonedCamps = [];
 let built = [];                       // oyuncunun kurduğu bloklar ve taretler
@@ -770,7 +777,10 @@ function makeHouse(c, id, roofs) {
   return hs;
 }
 
-(function buildWorld() {
+function buildWorld(seed=90210) {
+  worldSeed = (Number(seed)>>>0) || 90210;
+  R = seeded(worldSeed);
+  houses.length=0; obs.length=0; chests.length=0; tufts.length=0; patches.length=0; abandonedCamps.length=0;
   const roofs = ['#3a4046', '#4a3c37', '#34433d', '#3e3b4b', '#4b4a3a', '#3b4552'];
   let tries = 0;
   while (houses.length < 46 && tries++ < 8000) {
@@ -829,7 +839,10 @@ function makeHouse(c, id, roofs) {
     const tentData=offsets.map(([ox,oy])=>({x:x+ox,y:y+oy,a:0,loot:false,inside:false}));
     abandonedCamps.push({id:i,x,y,r:rad,tents:tentData,fire:i%2===0,medical:i===1||i===3,discovered:false,plot});
   }
-})();
+}
+
+// İlk açılışta bir önizleme dünyası kurulur; yeni oyunda yeni seed ile tekrar üretilir.
+buildWorld(90210);
 
 // Multiplayer için sandıkların ve ağaçların tüm istemcilerde aynı kimliği vardır.
 for (let i = 0; i < chests.length; i++) chests[i].netId = i;
@@ -1024,7 +1037,7 @@ function pushOut(e) {
 const MM = 176;
 const mmBase = document.createElement('canvas');
 mmBase.width = mmBase.height = MM;
-(function () {
+function rebuildMiniMapBase() {
   const c = mmBase.getContext('2d'), s = MM / WORLD;
   if (!c) return;
   c.fillStyle = '#16241b'; c.fillRect(0, 0, MM, MM);
@@ -1033,7 +1046,8 @@ mmBase.width = mmBase.height = MM;
   c.fillRect(0, (MID - ROAD / 2) * s, MM, ROAD * s);
   for (const h of houses) { c.fillStyle = '#7b848a'; c.fillRect(h.x * s, h.y * s, Math.max(3, h.w * s), Math.max(3, h.h * s)); }
   for (const o of obs) if (o.t === 't') { c.fillStyle = '#2c5a36'; c.fillRect(o.x * s - 1, o.y * s - 1, 3, 3); }
-})();
+}
+rebuildMiniMapBase();
 
 /* =====================================================
    Silahlar, zombiler, mağaza
@@ -1584,10 +1598,17 @@ function restoreSnap() {
   built = s.built; rebuildGrid();
 }
 
-function newGame() {
+function newGame(seedOverride) {
   clearTimeout(menuScareTimer);const js=document.getElementById('menuJumpScare');if(js)js.classList.remove('show');
   const mm=document.getElementById('mainGameMenu');if(mm)mm.classList.add('hidden');hideOverlay();
   money = 100; score = 0; kills = 0; level = 1;
+  // v102: Her yeni koşuda evler, ağaçlar, kasalar ve terk edilmiş çadır kampları yeni konumlarda doğar.
+  // Multiplayer'da hostun seed'i bütün oyunculara gönderilir; herkes aynı haritayı görür.
+  const nextSeed=Number.isFinite(Number(seedOverride))?(Number(seedOverride)>>>0):((Date.now()^Math.floor(Math.random()*0xffffffff))>>>0);
+  buildWorld(nextSeed);
+  for(let i=0;i<chests.length;i++)chests[i].netId=i;
+  treeSeq=0;for(const o of obs)if(o.t==='t')o.treeId=treeSeq++;
+  rebuildGrid();rebuildMiniMapBase();
   up = { wall: 0, turret: 0, hp: 0 }; gunUp=Object.fromEntries(GUN_ORDER.map(id=>[id,0])); perks={damage:0,speed:0,crit:0,lifesteal:0,mag:0,fire:0,fortify:0}; rareLoot=[]; inv.block=0; inv.door=0; inv.turret=0; inv.bomb=0; inv.medkit=0; inv.logs=0; inv.seeds=0; plantedTrees=[]; treeFalls=[]; nextPlantedTreeId=100000; treeNightCounter=0;
   for(const c of abandonedCamps){c.discovered=false;for(const t of c.tents){t.loot=false;t.inside=false;t.eLatch=false;}}
   player = newPlayer(); built = [
@@ -3458,7 +3479,7 @@ function bindMainGameMenu(){
  document.getElementById('multiBack').onclick=async()=>{if(net.connected)await leaveRoom();lobby.hidden=true;setup.hidden=true;cards.style.display='grid'};
  document.getElementById('menuCreateRoom').onclick=async()=>{const n=(name.value||'Oyuncu').slice(0,14);document.getElementById('netName').value=n;net.name=n;const rc=roomCode();code.value=rc;status.textContent='Oda oluşturuluyor… '+rc;await connectRoom(rc,true);if(net.connected){status.textContent='Oda hazır · Arkadaşlarının katılmasını bekle.';renderMainLobby()}};
  document.getElementById('menuJoinRoom').onclick=async()=>{const rc=clean(code.value);code.value=rc;if(rc.length!==6){status.textContent='6 karakterli oda kodunu yaz.';return}const n=(name.value||'Oyuncu').slice(0,14);document.getElementById('netName').value=n;net.name=n;status.textContent='Odaya bağlanılıyor… '+rc;await connectRoom(rc,false);if(net.connected){status.textContent='Odaya katıldın.';renderMainLobby()}};
- document.getElementById('menuStartGame').onclick=()=>{if(!net.connected||!net.host)return;net.hostId=net.id;newGame();if(net.channel)net.channel.send({type:'broadcast',event:'game_start',payload:{level:1,hostId:net.id}});adminWorldBroadcast()};
+ document.getElementById('menuStartGame').onclick=()=>{if(!net.connected||!net.host)return;net.hostId=net.id;newGame();if(net.channel)net.channel.send({type:'broadcast',event:'game_start',payload:{level:1,hostId:net.id,worldSeed}});adminWorldBroadcast()};
  code.addEventListener('input',()=>code.value=clean(code.value));
 }
 function bootGameUI(){
