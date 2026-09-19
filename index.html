@@ -1328,15 +1328,9 @@ function levelClear() {
   let bonus = 40 + level * 15; if(runEvent&&runEvent.id==='horde')bonus+=100;if(runEvent&&runEvent.id==='supply')bonus+=150; money += bonus; levelMoney += bonus;
   for (const o of built) o.hp = o.max;
   player.hp = Math.min(player.max, player.hp + 30);
-  const note = built.length ? `<div class="note">Bölüm ödülü: <b>$${bonus}</b>. Savunmalar onarıldı. Hazırlık sırasında haritada dolaşıp duvar/kapı/taret kurabilirsin.</div>`
-                            : `<div class="note">Bölüm ödülü: <b>$${bonus}</b>. Hazırlık sırasında üssünü kurabilirsin.</div>`;
-  showOverlay({
-    title: 'Bölüm ' + level + ' temizlendi',
-    text: 'Sonraki bölüm otomatik başlamaz. İstediğin kadar hazırlan, sonra sen başlat.',
-    extra: `<div class="stats"><div><b>${levelKills}</b>Bu bölümde öldürülen</div><div><b>$${money}</b>Paran</div><div><b>${score}</b>Puan</div></div>${note}`,
-    btn: 'Hazırlık moduna geç', onClick: startIntermission,
-    btn2: 'Mağaza', keep2: true, onClick2: openShop
-  });
+  // Bölüm biter bitmez oyuncuyu durdurmadan doğrudan hazırlık moduna geçir.
+  startIntermission();
+  toast('Bölüm '+level+' tamamlandı · +$'+bonus+' · Hazırlık zamanı');
 }
 function gameOver() {
   state = 'over';
@@ -2431,7 +2425,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v24';
+const GAME_VERSION = 'v25';
 
 function drawHUD() {
   const p = player, L = spec || levelSpec(1), narrow = W < 760;
