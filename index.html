@@ -1297,8 +1297,9 @@ function newGame() {
   money = 100; score = 0; kills = 0; level = 1;
   up = { wall: 0, turret: 0, hp: 0 }; gunUp=Object.fromEntries(GUN_ORDER.map(id=>[id,0])); perks={damage:0,speed:0,crit:0,lifesteal:0,mag:0,fire:0,fortify:0}; rareLoot=[]; inv.block=0; inv.door=0; inv.turret=0; inv.bomb=0; inv.medkit=0;
   player = newPlayer(); built = [
-    {t:'campfire',x:MID-72,y:MID+108,w:44,h:44,hp:9999,max:9999,sb:false,utility:true},
-    {t:'workbench',x:MID+36,y:MID+105,w:72,h:46,hp:9999,max:9999,sb:false,utility:true}
+    // Başlangıç kampı ana yol kavşağının tam merkezinde; oyuncunun doğduğu noktadan ayrı.
+    {t:'campfire',x:MID-22,y:MID-22,w:44,h:44,hp:9999,max:9999,sb:false,utility:true},
+    {t:'workbench',x:MID+58,y:MID-23,w:72,h:46,hp:9999,max:9999,sb:false,utility:true}
   ]; decals = []; rebuildGrid();
   beginLevel();
 }
@@ -1525,11 +1526,13 @@ function tryPlace(kind) {
     inv.block--;
     const hp = Math.round(BLOCK_HP * (1 + 0.5 * up.wall) * perkStats().fortify);
     built.push({ t: 'block', x: gx * 40, y: gy * 40, w: 40, h: 40, hp, max: hp, sb: false });
+    player.sel=Math.min(player.sel,Math.max(0,slots().length-1));
   } else if (kind === 'door') {
     if (inv.door <= 0) { toast('Werkbankta kapı üretmelisin'); return false; }
     inv.door--;
     const hp = Math.round(DOOR_HP * (1 + 0.5 * up.wall) * perkStats().fortify);
     built.push({ t: 'door', x: gx * 40, y: gy * 40, w: 40, h: 40, hp, max: hp, sb: false });
+    player.sel=Math.min(player.sel,Math.max(0,slots().length-1));
   } else {
     if (inv.turret <= 0) { toast('Werkbankta taret üretmelisin'); return false; }
     inv.turret--;
@@ -1873,7 +1876,9 @@ function update(dt) {
 
   // Eylemler
   p.cd -= dt; p.flash -= dt; p.hurt -= dt; mouse.buf -= dt;
-  const sl = slots()[p.sel] || slots()[0];
+  const activeSlots=slots();
+  if(p.sel>=activeSlots.length)p.sel=Math.max(0,activeSlots.length-1);
+  const sl = activeSlots[p.sel] || {k:'gun',id:'pistol'};
   const want = p.hp > 0 && (mouse.down || mouse.buf > 0);
   if (sl.k === 'gun') {
     const w = gunStats(sl.id);
@@ -1889,7 +1894,7 @@ function update(dt) {
     else if (sl.k === 'turret') {
       if (mouse.buf > 0) {
         if (inv.turret <= 0) toast('Taretin yok. Mağazadan al (Tab)');
-        else if (tryPlace('turret')) { inv.turret--; p.cd = 0.3; }
+        else if (tryPlace('turret')) { p.cd = 0.3; }
         mouse.buf = 0;
       }
     } else if (sl.k === 'bomb') {
@@ -2480,7 +2485,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v26';
+const GAME_VERSION = 'v27';
 
 function drawHUD() {
   const p = player, L = spec || levelSpec(1), narrow = W < 760;
