@@ -1103,7 +1103,7 @@ const GUNS = {
   sniper:  { name: 'Keskin nişancı',   price: 900,  mag: 5,   rate: 1.0,  reload: 2.4, dmg: 180, spread: .004, pellets: 1, auto: false, speed: 2800, range: 1900, kick: 10, len: 46, pierce: 4, desc: 'Tek atışta zombileri deler geçer; patronlara karşı çok etkili.' },
   minigun: { name: 'Minigun',          price: 2000, mag: 120, rate: .045, reload: 4.0, dmg: 24,  spread: .11,  pellets: 1, auto: true,  speed: 1500, range: 1000, kick: 3,  len: 38, pierce: 1, desc: 'Kurşun yağmuru. Ağır ve pahalı ama durdurulamaz.' }
 };
-const ADMIN_PASSWORD='zombi42';let adminUnlocked=false,adminGodMode=false,adminInfStamina=false,adminSpeed2=false,adminNoTarget=false,adminInfAmmo=false;
+const ADMIN_PASSWORD='Destur-1453';let adminUnlocked=false,adminGodMode=false,adminInfStamina=false,adminSpeed2=false,adminNoTarget=false,adminInfAmmo=false;
 function giveAdminGun(id){if(!player||!GUNS[id])return;if(!player.guns.includes(id))player.guns.push(id);player.ammo[id]=gunStats(id).mag;toast('Admin: '+GUNS[id].name+' verildi');}
 function adminSpawn(type){if(!player||!ZT[type])return;const a=Math.random()*TAU,d=220;const z=makeZombie(type,clamp(player.x+Math.cos(a)*d,50,WORLD-50),clamp(player.y+Math.sin(a)*d,50,WORLD-50));z.sleep=false;zombies.push(z);}
 function adminWorldBroadcast(){if(net.connected&&net.host&&net.channel)net.channel.send({type:'broadcast',event:'world',payload:worldSnapshot()});}
