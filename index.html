@@ -1299,7 +1299,7 @@ function newGame() {
   player = newPlayer(); built = [
     // Başlangıç kampı ana yol kavşağının tam merkezinde; oyuncunun doğduğu noktadan ayrı.
     {t:'campfire',x:MID-22,y:MID-22,w:44,h:44,hp:9999,max:9999,sb:false,utility:true},
-    {t:'workbench',x:MID+58,y:MID-23,w:72,h:46,hp:9999,max:9999,sb:false,utility:true}
+    {t:'workbench',x:MID-36,y:MID-112,w:72,h:46,hp:9999,max:9999,sb:false,utility:true}
   ]; decals = []; rebuildGrid();
   beginLevel();
 }
@@ -2504,7 +2504,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v28';
+const GAME_VERSION = 'v29';
 
 function drawHUD() {
   const p = player, L = spec || levelSpec(1), narrow = W < 760;
