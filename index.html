@@ -18,59 +18,10 @@ html, body, #artifacts-component-root-html {
   height: 100vh !important;
 }
 
-/* Shop weapon previews: detailed DOM-only weapon illustrations. */
-.gunPreview{height:92px;margin:8px 0 8px;border:1px solid #314238;border-radius:7px;background:linear-gradient(180deg,rgba(12,24,18,.95),rgba(3,10,7,.95));position:relative;overflow:hidden;box-shadow:inset 0 0 24px rgba(0,0,0,.38)}
-.gunPreview:after{content:"";position:absolute;left:7%;right:7%;bottom:10px;height:1px;background:linear-gradient(90deg,transparent,rgba(206,220,211,.18),transparent)}
-.gunShape{position:absolute;left:50%;top:48%;width:230px;height:62px;transform:translate(-50%,-50%);filter:drop-shadow(0 5px 3px rgba(0,0,0,.55))}
-.gunShape:before,.gunShape:after,.gunShape i,.gunShape em,.gunShape span{content:"";position:absolute;display:block;box-sizing:border-box}
-.gunShape:before{background:linear-gradient(#9ca6aa,#606b70);border:2px solid #1d2427;height:17px;top:19px;left:57px;width:115px;border-radius:3px}
-.gunShape:after{background:linear-gradient(100deg,#3d474c,#171d20);border:2px solid #111719;width:19px;height:32px;left:91px;top:33px;transform:skew(-8deg);border-radius:0 0 3px 3px}
-.gunShape i{background:linear-gradient(#d3dadd,#8e999e);border:1px solid #20272a;height:8px;left:168px;top:23px;width:54px;border-radius:0 5px 5px 0}
-.gunShape em{background:linear-gradient(155deg,#9a693a,#57371e);border:1px solid #302014;width:66px;height:19px;left:3px;top:25px;transform:skew(-25deg);border-radius:2px}
-.gunShape span{background:#d9b650;box-shadow:0 0 5px rgba(255,207,78,.3);width:11px;height:5px;left:53px;top:11px;border-radius:2px}
-
-/* Pistol: compact slide, trigger guard and angled grip */
-.gun-pistol .gunShape{width:150px}
-.gun-pistol .gunShape:before{left:20px;top:15px;width:86px;height:20px;background:linear-gradient(#b9c1c4 0 42%,#778287 43% 100%);border-radius:5px 7px 2px 2px}
-.gun-pistol .gunShape:after{left:60px;top:31px;width:25px;height:37px;transform:skew(-11deg);background:repeating-linear-gradient(90deg,#242c30 0 4px,#3d474b 4px 7px)}
-.gun-pistol .gunShape i{left:101px;top:20px;width:28px;height:7px;background:#9ba5a9}
-.gun-pistol .gunShape em{left:46px;top:31px;width:25px;height:18px;transform:none;background:transparent;border:4px solid #30393d;border-radius:0 0 13px 13px}
-.gun-pistol .gunShape span{left:30px;top:20px;width:25px;height:3px;background:#252c2f;box-shadow:43px 0 0 #252c2f}
-
-/* Shotgun: long twin-tone barrel, pump fore-end and wooden stock */
-.gun-shotgun .gunShape:before{left:61px;top:19px;width:142px;height:8px;background:linear-gradient(#d5dcde,#747f84);box-shadow:0 9px 0 #657176}
-.gun-shotgun .gunShape i{left:198px;top:20px;width:28px;height:6px}
-.gun-shotgun .gunShape:after{left:105px;top:32px;width:20px;height:27px}
-.gun-shotgun .gunShape em{left:3px;top:26px;width:73px;height:21px;background:linear-gradient(155deg,#a06b39,#57361d)}
-.gun-shotgun .gunShape span{left:70px;top:30px;width:48px;height:15px;background:repeating-linear-gradient(90deg,#6e4727 0 5px,#925f34 5px 8px);box-shadow:none;transform:skew(-8deg)}
-
-/* SMG: short tactical receiver, curved magazine, compact stock */
-.gun-smg .gunShape:before{left:56px;top:16px;width:105px;height:25px;background:linear-gradient(#626d72,#30393d)}
-.gun-smg .gunShape:after{left:92px;top:38px;width:22px;height:32px;transform:skew(-6deg);background:linear-gradient(100deg,#475156,#1e2528)}
-.gun-smg .gunShape i{left:157px;top:22px;width:54px;height:8px;background:#8c989d}
-.gun-smg .gunShape em{left:8px;top:24px;width:58px;height:16px;transform:none;background:transparent;border:5px solid #465055;border-right-width:9px}
-.gun-smg .gunShape span{left:69px;top:8px;width:35px;height:8px;background:#222a2d;box-shadow:45px 0 0 #222a2d}
-
-/* Assault rifle: receiver, handguard, magazine and skeletal stock */
-.gun-rifle .gunShape:before{left:70px;top:17px;width:100px;height:21px;background:linear-gradient(#69757a,#30383c);box-shadow:42px 2px 0 -5px #4b565b}
-.gun-rifle .gunShape i{left:164px;top:22px;width:60px;height:7px;background:linear-gradient(#c5ced1,#778287)}
-.gun-rifle .gunShape:after{left:107px;top:35px;width:23px;height:34px;transform:skew(-10deg);background:linear-gradient(100deg,#4e595e,#20272a)}
-.gun-rifle .gunShape em{left:4px;top:23px;width:76px;height:24px;transform:none;background:linear-gradient(155deg,#75502f,#3d2a1c);clip-path:polygon(0 35%,70% 0,100% 35%,70% 55%,30% 100%,0 85%)}
-.gun-rifle .gunShape span{left:80px;top:7px;width:49px;height:8px;background:#242c2f;box-shadow:0 0 0 1px #111}
-
-/* Sniper: extra-long barrel, prominent scope, bolt receiver */
-.gun-sniper .gunShape:before{left:54px;top:28px;width:119px;height:11px;background:linear-gradient(#6c787d,#30383c)}
-.gun-sniper .gunShape i{left:167px;top:31px;width:62px;height:5px;background:#c0c9cc}
-.gun-sniper .gunShape:after{left:87px;top:37px;width:20px;height:29px}
-.gun-sniper .gunShape em{left:3px;top:31px;width:65px;height:18px;background:linear-gradient(155deg,#8b5c34,#4e321d)}
-.gun-sniper .gunShape span{left:69px;top:8px;width:76px;height:14px;background:linear-gradient(#7ca7bd,#365766);border:3px solid #20282c;border-radius:9px;box-shadow:-9px 3px 0 -4px #20282c,9px 3px 0 -4px #20282c}
-
-/* Minigun: motor housing, rotary barrel cluster and rear grip */
-.gun-minigun .gunShape:before{left:52px;top:17px;width:70px;height:31px;border-radius:8px;background:linear-gradient(#7a858a,#394246)}
-.gun-minigun .gunShape i{left:116px;top:18px;width:104px;height:5px;background:#c7d0d3;box-shadow:0 8px 0 #9eaaae,0 16px 0 #c7d0d3,0 24px 0 #899599}
-.gun-minigun .gunShape:after{left:70px;top:43px;width:20px;height:28px}
-.gun-minigun .gunShape em{left:13px;top:23px;width:42px;height:42px;border-radius:50%;transform:none;background:radial-gradient(circle at 35% 35%,#7b878c,#30383c 65%);border:3px solid #1d2427}
-.gun-minigun .gunShape span{left:35px;top:9px;width:41px;height:8px;background:#30383c;box-shadow:none}
+/* Shop weapon previews: real photographic assets, isolated from game canvas. */
+.gunPhoto{height:112px;margin:8px 0 9px;border:1px solid #314238;border-radius:7px;background:radial-gradient(circle at 50% 45%,#25332c 0,#0c1712 58%,#06100b 100%);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;box-shadow:inset 0 0 28px rgba(0,0,0,.48)}
+.gunPhoto:after{content:"";position:absolute;left:8%;right:8%;bottom:11px;height:8px;border-radius:50%;background:rgba(0,0,0,.36);filter:blur(5px)}
+.gunPhoto img{position:relative;z-index:1;display:block;max-width:92%;max-height:94px;width:auto;height:auto;object-fit:contain;filter:drop-shadow(0 8px 5px rgba(0,0,0,.72)) contrast(1.08) saturate(.9)}
 </style>
 
 <title>Zombi İstilası</title>
@@ -1045,22 +996,40 @@ function tone(f0, f1, dur, vol, type, delay) {
   g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.001, t + dur);
   o.connect(g); g.connect(AC.destination); o.start(t); o.stop(t + dur);
 }
+function gunReport(kind){
+  if(!AC||muted)return;
+  const cfg={
+    pistol:[.13,1450,.52,150,48,.22],
+    smg:[.075,1850,.30,175,65,.12],
+    rifle:[.11,1250,.48,135,42,.20],
+    minigun:[.06,1650,.24,155,58,.10],
+    shotgun:[.28,650,.82,95,28,.42],
+    sniper:[.34,520,.90,78,24,.48]
+  }[kind]||[.12,1200,.4,130,40,.2];
+  const [dur,freq,vol,lo,hi,punch]=cfg;
+  noise(dur,freq,.55,vol);
+  tone(lo,hi,dur*.72,punch,'sawtooth');
+  // muzzle crack
+  noise(Math.min(.035,dur),Math.min(4200,freq*2.4),1.5,Math.min(.7,vol*.8));
+  // short outdoor/room reflection
+  setTimeout(()=>{ if(AC&&!muted) noise(Math.min(.08,dur*.45),Math.max(280,freq*.55),.8,vol*.13); },45);
+}
 let lastSfx = {};
 function sfx(n) {
   const now = performance.now();
   if (lastSfx[n] && now - lastSfx[n] < 40) return; lastSfx[n] = now;
   switch (n) {
-    case 'shot_pistol': noise(.09, 1800, .8, .35); tone(220, 60, .08, .22, 'square'); break;
-    case 'shot_smg': noise(.06, 2600, .7, .22); tone(200, 80, .05, .12, 'square'); break;
-    case 'shot_rifle': noise(.07, 2200, .7, .28); tone(170, 70, .06, .16, 'square'); break;
-    case 'shot_minigun': noise(.05, 2000, .7, .2); break;
-    case 'shot_shotgun': noise(.2, 900, .6, .6); tone(140, 40, .16, .35, 'sawtooth'); break;
-    case 'shot_sniper': noise(.3, 700, .5, .7); tone(120, 30, .3, .4, 'sawtooth'); break;
+    case 'shot_pistol': gunReport('pistol'); break;
+    case 'shot_smg': gunReport('smg'); break;
+    case 'shot_rifle': gunReport('rifle'); break;
+    case 'shot_minigun': gunReport('minigun'); break;
+    case 'shot_shotgun': gunReport('shotgun'); break;
+    case 'shot_sniper': gunReport('sniper'); break;
     case 'tur': noise(.04, 2800, .8, .08); break;
     case 'hit': noise(.05, 500, 1, .2); break;
     case 'die': tone(130, 45, .28, .16, 'sawtooth'); break;
     case 'hurt': tone(190, 80, .16, .28, 'square'); break;
-    case 'reload': tone(900, 600, .04, .12, 'square'); tone(700, 900, .05, .12, 'square', .16); break;
+    case 'reload': noise(.025,2400,2,.10); tone(620,410,.035,.09,'square'); setTimeout(()=>{noise(.03,1900,2,.12);tone(420,720,.04,.08,'square');},135); break;
     case 'empty': tone(300, 200, .03, .1, 'square'); break;
     case 'pick': tone(500, 900, .12, .16, 'sine'); break;
     case 'coin': tone(900, 1400, .1, .12, 'triangle'); break;
@@ -1392,10 +1361,20 @@ function renderShop() {
       card.innerHTML = `<b></b><div class="d"></div><div class="s"></div>`;
       card.children[0].textContent = it.name; card.children[1].textContent = it.desc; card.children[2].textContent = stats;
       if (it.gun) {
+        const gunPhotos={
+          shotgun:'https://commons.wikimedia.org/wiki/Special:FilePath/Remington_Model_10-A_Slide_Action_Shotgun_transparent.png',
+          smg:'https://commons.wikimedia.org/wiki/Special:FilePath/Uzi-nobg.png',
+          rifle:'https://commons.wikimedia.org/wiki/Special:FilePath/M4-Transparent.png',
+          sniper:'https://commons.wikimedia.org/wiki/Special:FilePath/MK_17_Sniper_Support_Rifle.png',
+          minigun:'https://commons.wikimedia.org/wiki/Special:FilePath/XM214_Minigun.jpg',
+          pistol:'https://commons.wikimedia.org/wiki/Special:FilePath/Glock_17_MOD_45154998_(Transparent).png'
+        };
         const preview=document.createElement('div');
-        preview.className='gunPreview gun-'+it.gun;
-        preview.innerHTML='<div class="gunShape"><i></i><em></em><span></span></div>';
-        card.insertBefore(preview, card.children[1]);
+        preview.className='gunPhoto';
+        const img=document.createElement('img');
+        img.src=gunPhotos[it.gun]||gunPhotos.pistol; img.alt=it.name;
+        img.loading='lazy'; img.referrerPolicy='no-referrer';
+        preview.appendChild(img); card.insertBefore(preview,card.children[1]);
       }
       const b = document.createElement('button');
       b.textContent=st==='max'?'Maksimum upgrade 3/3':st==='upgrade'?'$'+GUN_UPGRADE_COST[it.gun]+' · Upgrade '+(gunLevel(it.gun)+1)+'/3':st==='poorup'?'$'+GUN_UPGRADE_COST[it.gun]+' · Upgrade için para yetersiz':st==='poor'?'$'+it.price+' · Yetersiz para':'$'+it.price+' · Satın al';
@@ -2345,7 +2324,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v14';
+const GAME_VERSION = 'v15';
 
 function drawHUD() {
   const p = player, L = spec || levelSpec(1), narrow = W < 760;
