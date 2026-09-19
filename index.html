@@ -22,7 +22,6 @@ html, body, #artifacts-component-root-html {
 .gunPhoto{height:112px;margin:8px 0 9px;border:1px solid #314238;border-radius:7px;background:radial-gradient(circle at 50% 45%,#25332c 0,#0c1712 58%,#06100b 100%);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;box-shadow:inset 0 0 28px rgba(0,0,0,.48)}
 .gunPhoto:after{content:"";position:absolute;left:8%;right:8%;bottom:11px;height:8px;border-radius:50%;background:rgba(0,0,0,.36);filter:blur(5px)}
 .gunPhoto img{position:relative;z-index:1;display:block;max-width:92%;max-height:94px;width:auto;height:auto;object-fit:contain;filter:drop-shadow(0 8px 5px rgba(0,0,0,.72)) contrast(1.12) saturate(.92)}
-.gunPhoto img.minigunPhoto{width:94%;height:94px;max-width:none;max-height:none;object-fit:cover;object-position:center 46%;border-radius:3px;mix-blend-mode:screen;filter:contrast(1.18) brightness(.88) saturate(.78) drop-shadow(0 8px 5px rgba(0,0,0,.72))}
 </style>
 
 <title>Zombi İstilası</title>
@@ -1373,13 +1372,12 @@ function renderShop() {
         const preview=document.createElement('div');
         preview.className='gunPhoto';
         const realisticLower={
-          sniper:'https://pngimg.com/uploads/sniper_rifle/sniper_rifle_PNG51.png',
-          minigun:'https://i.shgcdn.com/6592278b-fe1d-4d3a-b8f2-afa9db7856d8/-/format/auto/-/preview/3000x3000/-/quality/lighter/'
+          sniper:'https://toppng.com/uploads/preview/metal-sniper-station-11530957738rutui1qacl.png',
+          minigun:'https://toppng.com/uploads/preview/minigun-png-11530958294dbhtbzwqaz.png'
         };
         const img=document.createElement('img');
         img.src=realisticLower[it.gun]||gunPhotos[it.gun]||gunPhotos.pistol;
         img.alt=it.name; img.loading='lazy'; img.referrerPolicy='no-referrer';
-        if(it.gun==='minigun') img.className='photoCrop minigunPhoto';
         preview.appendChild(img);
         card.insertBefore(preview,card.children[1]);
       }
@@ -2331,7 +2329,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v20';
+const GAME_VERSION = 'v21';
 
 function drawHUD() {
   const p = player, L = spec || levelSpec(1), narrow = W < 760;
