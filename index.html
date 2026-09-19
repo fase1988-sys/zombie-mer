@@ -1585,6 +1585,8 @@ function canPlace(gx, gy) {
   if (player.hi >= 0) return false;
   for (const h of houses) if (x < h.x + h.w + 28 && x + 40 > h.x - 28 && y < h.y + h.h + 28 && y + 40 > h.y - 28) return false;
   if (!rectFree(x, y, 40, 40)) return false;
+  // Kamp ateşi/tezgâh grid dışında tutuluyor; yerleştirme sırasında ayrıca çakışmayı engelle.
+  for(const o of built)if(o.utility && x<o.x+o.w+8 && x+40>o.x-8 && y<o.y+o.h+8 && y+40>o.y-8)return false;
   if (distToRect(player.x, player.y, rect) < player.r + 3) return false;
   for (const z of zombies) if (distToRect(z.x, z.y, rect) < z.r) return false;
   return true;
@@ -1610,6 +1612,7 @@ function tryPlace(kind) {
     inv.turret--;
     const hp = TURRET_HP;
     built.push({ t: 'turret', x: gx * 40 + 2, y: gy * 40 + 2, w: 36, h: 36, hp, max: hp, sb: false, cd: 0, ang: 0 });
+    player.sel=Math.min(player.sel,Math.max(0,slots().length-1));
   }
   rebuildGrid(); sfx('place');
   return true;
@@ -2170,9 +2173,12 @@ function update(dt) {
   }
 
   // Taretler
-  for (const o of built) {
+  // Online oyunda mermi/zombi dünyası host-authoritative; misafir taret simülasyonu çalıştırmaz.
+  if(!net.connected || net.host) for (const o of built) {
     if (o.t !== 'turret') continue;
-    o.cd -= dt;
+    if(!Number.isFinite(o.cd))o.cd=0;
+    if(!Number.isFinite(o.ang))o.ang=0;
+    o.cd = Math.max(-1,o.cd-dt);
     let best = null, bd = 420;
     const cx = o.x + o.w / 2, cy = o.y + o.h / 2;
     for (const z of zombies) {
@@ -2628,7 +2634,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v41';
+const GAME_VERSION = 'v42';
 
 function drawHUD() {
   const p = player, L = spec || levelSpec(1), narrow = W < 760;
