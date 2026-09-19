@@ -724,13 +724,16 @@ function makeHouse(c, id, roofs) {
   }
   d.w = dw; hs.door = d;
   hs.inner = { x: c.x + T, y: c.y + T, w: c.w - 2 * T, h: c.h - 2 * T };
-  // Tüm evler tam olarak 2 katlıdır.
-  hs.floors = 2;
-  if(side==='N') hs.stairs={x:c.x+c.w-62,y:c.y+c.h+18,w:44,h:72};
-  else if(side==='S') hs.stairs={x:c.x+18,y:c.y-90,w:44,h:72};
-  else if(side==='W') hs.stairs={x:c.x+c.w+18,y:c.y+18,w:72,h:44};
-  else hs.stairs={x:c.x-90,y:c.y+c.h-62,w:72,h:44};
-  hs.stairs.outside=true;
+  // Evlerin bir kısmı tek katlı, bir kısmı 2 katlıdır.
+  hs.floors = R() < 0.38 ? 2 : 1;
+  hs.stairs = null;
+  if(hs.floors===2){
+    if(side==='N') hs.stairs={x:c.x+c.w-62,y:c.y+c.h+18,w:44,h:72};
+    else if(side==='S') hs.stairs={x:c.x+18,y:c.y-90,w:44,h:72};
+    else if(side==='W') hs.stairs={x:c.x+c.w+18,y:c.y+18,w:72,h:44};
+    else hs.stairs={x:c.x-90,y:c.y+c.h-62,w:72,h:44};
+    hs.stairs.outside=true;
+  }
 
   const x = c.x, y = c.y, w = c.w, h = c.h, segs = [];
   if (side === 'N') segs.push([x, y, d.x - dw / 2 - x, T], [d.x + dw / 2, y, x + w - (d.x + dw / 2), T]); else segs.push([x, y, w, T]);
@@ -782,8 +785,8 @@ function makeHouse(c, id, roofs) {
       hs.chests.push(placed); chests.push(placed); obs.push(placed);
     }
   }
-  // 2. kat sandıkları 1. kattan tamamen bağımsızdır.
-  const downstairs=hs.chests.filter(q=>(q.floor||1)===1).slice();
+  // Yalnızca 2 katlı evlerde bağımsız üst kat sandıkları oluştur.
+  const downstairs=hs.floors===2?hs.chests.filter(q=>(q.floor||1)===1).slice():[];
   for(const q of downstairs){
     const up={x:inn.x+inn.w-(q.x-inn.x)-q.w,y:inn.y+inn.h-(q.y-inn.y)-q.h,w:q.w,h:q.h,t:'k',sb:false,open:false,floor:2,hs};
     // Merdivenin üstüne sandık koyma.
