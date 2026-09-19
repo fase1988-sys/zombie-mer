@@ -18,21 +18,59 @@ html, body, #artifacts-component-root-html {
   height: 100vh !important;
 }
 
-/* Shop weapon previews: DOM-only, independent from the game canvas. */
-.gunPreview{height:72px;margin:8px 0 7px;border:1px solid #314238;border-radius:6px;background:rgba(4,12,8,.55);position:relative;overflow:hidden}
-.gunShape{position:absolute;left:50%;top:50%;width:190px;height:44px;transform:translate(-50%,-50%)}
+/* Shop weapon previews: detailed DOM-only weapon illustrations. */
+.gunPreview{height:92px;margin:8px 0 8px;border:1px solid #314238;border-radius:7px;background:linear-gradient(180deg,rgba(12,24,18,.95),rgba(3,10,7,.95));position:relative;overflow:hidden;box-shadow:inset 0 0 24px rgba(0,0,0,.38)}
+.gunPreview:after{content:"";position:absolute;left:7%;right:7%;bottom:10px;height:1px;background:linear-gradient(90deg,transparent,rgba(206,220,211,.18),transparent)}
+.gunShape{position:absolute;left:50%;top:48%;width:230px;height:62px;transform:translate(-50%,-50%);filter:drop-shadow(0 5px 3px rgba(0,0,0,.55))}
 .gunShape:before,.gunShape:after,.gunShape i,.gunShape em,.gunShape span{content:"";position:absolute;display:block;box-sizing:border-box}
-.gunShape:before{background:#aeb8bd;border:2px solid #20272a;height:12px;top:10px;left:35px;width:110px;border-radius:2px}
-.gunShape:after{background:#505a5f;border:2px solid #20272a;width:18px;height:27px;left:66px;top:20px;transform:skew(-8deg)}
-.gunShape i{background:#c7d0d4;height:6px;left:140px;top:13px;width:42px;border-radius:0 4px 4px 0}
-.gunShape em{background:#79512d;width:45px;height:15px;left:3px;top:15px;transform:skew(-24deg)}
-.gunShape span{background:#d7b45c;width:9px;height:5px;left:27px;top:5px}
-.gun-pistol .gunShape{width:120px}.gun-pistol .gunShape:before{left:18px;width:62px;height:15px}.gun-pistol .gunShape:after{left:49px;top:22px;width:18px;height:25px}.gun-pistol .gunShape i{left:78px;width:20px}.gun-pistol .gunShape em{display:none}
-.gun-shotgun .gunShape:before{left:45px;width:125px;height:7px;top:12px}.gun-shotgun .gunShape i{left:45px;width:120px;height:5px;top:23px}.gun-shotgun .gunShape:after{left:85px;top:24px;height:18px}.gun-shotgun .gunShape em{left:3px;width:58px;top:17px}
-.gun-smg .gunShape:before{left:35px;width:95px;height:20px;top:8px}.gun-smg .gunShape i{left:126px;width:42px;top:14px}.gun-smg .gunShape:after{left:72px;top:26px;height:24px}.gun-smg .gunShape em{left:12px;width:35px;height:13px;top:18px}
-.gun-rifle .gunShape:before{left:48px;width:102px}.gun-rifle .gunShape i{left:145px;width:40px}.gun-rifle .gunShape:after{left:88px}.gun-rifle .gunShape em{left:5px;width:62px}
-.gun-sniper .gunShape:before{left:28px;width:120px;height:8px;top:17px}.gun-sniper .gunShape i{left:143px;width:46px;top:18px;height:4px}.gun-sniper .gunShape em{left:2px;width:47px;top:18px;height:12px}.gun-sniper .gunShape span{left:72px;top:4px;width:50px;height:9px;border:2px solid #20272a;border-radius:5px;background:#6d9ab5}
-.gun-minigun .gunShape:before{left:25px;width:70px;height:24px;top:9px}.gun-minigun .gunShape i{left:90px;width:94px;height:4px;top:10px;box-shadow:0 8px 0 #c7d0d4,0 16px 0 #c7d0d4}.gun-minigun .gunShape:after{left:55px;top:29px}.gun-minigun .gunShape em{width:30px;height:30px;border-radius:50%;left:10px;top:20px;transform:none;background:#505a5f}
+.gunShape:before{background:linear-gradient(#9ca6aa,#606b70);border:2px solid #1d2427;height:17px;top:19px;left:57px;width:115px;border-radius:3px}
+.gunShape:after{background:linear-gradient(100deg,#3d474c,#171d20);border:2px solid #111719;width:19px;height:32px;left:91px;top:33px;transform:skew(-8deg);border-radius:0 0 3px 3px}
+.gunShape i{background:linear-gradient(#d3dadd,#8e999e);border:1px solid #20272a;height:8px;left:168px;top:23px;width:54px;border-radius:0 5px 5px 0}
+.gunShape em{background:linear-gradient(155deg,#9a693a,#57371e);border:1px solid #302014;width:66px;height:19px;left:3px;top:25px;transform:skew(-25deg);border-radius:2px}
+.gunShape span{background:#d9b650;box-shadow:0 0 5px rgba(255,207,78,.3);width:11px;height:5px;left:53px;top:11px;border-radius:2px}
+
+/* Pistol: compact slide, trigger guard and angled grip */
+.gun-pistol .gunShape{width:150px}
+.gun-pistol .gunShape:before{left:20px;top:15px;width:86px;height:20px;background:linear-gradient(#b9c1c4 0 42%,#778287 43% 100%);border-radius:5px 7px 2px 2px}
+.gun-pistol .gunShape:after{left:60px;top:31px;width:25px;height:37px;transform:skew(-11deg);background:repeating-linear-gradient(90deg,#242c30 0 4px,#3d474b 4px 7px)}
+.gun-pistol .gunShape i{left:101px;top:20px;width:28px;height:7px;background:#9ba5a9}
+.gun-pistol .gunShape em{left:46px;top:31px;width:25px;height:18px;transform:none;background:transparent;border:4px solid #30393d;border-radius:0 0 13px 13px}
+.gun-pistol .gunShape span{left:30px;top:20px;width:25px;height:3px;background:#252c2f;box-shadow:43px 0 0 #252c2f}
+
+/* Shotgun: long twin-tone barrel, pump fore-end and wooden stock */
+.gun-shotgun .gunShape:before{left:61px;top:19px;width:142px;height:8px;background:linear-gradient(#d5dcde,#747f84);box-shadow:0 9px 0 #657176}
+.gun-shotgun .gunShape i{left:198px;top:20px;width:28px;height:6px}
+.gun-shotgun .gunShape:after{left:105px;top:32px;width:20px;height:27px}
+.gun-shotgun .gunShape em{left:3px;top:26px;width:73px;height:21px;background:linear-gradient(155deg,#a06b39,#57361d)}
+.gun-shotgun .gunShape span{left:70px;top:30px;width:48px;height:15px;background:repeating-linear-gradient(90deg,#6e4727 0 5px,#925f34 5px 8px);box-shadow:none;transform:skew(-8deg)}
+
+/* SMG: short tactical receiver, curved magazine, compact stock */
+.gun-smg .gunShape:before{left:56px;top:16px;width:105px;height:25px;background:linear-gradient(#626d72,#30393d)}
+.gun-smg .gunShape:after{left:92px;top:38px;width:22px;height:32px;transform:skew(-6deg);background:linear-gradient(100deg,#475156,#1e2528)}
+.gun-smg .gunShape i{left:157px;top:22px;width:54px;height:8px;background:#8c989d}
+.gun-smg .gunShape em{left:8px;top:24px;width:58px;height:16px;transform:none;background:transparent;border:5px solid #465055;border-right-width:9px}
+.gun-smg .gunShape span{left:69px;top:8px;width:35px;height:8px;background:#222a2d;box-shadow:45px 0 0 #222a2d}
+
+/* Assault rifle: receiver, handguard, magazine and skeletal stock */
+.gun-rifle .gunShape:before{left:70px;top:17px;width:100px;height:21px;background:linear-gradient(#69757a,#30383c);box-shadow:42px 2px 0 -5px #4b565b}
+.gun-rifle .gunShape i{left:164px;top:22px;width:60px;height:7px;background:linear-gradient(#c5ced1,#778287)}
+.gun-rifle .gunShape:after{left:107px;top:35px;width:23px;height:34px;transform:skew(-10deg);background:linear-gradient(100deg,#4e595e,#20272a)}
+.gun-rifle .gunShape em{left:4px;top:23px;width:76px;height:24px;transform:none;background:linear-gradient(155deg,#75502f,#3d2a1c);clip-path:polygon(0 35%,70% 0,100% 35%,70% 55%,30% 100%,0 85%)}
+.gun-rifle .gunShape span{left:80px;top:7px;width:49px;height:8px;background:#242c2f;box-shadow:0 0 0 1px #111}
+
+/* Sniper: extra-long barrel, prominent scope, bolt receiver */
+.gun-sniper .gunShape:before{left:54px;top:28px;width:119px;height:11px;background:linear-gradient(#6c787d,#30383c)}
+.gun-sniper .gunShape i{left:167px;top:31px;width:62px;height:5px;background:#c0c9cc}
+.gun-sniper .gunShape:after{left:87px;top:37px;width:20px;height:29px}
+.gun-sniper .gunShape em{left:3px;top:31px;width:65px;height:18px;background:linear-gradient(155deg,#8b5c34,#4e321d)}
+.gun-sniper .gunShape span{left:69px;top:8px;width:76px;height:14px;background:linear-gradient(#7ca7bd,#365766);border:3px solid #20282c;border-radius:9px;box-shadow:-9px 3px 0 -4px #20282c,9px 3px 0 -4px #20282c}
+
+/* Minigun: motor housing, rotary barrel cluster and rear grip */
+.gun-minigun .gunShape:before{left:52px;top:17px;width:70px;height:31px;border-radius:8px;background:linear-gradient(#7a858a,#394246)}
+.gun-minigun .gunShape i{left:116px;top:18px;width:104px;height:5px;background:#c7d0d3;box-shadow:0 8px 0 #9eaaae,0 16px 0 #c7d0d3,0 24px 0 #899599}
+.gun-minigun .gunShape:after{left:70px;top:43px;width:20px;height:28px}
+.gun-minigun .gunShape em{left:13px;top:23px;width:42px;height:42px;border-radius:50%;transform:none;background:radial-gradient(circle at 35% 35%,#7b878c,#30383c 65%);border:3px solid #1d2427}
+.gun-minigun .gunShape span{left:35px;top:9px;width:41px;height:8px;background:#30383c;box-shadow:none}
 </style>
 
 <title>Zombi İstilası</title>
@@ -2307,7 +2345,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v13';
+const GAME_VERSION = 'v14';
 
 function drawHUD() {
   const p = player, L = spec || levelSpec(1), narrow = W < 760;
