@@ -754,7 +754,7 @@ function rebuildGrid() {
     for (let gy = y0; gy <= y1; gy++) for (let gx = x0; gx <= x1; gx++) grid[gy * GN + gx].push(o);
   };
   for (const o of obs) add(o);
-  for (const o of built) add(o);
+  for (const o of built) if(!o.utility) add(o);
 }
 rebuildGrid();
 
@@ -1531,6 +1531,8 @@ function tryPlace(kind) {
     const hp = Math.round(DOOR_HP * (1 + 0.5 * up.wall) * perkStats().fortify);
     built.push({ t: 'door', x: gx * 40, y: gy * 40, w: 40, h: 40, hp, max: hp, sb: false });
   } else {
+    if (inv.turret <= 0) { toast('Werkbankta taret üretmelisin'); return false; }
+    inv.turret--;
     const hp = TURRET_HP;
     built.push({ t: 'turret', x: gx * 40 + 2, y: gy * 40 + 2, w: 36, h: 36, hp, max: hp, sb: false, cd: 0, ang: 0 });
   }
@@ -1560,7 +1562,7 @@ function damageBuilt(o, d) {
 }
 function nearestBuilt(z) {
   let best = null, bd = z.r + 8;
-  for (const o of built) { const d = distToRect(z.x, z.y, o); if (d < bd) { bd = d; best = o; } }
+  for (const o of built) { if(o.utility)continue; const d = distToRect(z.x, z.y, o); if (d < bd) { bd = d; best = o; } }
   return best;
 }
 function builtBlockingPath(z, victim) {
@@ -2478,7 +2480,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v25';
+const GAME_VERSION = 'v26';
 
 function drawHUD() {
   const p = player, L = spec || levelSpec(1), narrow = W < 760;
