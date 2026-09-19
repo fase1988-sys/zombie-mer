@@ -1241,7 +1241,20 @@ function upgradeWall(o){
   const lvl=clamp(Number(o.wallTier)||1,1,WALL_TIERS.length);
   if(lvl>=WALL_TIERS.length){toast('Bu duvar maksimum seviyede · ALTIN');return false;}
   const next=WALL_TIERS[lvl],cost=next.cost;
-  if(money<cost){toast(next.name+' duvar için 
+  if(money<cost){toast(next.name+' duvar için $'+cost+' gerekli');return false;}
+  money-=cost;
+  const oldMax=Math.max(1,Number(o.max)||BLOCK_HP);
+  const ratio=clamp((Number(o.hp)||oldMax)/oldMax,0,1);
+  const base=Number(o.wallBaseMax)||Math.round(oldMax/WALL_TIERS[lvl-1].mult);
+  o.wallBaseMax=base;
+  o.wallTier=lvl+1;
+  o.max=Math.round(base*next.mult);
+  o.hp=Math.max(1,Math.round(o.max*ratio));
+  sfx('buy');
+  floatText(o.x+o.w/2,o.y-16,next.name+' · LV '+(lvl+1),'#f0d36b');
+  toast('Duvar güçlendirildi: '+next.name+' · $'+cost);
+  return true;
+}
 
 /* Mağaza envanteri */
 const inv = { block: 0, door: 0, turret: 0, bomb: 0, medkit: 0, logs: 0, seeds: 0 };
