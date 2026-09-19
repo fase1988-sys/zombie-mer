@@ -1103,6 +1103,7 @@ let shopPrev = null;
 let level = 1, score = 0, kills = 0, levelKills = 0, money = 0, levelMoney = 0, spec = null, snap = null;
 let player = null, zombies = [], bullets = [], drops = [], decals = [], parts = [], queue = [], bombs = [], floats = [], toasts = [];
 let spawnT = 0, banner = null, shake = 0, anim = 0, last = performance.now(), nearChest = null;
+let dayPhase='night', prepLeft=0, duskFade=0;
 const cam = { x: 0, y: 0 };
 let uiRects = { slots: [], shop: null, chest: null };
 
@@ -1186,7 +1187,6 @@ const touch = { stick: null, aim: null, on: false };
 
 function uiHit(px, py) {
   const inR = r => r && px >= r.x && px <= r.x + r.w && py >= r.y && py <= r.y + r.h;
-  if (inR(uiRects.nextWave) && state==='intermission') { startNextWave(); return true; }
   if (inR(uiRects.shop)) { openShop(); return true; }
   if (inR(uiRects.chest)) { openChest(); return true; }
   for (let i = 0; i < uiRects.slots.length; i++) if (inR(uiRects.slots[i])) { selectSlot(i); return true; }
@@ -1351,6 +1351,7 @@ function spawnInside(type, hs) {
 }
 
 function beginLevel() {
+  dayPhase='night'; prepLeft=0; duskFade=1;
   spec = levelSpec(level);
   levelKills = 0; levelMoney = 0;
   queue = [];
@@ -1385,28 +1386,31 @@ function beginLevel() {
 }
 function retryLevel() { restoreSnap(); beginLevel(); }
 
-function startIntermission(){
+function startDayPreparation(){
   state='intermission'; hideOverlay(); mouse.down=false;
   queue=[]; zombies=[]; bullets=[]; bombs=[];
-  banner={title:'HAZIRLIK ZAMANI',sub:'Üssünü geliştir · Hazır olduğunda sonraki bölümü başlat',t:3.2,max:3.2};
-  toast('Hazırlık modu · Zombi gelmez · Üssünü istediğin kadar geliştir');
+  dayPhase='day'; prepLeft=120; duskFade=0;
+  banner={title:'SABAH OLDU',sub:'2 dakika hazırlık · kaynak topla ve üssünü güçlendir',t:4,max:4};
+  toast('Sabah oldu · 2 dakika hazırlık süren var');
   setCursor();
 }
-function startNextWave(){ choosePerk(); }
+function startNightWave(){
+  if(state!=='intermission')return;
+  dayPhase='dusk'; duskFade=0;
+  banner={title:'AKŞAM OLUYOR',sub:'Zombiler yaklaşıyor...',t:4,max:4};
+  toast('Akşam oluyor · hazırlan!');
+}
+function startNextWave(){
+  level++;
+  dayPhase='night';prepLeft=0;duskFade=1;
+  beginLevel();
+}
 function levelClear() {
-  state = 'clear'; hideOverlay(); sfx('clear');
+  sfx('clear');
   let bonus = 40 + level * 15; if(runEvent&&runEvent.id==='horde')bonus+=100;if(runEvent&&runEvent.id==='supply')bonus+=150; money += bonus; levelMoney += bonus;
   for (const o of built) o.hp = o.max;
   player.hp = Math.min(player.max, player.hp + 30);
-  const note = built.length ? `<div class="note">Bölüm ödülü: <b>$${bonus}</b>. Savunmalar onarıldı. Hazırlık sırasında haritada dolaşıp duvar/kapı/taret kurabilirsin.</div>`
-                            : `<div class="note">Bölüm ödülü: <b>$${bonus}</b>. Hazırlık sırasında üssünü kurabilirsin.</div>`;
-  showOverlay({
-    title: 'Bölüm ' + level + ' temizlendi',
-    text: 'Sonraki bölüm otomatik başlamaz. İstediğin kadar hazırlan, sonra sen başlat.',
-    extra: `<div class="stats"><div><b>${levelKills}</b>Bu bölümde öldürülen</div><div><b>$${money}</b>Paran</div><div><b>${score}</b>Puan</div></div>${note}`,
-    btn: 'Hazırlık moduna geç', onClick: startIntermission,
-    btn2: 'Mağaza', keep2: true, onClick2: openShop
-  });
+  startDayPreparation();
 }
 function gameOver() {
   state = 'over';
@@ -1422,7 +1426,6 @@ function gameOver() {
 function openShop() {
   if (state === 'playing') { shopPrev = 'playing'; state = 'shop'; mouse.down = false; touch.stick = null; touch.aim = null; }
   else if (state === 'intermission') { shopPrev='intermission'; state='shop'; mouse.down=false; touch.stick=null; touch.aim=null; }
-  else if (state === 'clear') shopPrev = 'clear';
   else return;
   renderShop(); $('shop').classList.add('show'); setCursor();
   setTimeout(() => $('shopClose').focus(), 30);
@@ -1431,7 +1434,6 @@ function closeShop() {
   $('shop').classList.remove('show');
   if (shopPrev === 'playing') { state = 'playing'; last = performance.now(); }
   else if (shopPrev === 'intermission') { state='intermission'; last=performance.now(); }
-  else if (shopPrev === 'clear') setTimeout(() => $('ovBtn').focus(), 30);
   shopPrev = null; setCursor();
 }
 $('shopClose').onclick = closeShop;
@@ -1872,6 +1874,15 @@ function bossSlam(z) {
    ===================================================== */
 function update(dt) {
   anim += dt;
+  if(state==='intermission'){
+    if(dayPhase==='day'){
+      prepLeft=Math.max(0,prepLeft-dt);
+      if(prepLeft<=0)startNightWave();
+    }else if(dayPhase==='dusk'){
+      duskFade=Math.min(1,duskFade+dt/8);
+      if(duskFade>=1)startNextWave();
+    }
+  }
   if(state==='playing'&&mission&&mission.id==='survive'&&!mission.done) missionTick('survive',dt);
   const p = player;
   p.hi = houseAt(p.x, p.y);
@@ -2573,7 +2584,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v32';
+const GAME_VERSION = 'v33';
 
 function drawHUD() {
   const p = player, L = spec || levelSpec(1), narrow = W < 760;
@@ -2604,13 +2615,14 @@ function drawHUD() {
   ctx.fillStyle = '#ece6d6'; ctx.font = '900 22px ' + HEAD;
   ctx.fillText('Bölüm ' + level + ' · ' + L.name, W / 2, ty);
   ctx.font = '600 14px ' + FONT; ctx.fillStyle = '#f0b429';
-  ctx.fillText(state==='intermission'?'HAZIRLIK MODU · Zombi gelmez':'Kalan zombi: ' + (zombies.length + queue.length), W / 2, ty + 22);
   if(state==='intermission'){
-    const bw=220,bh=38,bx=W/2-bw/2,by=ty+48;
-    ctx.fillStyle='#7f2f28';ctx.fillRect(bx,by,bw,bh);ctx.strokeStyle='#d8b36a';ctx.lineWidth=2;ctx.strokeRect(bx,by,bw,bh);
-    ctx.fillStyle='#fff';ctx.font='900 14px '+FONT;ctx.textAlign='center';ctx.fillText('SONRAKİ BÖLÜMÜ BAŞLAT',W/2,by+24);
-    uiRects.nextWave={x:bx,y:by,w:bw,h:bh};
-  }else uiRects.nextWave=null;
+    const sec=Math.max(0,Math.ceil(prepLeft)),mm=Math.floor(sec/60),ss=String(sec%60).padStart(2,'0');
+    ctx.fillText(dayPhase==='dusk'?'AKŞAM OLUYOR · Zombiler yaklaşıyor':'SABAH · Hazırlık '+mm+':'+ss,W/2,ty+22);
+    uiRects.nextWave=null;
+  }else{
+    ctx.fillText('Kalan zombi: '+(zombies.length+queue.length),W/2,ty+22);
+    uiRects.nextWave=null;
+  }
   ctx.font='700 12px '+FONT;ctx.fillStyle=runEvent?'#ffb347':'#9fb6a4';
   if(runEvent)ctx.fillText(runEvent.name,W/2,ty+40);
   if(mission){ctx.fillStyle=mission.done?'#7fbf5a':'#d8d0b7';ctx.fillText('Görev: '+mission.name+' '+Math.min(mission.target,Math.floor(mission.progress))+'/'+mission.target,W/2,ty+(runEvent?56:40));}
@@ -2766,9 +2778,17 @@ function draw() {
     ctx.strokeStyle = '#6b5a3c'; ctx.lineWidth = 6; ctx.setLineDash([18, 10]); ctx.strokeRect(24, 24, WORLD - 48, WORLD - 48); ctx.setLineDash([]);
     ctx.restore();
     const g = ctx.createRadialGradient(W / 2, H / 2, Math.min(W, H) * .3, W / 2, H / 2, Math.hypot(W, H) * .62);
-    g.addColorStop(0, 'rgba(4,8,14,0)'); g.addColorStop(1, 'rgba(4,8,14,.68)');
-    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
-    ctx.fillStyle = 'rgba(10,20,40,.16)'; ctx.fillRect(0, 0, W, H);
+    g.addColorStop(0,'rgba(4,8,14,0)');
+    const darkAlpha=state==='intermission'?(dayPhase==='dusk'?(.18+.50*duskFade):.18):.68;
+    g.addColorStop(1,'rgba(4,8,14,'+darkAlpha+')');
+    ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+    if(state==='intermission'){
+      const nightMix=dayPhase==='dusk'?duskFade:0;
+      ctx.fillStyle='rgba(255,224,150,'+(0.16*(1-nightMix))+')';ctx.fillRect(0,0,W,H);
+      ctx.fillStyle='rgba(10,20,40,'+(0.16*nightMix)+')';ctx.fillRect(0,0,W,H);
+    }else{
+      ctx.fillStyle='rgba(10,20,40,.16)';ctx.fillRect(0,0,W,H);
+    }
     drawEdgeArrows();
   }
   if (player.hurt > 0) {
