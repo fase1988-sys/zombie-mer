@@ -181,7 +181,7 @@ div:has(> #legacyOnlineMarker){display:none!important}
 </div><div class="adminFooter"><span>● ADMIN ACCESS</span><span>v48 CONTROL CONSOLE</span></div></div></div></div>
 
 
-<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v54</b></div></div></div>
+<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v55</b></div></div></div>
 
 <div id="onlinePanel">
   <b><span id="legacyOnlineMarker">ONLINE CO-OP v8 · CLEAN LOBBY</span></b>
@@ -811,24 +811,22 @@ function makeHouse(c, id, roofs) {
   for (let i = 0; i < 1500; i++) tufts.push({ x: rr(0, WORLD), y: rr(0, WORLD), s: rr(4, 10), a: rr(0, TAU), v: R() });
   for (let i = 0; i < 90; i++) patches.push({ x: rr(0, WORLD), y: rr(0, WORLD), rx: rr(60, 190), ry: rr(40, 130), rot: rr(0, TAU), v: R() });
   // Terk edilmiş kamplar: haritada keşfedilebilen küçük survivor alanları.
-  const campSpots=[[520,520],[WORLD-650,610],[650,WORLD-650],[WORLD-620,WORLD-620],[MID+520,MID-610],[MID-650,MID+520]];
+  const campSpots=[[520,520],[WORLD-520,520],[520,WORLD-520],[WORLD-520,WORLD-520],[900,900],[WORLD-900,WORLD-900]];
   for(let i=0;i<campSpots.length;i++){
     const base=campSpots[i],rad=165;let found=null;
-    for(let ring=0;ring<12&&!found;ring++)for(let step=0;step<24&&!found;step++){
-      const a=step*TAU/24,off=ring*85,x=clamp(base[0]+Math.cos(a)*off,rad+50,WORLD-rad-50),y=clamp(base[1]+Math.sin(a)*off,rad+50,WORLD-rad-50);
+    for(let ring=0;ring<14&&!found;ring++)for(let step=0;step<24&&!found;step++){
+      const a=step*TAU/24,off=ring*75,x=clamp(base[0]+Math.cos(a)*off,rad+60,WORLD-rad-60),y=clamp(base[1]+Math.sin(a)*off,rad+60,WORLD-rad-60);
+      if(Math.abs(x-MID)<ROAD/2+rad+45||Math.abs(y-MID)<ROAD/2+rad+45)continue;
       const box={x:x-rad,y:y-rad,w:rad*2,h:rad*2};
-      if(onRoad(box.x,box.y,box.w,box.h,45))continue;
-      if(houses.some(h=>rectsNear(box,h,130)))continue;
-      if(abandonedCamps.some(cp=>Math.hypot(cp.x-x,cp.y-y)<rad*2+140))continue;
+      if(houses.some(h=>rectsNear(box,h,100)))continue;
+      if(abandonedCamps.some(cp=>Math.hypot(cp.x-x,cp.y-y)<rad*2+120))continue;
       found={x,y};
     }
-    if(found){
-      // Kamp alanını gerçekten temizle: sonradan çizilen ağaç/kasa bile çadırların içine giremez.
-      for(let oi=obs.length-1;oi>=0;oi--){const o=obs[oi];if((o.t==='t'||o.t==='c')&&Math.hypot(o.x+o.w/2-found.x,o.y+o.h/2-found.y)<rad+85)obs.splice(oi,1);}
-      const count=2+(i%3),tentData=[];
-      for(let ti=0;ti<count;ti++){const a=-1.75+ti*(TAU/count),d=count===4?92:82;tentData.push({x:found.x+Math.cos(a)*d,y:found.y+Math.sin(a)*d,a,open:false,loot:false,inside:false});}
-      abandonedCamps.push({id:i,x:found.x,y:found.y,r:rad,tents:tentData,fire:i%2===0,medical:i===2||i===5,discovered:false});
-    }
+    if(!found){const q=[[420,420],[WORLD-420,420],[420,WORLD-420],[WORLD-420,WORLD-420],[720,720],[WORLD-720,WORLD-720]][i];found={x:q[0],y:q[1]};}
+    for(let oi=obs.length-1;oi>=0;oi--){const o=obs[oi];if((o.t==='t'||o.t==='c')&&Math.hypot(o.x+o.w/2-found.x,o.y+o.h/2-found.y)<rad+100)obs.splice(oi,1);}
+    const count=2+(i%3),tentData=[];
+    for(let ti=0;ti<count;ti++){const a=-1.75+ti*(TAU/count),d=count===4?92:82;tentData.push({x:found.x+Math.cos(a)*d,y:found.y+Math.sin(a)*d,a,loot:false,inside:false});}
+    abandonedCamps.push({id:i,x:found.x,y:found.y,r:rad,tents:tentData,fire:i%2===0,medical:i===2||i===5,discovered:false});
   }
 })();
 
@@ -2809,7 +2807,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v54';
+const GAME_VERSION = 'v55';
 
 function drawHUD() {
   const p = player, L = spec || levelSpec(1), narrow = W < 760;
@@ -2936,7 +2934,7 @@ function drawHUD() {
   ctx.strokeStyle = 'rgba(236,230,214,.5)'; ctx.lineWidth = 1; ctx.strokeRect(mmx + .5, mmy + .5, mms - 1, mms - 1);
   ctx.strokeStyle = 'rgba(255,255,255,.35)'; ctx.strokeRect(mmx + cam.x * s, mmy + cam.y * s, W * s, H * s);
   for (const o of built) { ctx.fillStyle = o.t === 'turret' ? '#7fb0d0' : '#c99a5a'; ctx.fillRect(mmx + o.x * s, mmy + o.y * s, 2, 2); }
-  for(const c of abandonedCamps){ctx.fillStyle='#d59b46';ctx.fillRect(mmx+c.x*s-1.5,mmy+c.y*s-1.5,3,3);}
+  for(const c of abandonedCamps){ctx.fillStyle='#f0a928';ctx.beginPath();ctx.arc(mmx+c.x*s,mmy+c.y*s,3.2,0,TAU);ctx.fill();}
   for (const z of zombies) { ctx.fillStyle = z.boss ? '#ff7a3a' : z.sleep ? '#a86a2a' : '#e0483a'; const zs = z.boss ? 5 : 3; ctx.fillRect(mmx + z.x * s - zs / 2, mmy + z.y * s - zs / 2, zs, zs); }
   ctx.fillStyle = '#7fd0ff'; ctx.beginPath(); ctx.arc(mmx + player.x * s, mmy + player.y * s, 3.5, 0, TAU); ctx.fill();
 
