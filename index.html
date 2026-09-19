@@ -137,7 +137,11 @@ div:has(> #legacyOnlineMarker){display:none!important}
 .craftInfo{display:flex;flex-direction:column;gap:4px}.craftInfo b{font-size:15px;color:#fff1ca}.craftInfo small{color:#aeb8ad;font-size:12px}.craftInfo strong{color:#f0b429;font-size:12px}
 .craftMake{font-weight:900;font-size:11px;background:#f0b429;color:#171b16;border-radius:4px;padding:8px 9px}
 @media(max-width:650px){.craftGrid{grid-template-columns:1fr}.craftCard{grid-template-columns:54px 1fr auto}.craftPic{width:50px;height:50px;font-size:29px}}
-.craftLayout{display:grid;grid-template-columns:minmax(0,1fr) 150px;gap:14px;align-items:start}.craftLayout .craftGrid{grid-template-columns:1fr;margin-top:14px}.craftStock{margin-top:14px;border:1px solid #465449;background:#111b15;border-radius:7px;padding:14px;display:flex;flex-direction:column;gap:5px;position:sticky;top:0}.craftStock>span{font-size:10px;font-weight:900;color:#9aa89c;letter-spacing:.1em}.craftStock>b{font-size:28px;color:#f0b429}.craftStock small{font-weight:800;color:#eee7d5}.craftStock em{font-style:normal;font-size:11px;line-height:1.45;color:#aeb8ad;margin-top:9px}.craftStock em strong{color:#f0b429}@media(max-width:650px){.craftLayout{grid-template-columns:1fr}.craftStock{grid-row:1;position:static}.craftLayout .craftGrid{margin-top:0}}
+.craftLayout{display:grid;grid-template-columns:minmax(0,1fr) 150px;gap:14px;align-items:start}.craftLayout .craftGrid{grid-template-columns:1fr;margin-top:14px}.craftStock{margin-top:14px;border:1px solid #465449;background:#111b15;border-radius:7px;padding:14px;display:flex;flex-direction:column;gap:5px;position:sticky;top:0}.craftStock>span{font-size:10px;font-weight:900;color:#9aa89c;letter-spacing:.1em}.craftStock>b{font-size:28px;color:#f0b429}.craftStock small{font-weight:800;color:#eee7d5}.craftPrepClock{display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 10px;margin-bottom:12px;border:1px solid #8b6b2e;background:#1c2118;border-radius:6px;text-align:center}
+.craftPrepClock strong{font-size:13px;color:#f0b429;letter-spacing:.06em}
+.craftPrepClock b{font-size:30px;color:#ece6d6;line-height:1}
+.craftPrepClock small{font-size:11px;color:#b8b29f}
+.craftStock em{font-style:normal;font-size:11px;line-height:1.45;color:#aeb8ad;margin-top:9px}.craftStock em strong{color:#f0b429}@media(max-width:650px){.craftLayout{grid-template-columns:1fr}.craftStock{grid-row:1;position:static}.craftLayout .craftGrid{margin-top:0}}
 </style>
 
 </head>
@@ -1156,9 +1160,13 @@ function openWorkbench(){
    const req=it.logs?('🪵 '+it.logs+' kütük'):('$'+it.cost);
    return '<button class="craftCard" data-craft="'+it.id+'"><span class="craftPic">'+craftIcon(it.id)+'</span><span class="craftInfo"><b>'+it.name+'</b><small>'+it.desc+'</small><strong>'+req+' · Envanter: '+(inv[it.id]||0)+'</strong></span><span class="craftMake">ÜRET</span></button>';
  }).join('');
- const resource='<aside class="craftStock"><span>HAMMADDE</span><b>🪵 '+inv.logs+'</b><small>Kütük</small><em>Baltayı envanterden seç, ağaca yaklaş ve <strong>F</strong> ya da sol tık ile kes. Her vuruş +1 kütük.</em></aside>';
+ const prepClock=(prev==='intermission')
+   ? '<div class="craftPrepClock" id="craftPrepClock"></div>'
+   : '';
+ const resource='<aside class="craftStock">'+prepClock+'<span>HAMMADDE</span><b>🪵 '+inv.logs+'</b><small>Kütük</small><em>Baltayı envanterden seç, ağaca yaklaş ve <strong>F</strong> ya da sol tık ile kes. Her vuruş +1 kütük.</em></aside>';
  showOverlay({title:'ÇALIŞMA TEZGÂHI',text:'Üretmek istediğin eşyayı seç.',extra:'<div class="craftLayout"><div class="craftGrid">'+cards+'</div>'+resource+'</div>',btn:'Kapat',onClick:()=>{state=prev;hideOverlay();}});
  setTimeout(()=>{
+   updateCraftPrepClock();
    document.querySelectorAll('.craftCard').forEach(b=>b.onclick=()=>{
      craftItem(b.dataset.craft);
      state=prev;
@@ -1166,6 +1174,13 @@ function openWorkbench(){
      openWorkbench();
    });
  },0);
+}
+function updateCraftPrepClock(){
+ const el=document.getElementById('craftPrepClock');if(!el)return;
+ if(dayPhase==='dawn'){el.innerHTML='<strong>SABAH OLUYOR...</strong><small>Hazırlık süresi gün doğunca başlayacak</small>';return;}
+ if(dayPhase==='dusk'){el.innerHTML='<strong>AKŞAM OLUYOR...</strong><small>Zombiler yaklaşıyor</small>';return;}
+ const sec=Math.max(0,Math.ceil(prepLeft)),mm=Math.floor(sec/60),ss=String(sec%60).padStart(2,'0');
+ el.innerHTML='<strong>AKŞAMA KALAN SÜRE</strong><b>'+mm+':'+ss+'</b><small>Süre bitince akşam olacak</small>';
 }
 function craftItem(id){
  const it=CRAFT.find(x=>x.id===id);if(!it)return false;
@@ -1875,6 +1890,7 @@ function bossSlam(z) {
    ===================================================== */
 function update(dt) {
   anim += dt;
+  if(state==='craft')updateCraftPrepClock();
   if(state==='intermission'||state==='craft'){
     if(dayPhase==='dawn'){
       dawnFade=Math.min(1,dawnFade+dt/8);
@@ -2594,7 +2610,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v38';
+const GAME_VERSION = 'v39';
 
 function drawHUD() {
   const p = player, L = spec || levelSpec(1), narrow = W < 760;
