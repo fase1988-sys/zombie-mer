@@ -187,13 +187,14 @@ div:has(> #legacyOnlineMarker){display:none!important}
 <section><div class="adminSectionTitle"><span>🏗️</span><div><b>ÜS KONTROLÜ</b><small>Yapıları yönet</small></div></div><div class="adminInline"><button id="adminRepair">TÜMÜNÜ TAMİR ET</button><button id="adminDeleteBuilds">SAVUNMALARI SİL</button></div><button id="adminMaxBase">ÜS / TARET MAX UPGRADE</button></section>
 <section><div class="adminSectionTitle"><span>🌐</span><div><b>MULTIPLAYER</b><small>Host ve oda durumu</small></div></div><div id="adminNetInfo" class="adminInfo">Offline</div><div class="adminInline"><button id="adminTeleportPeer">TAKIM ARKADAŞINA IŞINLAN</button><button id="adminRevive">KENDİNİ DİRİLT</button></div></section>
 <section><div class="adminSectionTitle"><span>📊</span><div><b>DEBUG</b><small>Canlı oyun bilgileri</small></div></div><div id="adminDebug" class="adminInfo">Hazırlanıyor…</div></section>
+<section><div class="adminSectionTitle"><span>😱</span><div><b>JUMPSCARE TESTİ</b><small>Menü korkutmasını anında kontrol et</small></div></div><button id="adminJumpScare">JUMPSCARE ÇALIŞTIR</button></section>
 <section class="devSection"><div class="adminSectionTitle"><span>🚨</span><div><b>DEV MODE</b><small>Tüm test yetkilerini tek seferde aç</small></div></div><button id="adminDev">DEV MODE'U AKTİF ET</button></section>
 </div><div class="adminFooter"><span>● ADMIN ACCESS</span><span>v48 CONTROL CONSOLE</span></div></div></div></div>
 
 
 <div id="menuJumpScare" aria-hidden="true"><div class="jsFace"><div class="jsCrack"></div><div class="jsMouth"></div></div></div>
 
-<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v66</b></div></div></div>
+<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v67</b></div></div></div>
 
 <div id="onlinePanel">
   <b><span id="legacyOnlineMarker">ONLINE CO-OP v8 · CLEAN LOBBY</span></b>
@@ -1058,6 +1059,7 @@ $a('adminDeleteBuilds').onclick=()=>{if(!adminUnlocked)return;built=built.filter
 $a('adminMaxBase').onclick=()=>{if(!adminUnlocked)return;up.wall=5;up.turret=5;for(const o of built){if(o.t==='block'||o.t==='door'){const base=o.t==='door'?DOOR_HP:BLOCK_HP;o.max=Math.round(base*3.5*perkStats().fortify);o.hp=o.max}else if(o.t==='turret')o.hp=o.max=Math.max(o.max,TURRET_HP*3)}toast('Üs MAX upgrade')};
 $a('adminTeleportPeer').onclick=()=>{if(!adminUnlocked||!player)return;const q=[...net.peers.values()].find(x=>x&&!x.dead);if(q){player.x=q.x+35;player.y=q.y;toast('Takım arkadaşına ışınlandın')}else toast('Aktif takım arkadaşı yok')};
 $a('adminRevive').onclick=()=>{if(adminUnlocked&&player){player.hp=player.max;state='playing';hideOverlay();toast('Diriltildin')}};
+$a('adminJumpScare').onclick=()=>{if(!adminUnlocked)return;triggerMenuJumpScare(true)};
 $a('adminDev').onclick=()=>{if(!adminUnlocked||!player)return;adminGodMode=adminInfStamina=adminSpeed2=adminInfAmmo=true;money+=100000;inv.logs+=999;for(const k of ['block','door','turret','bomb','medkit'])inv[k]+=99;for(const id of GUN_ORDER){if(!player.guns.includes(id))player.guns.push(id);gunUp[id]=3;player.ammo[id]=gunStats(id).mag}player.hp=player.max;tog($a('adminGod'),true,'GOD MODE');tog($a('adminStamina'),true,'SINIRSIZ STAMINA');tog($a('adminSpeed'),true,'HIZ ×2');tog($a('adminAmmo'),true,'SONSUZ MERMİ');toast('DEV MODE aktif')};
 setInterval(()=>{if(!adminUnlocked)return;const d=$a('adminDebug'),n=$a('adminNetInfo');if(d)d.textContent='State: '+state+' | Gün: '+dayPhase+' | Bölüm: '+level+' | Zombi: '+zombies.length+' | Queue: '+queue.length+' | Mermi: '+bullets.length+' | Yapı: '+built.length;if(n)n.textContent=net.connected?('ONLINE · '+(net.host?'HOST':'GUEST')+' · Oda: '+net.room+' · Oyuncu: '+(net.peers.size+1)):'OFFLINE · Tek oyuncu'},500)},0);
 const ZT = {
@@ -1463,12 +1465,12 @@ const CONTROLS = `
 <p style="font-size:13px">Dokunmatik ekranda: sol yarıyı sürükleyerek yürü, sağ yarıya basılı tutarak nişan al ve ateş et. Envanter kutularına ve Mağaza düğmesine dokun.</p>`;
 
 let menuScareTimer=0,menuScareBusy=false;
-function triggerMenuJumpScare(){
-  if(state!=='menu'||menuScareBusy)return;
+function triggerMenuJumpScare(force=false){
+  if((state!=='menu'&&!force)||menuScareBusy)return;
   const el=document.getElementById('menuJumpScare');if(!el)return;
   menuScareBusy=true;el.classList.remove('show');void el.offsetWidth;el.classList.add('show');
   try{audio();noise(.32,720,1.1,.24);tone(120,42,.38,.18,'sawtooth',0)}catch(e){}
-  setTimeout(()=>{el.classList.remove('show');menuScareBusy=false;scheduleMenuJumpScare();},520);
+  setTimeout(()=>{el.classList.remove('show');menuScareBusy=false;if(state==='menu')scheduleMenuJumpScare();},520);
 }
 function scheduleMenuJumpScare(){
   clearTimeout(menuScareTimer);
@@ -2892,7 +2894,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v66';
+const GAME_VERSION = 'v67';
 
 function drawHUD() {
   if(player&&abandonedCamps.length&&player.hi<0){let cp=null,bd=1e9;for(const q of abandonedCamps){const d=Math.hypot(q.x-player.x,q.y-player.y);if(d<bd){bd=d;cp=q}}if(cp&&bd>190){ctx.save();ctx.textAlign='center';ctx.font='900 11px '+FONT;ctx.fillStyle='#e3aa45';ctx.fillText('🏕 KAMP  '+Math.round(bd)+'m',W/2,82);ctx.restore();}}
