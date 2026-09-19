@@ -1396,7 +1396,7 @@ function startDayPreparation(){
   setCursor();
 }
 function startNightWave(){
-  if(state!=='intermission')return;
+  if(state!=='intermission'&&state!=='craft')return;
   dayPhase='dusk'; duskFade=0;
   banner={title:'AKŞAM OLUYOR',sub:'Zombiler yaklaşıyor...',t:4,max:4};
   toast('Akşam oluyor · hazırlan!');
@@ -1875,7 +1875,7 @@ function bossSlam(z) {
    ===================================================== */
 function update(dt) {
   anim += dt;
-  if(state==='intermission'){
+  if(state==='intermission'||state==='craft'){
     if(dayPhase==='dawn'){
       dawnFade=Math.min(1,dawnFade+dt/8);
       if(dawnFade>=1){
@@ -1887,7 +1887,10 @@ function update(dt) {
       if(prepLeft<=0)startNightWave();
     }else if(dayPhase==='dusk'){
       duskFade=Math.min(1,duskFade+dt/8);
-      if(duskFade>=1)startNextWave();
+      if(duskFade>=1){
+        if(state==='craft') hideOverlay();
+        startNextWave();
+      }
     }
   }
   if(state==='playing'&&mission&&mission.id==='survive'&&!mission.done) missionTick('survive',dt);
@@ -2591,7 +2594,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v36';
+const GAME_VERSION = 'v37';
 
 function drawHUD() {
   const p = player, L = spec || levelSpec(1), narrow = W < 760;
