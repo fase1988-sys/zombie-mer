@@ -129,6 +129,14 @@ div:has(> #legacyOnlineMarker){display:none!important}
 .door-v8-icon .door-knob{position:absolute;width:4px;height:4px;border-radius:50%;background:#e0bd68;right:4px;top:15px}
 .door-v8-cost{font-weight:800;color:#f0b429;font-size:11px;line-height:1.1}
 .door-v8-hp{font-size:9px;color:#9fd5a8;line-height:1.1}
+
+.craftGrid{display:grid;grid-template-columns:repeat(2,minmax(220px,1fr));gap:10px;margin-top:14px}
+.craftCard{appearance:none;border:1px solid #465449;background:#17231b;color:#eee7d5;border-radius:7px;padding:10px;display:grid;grid-template-columns:62px 1fr auto;gap:11px;align-items:center;text-align:left;cursor:pointer;min-height:78px}
+.craftCard:hover,.craftCard:focus{border-color:#f0b429;background:#1d2b21;outline:none;transform:translateY(-1px)}
+.craftPic{width:58px;height:58px;border-radius:6px;background:linear-gradient(145deg,#2b372d,#101712);display:flex;align-items:center;justify-content:center;font-size:34px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.05)}
+.craftInfo{display:flex;flex-direction:column;gap:4px}.craftInfo b{font-size:15px;color:#fff1ca}.craftInfo small{color:#aeb8ad;font-size:12px}.craftInfo strong{color:#f0b429;font-size:12px}
+.craftMake{font-weight:900;font-size:11px;background:#f0b429;color:#171b16;border-radius:4px;padding:8px 9px}
+@media(max-width:650px){.craftGrid{grid-template-columns:1fr}.craftCard{grid-template-columns:54px 1fr auto}.craftPic{width:50px;height:50px;font-size:29px}}
 </style>
 
 </head>
@@ -1130,12 +1138,26 @@ const CRAFT=[
  {id:'medkit',name:'İlk yardım',cost:80,desc:'1 adet ilk yardım çantası'}
 ];
 function nearWorkbench(){const w=built.find(o=>o.t==='workbench');return w&&Math.hypot(w.x+w.w/2-player.x,w.y+w.h/2-player.y)<115?w:null;}
+function craftIcon(id){
+ const icons={
+  block:'🪵',door:'🚪',turret:'⚙️',bomb:'💣',medkit:'🩹'
+ };
+ return icons[id]||'🔧';
+}
 function openWorkbench(){
  if(state!=='playing'&&state!=='intermission')return;
  const w=nearWorkbench();if(!w){toast('Çalışma tezgâhı için kamp alanına yaklaş');return;}
- const rows=CRAFT.map((it,i)=>(i+1)+'. '+it.name+' — $'+it.cost+' · '+it.desc).join('<br><br>');
  const prev=state;state='craft';mouse.down=false;
- showOverlay({title:'ÇALIŞMA TEZGÂHI',text:'Üs eşyalarını burada üret.',extra:'<div class="note">'+rows+'</div>',btn:'Tahta duvar üret ($8)',onClick:()=>{craftItem('block');state=prev;openWorkbench();},btn2:'Kapat',onClick2:()=>{state=prev;hideOverlay();}});
+ const cards=CRAFT.map(it=>'<button class="craftCard" data-craft="'+it.id+'"><span class="craftPic">'+craftIcon(it.id)+'</span><span class="craftInfo"><b>'+it.name+'</b><small>'+it.desc+'</small><strong>$'+it.cost+' · Envanter: '+(inv[it.id]||0)+'</strong></span><span class="craftMake">ÜRET</span></button>').join('');
+ showOverlay({title:'ÇALIŞMA TEZGÂHI',text:'Üretmek istediğin eşyayı seç.',extra:'<div class="craftGrid">'+cards+'</div>',btn:'Kapat',onClick:()=>{state=prev;hideOverlay();}});
+ setTimeout(()=>{
+   document.querySelectorAll('.craftCard').forEach(b=>b.onclick=()=>{
+     craftItem(b.dataset.craft);
+     state=prev;
+     hideOverlay();
+     openWorkbench();
+   });
+ },0);
 }
 function craftItem(id){
  const it=CRAFT.find(x=>x.id===id);if(!it)return false;
@@ -2504,7 +2526,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v29';
+const GAME_VERSION = 'v30';
 
 function drawHUD() {
   const p = player, L = spec || levelSpec(1), narrow = W < 760;
