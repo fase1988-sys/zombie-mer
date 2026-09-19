@@ -923,6 +923,10 @@ const ZT = {
   n:  { hp: 70,   spd: 64,  r: 16, dmg: 11, score: 10,  money: 8,   col: '#6f8c57', arm: '#5c7848', head: '#82a068' },
   f:  { hp: 42,   spd: 122, r: 14, dmg: 8,  score: 15,  money: 12,  col: '#98a355', arm: '#7f8a45', head: '#aab566' },
   t:  { hp: 320,  spd: 48,  r: 24, dmg: 24, score: 40,  money: 30,  col: '#4e6b5d', arm: '#3e574b', head: '#5f7f6f' },
+  a:  { hp: 520,  spd: 42,  r: 25, dmg: 27, score: 55,  money: 38,  col: '#52606b', arm: '#3e4850', head: '#71808c', armor: .35 },
+  x:  { hp: 85,   spd: 82,  r: 17, dmg: 18, score: 35,  money: 24,  col: '#9a5b35', arm: '#7b4528', head: '#b66e42', explode: 1 },
+  p:  { hp: 120,  spd: 70,  r: 17, dmg: 12, score: 30,  money: 20,  col: '#527b45', arm: '#3d6334', head: '#6e9c5e', poison: 1 },
+  s:  { hp: 105,  spd: 62,  r: 16, dmg: 10, score: 32,  money: 22,  col: '#506f78', arm: '#3e5960', head: '#6e929d', ranged: 1 },
   b1: { hp: 1300, spd: 68,  r: 36, dmg: 38, score: 300, money: 150, col: '#8a3a3a', arm: '#6e2c2c', head: '#a24c4c', boss: 1, name: 'Kasap' },
   b2: { hp: 1700, spd: 56,  r: 38, dmg: 30, score: 400, money: 220, col: '#5c3a7a', arm: '#472c5f', head: '#7650a0', boss: 1, name: 'Çağırıcı' },
   b3: { hp: 3200, spd: 46,  r: 50, dmg: 50, score: 600, money: 320, col: '#3f5060', arm: '#2f3d4b', head: '#566b7f', boss: 1, name: 'Yıkıcı' }
@@ -934,7 +938,8 @@ function levelSpec(n) {
     const k = (n - 3) / 2, types = ['b1', 'b2', 'b3'], cnt = 1 + Math.floor(k / 3);
     for (let i = 0; i < cnt; i++) bosses.push(types[k % 3]);
   }
-  return { name: NAMES[(n - 1) % NAMES.length], n: 6 + 4 * n, f: Math.max(0, 3 * (n - 1)), t: Math.max(0, 2 * (n - 2)), bosses,
+  return { name: NAMES[(n - 1) % NAMES.length], n: 6 + 4 * n, f: Math.max(0, 3 * (n - 1)), t: Math.max(0, 2 * (n - 2)),
+           a:Math.max(0,Math.floor((n-2)*1.2)), x:Math.max(0,Math.floor((n-3)*.8)), p:Math.max(0,Math.floor((n-4)*.7)), s:Math.max(0,Math.floor((n-5)*.6)), bosses,
            hp: 1 + 0.14 * (n - 1), sp: Math.min(1.5, 1 + 0.03 * (n - 1)), dm: 1 + 0.08 * (n - 1),
            interval: Math.max(0.45, 1.7 - 0.15 * (n - 1)), house: Math.min(3 + n * 2, 18) };
 }
@@ -944,18 +949,54 @@ const BLOCK_COST = 6, BLOCK_HP = 120, DOOR_COST = 10, DOOR_HP = 160, TURRET_HP =
 const inv = { turret: 0, bomb: 0, medkit: 0 };
 let up = { wall: 0, turret: 0, hp: 0 };
 let gunUp = Object.fromEntries(GUN_ORDER.map(id => [id, 0]));
+let metaXP=Number(localStorage.getItem('zombieMetaXP')||0), metaLevel=Math.max(1,Math.floor(metaXP/500)+1);
+let perks={damage:0,speed:0,crit:0,lifesteal:0,mag:0,fire:0,fortify:0};
+let runEvent=null, mission=null, rareLoot=[];
+const PERKS=[
+ {id:'damage',name:'Ağır Mermi',desc:'+%15 tüm silah hasarı'},
+ {id:'speed',name:'Adrenalin',desc:'+%8 hareket hızı'},
+ {id:'crit',name:'Keskin Göz',desc:'+%8 kritik vuruş şansı'},
+ {id:'lifesteal',name:'Kan Hasadı',desc:'Her öldürmede 2 can'},
+ {id:'mag',name:'Büyük Şarjör',desc:'+%12 şarjör kapasitesi'},
+ {id:'fire',name:'Ateşli Mermi',desc:'Mermiler %20 ek hasar verir'},
+ {id:'fortify',name:'Mühendis',desc:'+%20 duvar ve kapı dayanıklılığı'}
+];
+function perkStats(){return {damage:1+perks.damage*.15,speed:1+perks.speed*.08,crit:perks.crit*.08,mag:1+perks.mag*.12,fortify:1+perks.fortify*.20};}
+function rollEvent(){
+ const es=[{id:'horde',name:'HORDE INCOMING',desc:'Bu bölüm %35 daha fazla zombi · bölüm ödülü +$100'},
+ {id:'blackout',name:'BLACKOUT',desc:'Karanlık çöktü · zombiler %12 hızlı'},
+ {id:'supply',name:'SUPPLY DROP',desc:'Bölüm ödülü +$150'},
+ {id:'bloodmoon',name:'BLOOD MOON',desc:'Zombiler %20 güçlü · para ödülü %35 fazla'}];
+ return level>1&&Math.random()<.55?es[Math.floor(Math.random()*es.length)]:null;
+}
+function makeMission(){
+ const ms=[{id:'kills',target:Math.max(12,10+level*3),name:'Temizleme',desc:'zombi öldür'},
+ {id:'survive',target:45+level*3,name:'Hayatta Kal',desc:'saniye dayan'},
+ {id:'boss',target:1,name:'Avcı',desc:'patron öldür'}];
+ let m=ms[Math.floor(Math.random()*ms.length)]; if(m.id==='boss'&&!spec.bosses.length)m=ms[0];
+ return {...m,progress:0,done:false};
+}
+function missionTick(kind,v=1){if(!mission||mission.done||mission.id!==kind)return;mission.progress+=v;if(mission.progress>=mission.target){mission.done=true;money+=120+level*10;toast('Görev tamamlandı! Bonus para');sfx('clear');}}
+function choosePerk(){
+ const pool=[...PERKS].sort(()=>Math.random()-.5).slice(0,3);
+ showOverlay({title:'PERK SEÇ',text:'Bu run için bir güç seç.',extra:'<div class="note">'+pool.map((p,i)=>'<b>'+ (i+1)+'. '+p.name+'</b> — '+p.desc).join('<br><br>')+'</div>',btn:pool[0].name,onClick:()=>applyPerk(pool[0]),btn2:pool[1].name,onClick2:()=>applyPerk(pool[1])});
+ // üçüncü seçenek klavye 3 ile değil, rastgele bonus olarak sonraki seçimlerde tekrar gelebilir.
+}
+function applyPerk(p){perks[p.id]=(perks[p.id]||0)+1;toast(p.name+' alındı');level++;beginLevel();if(net.connected&&net.host&&net.channel)net.channel.send({type:'broadcast',event:'level_start',payload:{level}});}
+
 const GUN_UPGRADE_COST = { pistol: 90, shotgun: 180, smg: 200, rifle: 300, sniper: 420, minigun: 650 };
 function gunLevel(id) { return gunUp[id] || 0; }
 function gunStats(id) {
   const w = GUNS[id], lv = gunLevel(id);
-  return {...w, dmg:Math.round(w.dmg*(1+.20*lv)), mag:Math.round(w.mag*(1+.15*lv)),
+  const ps=perkStats();
+  return {...w, dmg:Math.round(w.dmg*(1+.20*lv)*ps.damage*(1+perks.fire*.20)), mag:Math.round(w.mag*(1+.15*lv)*ps.mag),
     rate:w.rate*Math.pow(.92,lv), reload:w.reload*Math.pow(.94,lv), spread:w.spread*Math.pow(.94,lv)};
 }
 const SHOP = [
   { cat: 'Silahlar', items: GUN_ORDER.filter(g => GUNS[g].price > 0).map(g => ({ id: g, gun: g, name: GUNS[g].name, price: GUNS[g].price, desc: GUNS[g].desc })) },
   { cat: 'Savunma', items: [
     { id: 'turret', name: 'Otomatik taret', price: 160, desc: 'Yakınındaki zombilere kendi kendine ateş eder. Envanterden seçip yerleştir; canı bölüm sonunda yenilenir.', count: () => inv.turret },
-    { id: 'wallup', name: 'Odun takviyesi', price: 220, max: 3, desc: 'Tüm odun blokların canını %50 artırır.', lvl: () => up.wall },
+    { id: 'wallup', name: 'Bina / duvar geliştirme', price: 220, max: 5, desc: 'Kurulu ve yeni duvar/kapıları güçlendirir. Her seviye +%50 HP; görünüşü de güçlenir.', lvl: () => up.wall },
     { id: 'turretup', name: 'Taret ateş gücü', price: 260, max: 3, desc: 'Taretlerin hasarını %40 artırır.', lvl: () => up.turret }
   ] },
   { cat: 'Sarf malzeme', items: [
@@ -1211,19 +1252,19 @@ function pauseGame() {
 }
 
 function takeSnap() {
-  snap = JSON.stringify({ money, score, kills, level, up, inv, guns: player.guns, max: player.max, sel: player.sel, built: built.map(o => Object.assign({}, o)) });
+  snap = JSON.stringify({ money, score, kills, level, up, inv, gunUp, perks, rareLoot, guns: player.guns, max: player.max, sel: player.sel, built: built.map(o => Object.assign({}, o)) });
 }
 function restoreSnap() {
   const s = JSON.parse(snap);
   money = s.money; score = s.score; kills = s.kills; level = s.level;
-  Object.assign(up, s.up); Object.assign(inv, s.inv);
+  Object.assign(up, s.up); Object.assign(inv, s.inv); if(s.gunUp)gunUp=Object.assign(gunUp,s.gunUp); if(s.perks)perks=Object.assign(perks,s.perks); rareLoot=s.rareLoot||[];
   player.guns = s.guns; player.max = s.max; player.hp = s.max; player.sel = Math.min(s.sel, slots().length - 1);
   built = s.built; rebuildGrid();
 }
 
 function newGame() {
   money = 100; score = 0; kills = 0; level = 1;
-  up = { wall: 0, turret: 0, hp: 0 }; inv.turret = 0; inv.bomb = 0; inv.medkit = 1;
+  up = { wall: 0, turret: 0, hp: 0 }; gunUp=Object.fromEntries(GUN_ORDER.map(id=>[id,0])); perks={damage:0,speed:0,crit:0,lifesteal:0,mag:0,fire:0,fortify:0}; rareLoot=[]; inv.turret = 0; inv.bomb = 0; inv.medkit = 1;
   player = newPlayer(); built = []; decals = []; rebuildGrid();
   beginLevel();
 }
@@ -1245,6 +1286,9 @@ function beginLevel() {
   for (let i = 0; i < spec.n; i++) queue.push('n');
   for (let i = 0; i < spec.f; i++) queue.push('f');
   for (let i = 0; i < spec.t; i++) queue.push('t');
+  for (const k of ['a','x','p','s']) for(let i=0;i<(spec[k]||0);i++) queue.push(k);
+  runEvent=rollEvent();
+  if(runEvent&&runEvent.id==='horde') for(let i=0;i<Math.ceil(queue.length*.35);i++) queue.push(Math.random()<.5?'n':'f');
   for (let i = queue.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [queue[i], queue[j]] = [queue[j], queue[i]]; }
   for (const b of spec.bosses) queue.push(b);
   zombies = []; bullets = []; drops = []; parts = []; bombs = []; floats = []; toasts = [];
@@ -1259,10 +1303,12 @@ function beginLevel() {
   for (const o of built) o.hp = o.max;
   // Zombiler artık hiçbir bölümde evlerin içinde doğmaz.
   // Tüm zombiler dışarıdaki normal spawn sistemi üzerinden gelir.
+  mission=makeMission();
   const total = queue.length + zombies.length;
   const bossNames = spec.bosses.map(b => ZT[b].name);
   banner = { title: 'Bölüm ' + level, sub: spec.name + ' · ' + total + ' zombi' + (bossNames.length ? ' · Patron: ' + bossNames.join(', ') : ''), t: 3.6, max: 3.6 };
   state = 'playing';
+  if(runEvent) toast(runEvent.name+' · '+runEvent.desc);
   takeSnap();
   setCursor();
 }
@@ -1270,7 +1316,7 @@ function retryLevel() { restoreSnap(); beginLevel(); }
 
 function levelClear() {
   state = 'clear'; hideOverlay(); sfx('clear');
-  const bonus = 40 + level * 15; money += bonus; levelMoney += bonus;
+  let bonus = 40 + level * 15; if(runEvent&&runEvent.id==='horde')bonus+=100;if(runEvent&&runEvent.id==='supply')bonus+=150; money += bonus; levelMoney += bonus;
   for (const o of built) o.hp = o.max;           // odunlar ve taretler onarılır
   player.hp = Math.min(player.max, player.hp + 30);
   const note = built.length ? `<div class="note">Bölüm ödülü: <b>$${bonus}</b>. Tüm duvarların, kapıların ve taretlerin canı yenilendi.</div>`
@@ -1279,10 +1325,7 @@ function levelClear() {
     title: 'Bölüm ' + level + ' temizlendi',
     text: 'Bölgede canlı zombi kalmadı. Sonraki dalga daha güçlü olacak. Mağazada alışveriş yap, üssünü güçlendir.',
     extra: `<div class="stats"><div><b>${levelKills}</b>Bu bölümde öldürülen</div><div><b>$${money}</b>Paran</div><div><b>${score}</b>Puan</div></div>${note}`,
-    btn: 'Sonraki bölüm', onClick: () => {
-      level++; beginLevel();
-      if(net.connected && net.host && net.channel) net.channel.send({type:'broadcast',event:'level_start',payload:{level}});
-    },
+    btn: 'Perk seç →', onClick: () => { choosePerk(); },
     btn2: 'Mağaza', keep2: true, onClick2: openShop
   });
 }
@@ -1340,7 +1383,7 @@ function buy(it) {
   else if (it.id === 'medkit') inv.medkit++;
   else if (it.id === 'wallup') {
     up.wall++;
-    for (const o of built) if (o.t === 'block') { const nm = Math.round(BLOCK_HP * (1 + 0.5 * up.wall)); o.hp += nm - o.max; o.max = nm; }
+    for (const o of built) if (o.t === 'block'||o.t==='door') { const base=o.t==='door'?DOOR_HP:BLOCK_HP,nm=Math.round(base*(1+0.5*up.wall)*perkStats().fortify); o.hp += nm-o.max; o.max=nm; }
   }
   else if (it.id === 'turretup') up.turret++;
   else if (it.id === 'maxhp') { up.hp++; player.max += 25; player.hp += 25; }
@@ -1436,12 +1479,12 @@ function tryPlace(kind) {
   if (kind === 'block') {
     if (money < BLOCK_COST) { toast('Yetersiz para'); return false; }
     money -= BLOCK_COST;
-    const hp = Math.round(BLOCK_HP * (1 + 0.5 * up.wall));
+    const hp = Math.round(BLOCK_HP * (1 + 0.5 * up.wall) * perkStats().fortify);
     built.push({ t: 'block', x: gx * 40, y: gy * 40, w: 40, h: 40, hp, max: hp, sb: false });
   } else if (kind === 'door') {
     if (money < DOOR_COST) { toast('Yetersiz para'); return false; }
     money -= DOOR_COST;
-    const hp = Math.round(DOOR_HP * (1 + 0.5 * up.wall));
+    const hp = Math.round(DOOR_HP * (1 + 0.5 * up.wall) * perkStats().fortify);
     built.push({ t: 'door', x: gx * 40, y: gy * 40, w: 40, h: 40, hp, max: hp, sb: false });
   } else {
     const hp = TURRET_HP;
@@ -1653,15 +1696,21 @@ function checkOnlineTeamAlive(){
 
 function damageZombie(z, dmg, kx, ky) {
   if (z.dead) return;
-  z.hp -= dmg; z.flash = 0.08; z.sleep = false; sfx('hit');
+  if(ZT[z.type].armor) dmg*=1-ZT[z.type].armor; z.hp -= dmg; z.flash = 0.08; z.sleep = false; sfx('hit');
   if (kx !== undefined) { z.x += kx; z.y += ky; }
   for (let i = 0; i < 3; i++) parts.push({ x: z.x, y: z.y, vx: (Math.random() - .5) * 180, vy: (Math.random() - .5) * 180, life: .35, max: .35, col: '#8f1c1f', s: 3 });
   if (z.hp <= 0) killZombie(z);
 }
 function killZombie(z) {
   z.dead = true; kills++; levelKills++; score += z.score;
-  const m = Math.round(z.money * (1 + 0.04 * (level - 1)));
+  let m = Math.round(z.money * (1 + 0.04 * (level - 1)));
+  if(runEvent&&runEvent.id==='bloodmoon')m=Math.round(m*1.35);
   money += m; levelMoney += m; floatText(z.x, z.y - z.r, '+$' + m); sfx('die');
+  missionTick('kills'); if(z.boss)missionTick('boss');
+  if(perks.lifesteal) player.hp=Math.min(player.max,player.hp+2*perks.lifesteal);
+  metaXP+=z.boss?80:4; localStorage.setItem('zombieMetaXP',String(metaXP)); metaLevel=Math.max(1,Math.floor(metaXP/500)+1);
+  if(z.type==='x'){for(const q of zombies)if(!q.dead&&q!==z&&Math.hypot(q.x-z.x,q.y-z.y)<110)damageZombie(q,55); if(Math.hypot(player.x-z.x,player.y-z.y)<110)hurtPlayer(18);}
+  if(z.boss&&Math.random()<.75){const ids=['shotgun','smg','rifle','sniper'];const id=ids[Math.floor(Math.random()*ids.length)];rareLoot.push(id);if(!player.guns.includes(id)){player.guns.push(id);player.ammo[id]=gunStats(id).mag;}gunUp[id]=Math.min(3,gunLevel(id)+1);toast('NADİR LOOT: '+GUNS[id].name+' +1');}
   const corpses = decals.filter(d => d.corpse).length;
   if (corpses < 30) decals.push({ x: z.x, y: z.y, r: z.r, a: z.a, type: z.type, corpse: true, life: 6 });
   if (decals.filter(d => d.blood).length < 50) for (let i = 0; i < 2; i++) decals.push({ x: z.x + (Math.random() - .5) * z.r * 2, y: z.y + (Math.random() - .5) * z.r * 2, r: z.r * (.4 + Math.random() * .5), blood: true, life: 14 });
@@ -1709,6 +1758,7 @@ function bossSlam(z) {
    ===================================================== */
 function update(dt) {
   anim += dt;
+  if(mission&&mission.id==='survive'&&!mission.done) missionTick('survive',dt);
   const p = player;
   p.hi = houseAt(p.x, p.y);
 
@@ -1728,7 +1778,7 @@ function update(dt) {
   const sprint = wantsSprint && !p.tired && p.stam > 0;
   if (sprint) { p.stam -= 38 * dt; if (p.stam <= 0) { p.stam = 0; p.tired = true; } }
   else p.stam = Math.min(100, p.stam + 20 * dt);
-  const speed = sprint ? 285 : 200;
+  const speed = (sprint ? 285 : 200) * perkStats().speed;
   p.x = clamp(p.x + mx * speed * dt, 40, WORLD - 40);
   p.y = clamp(p.y + my * speed * dt, 40, WORLD - 40);
   pushOut(p);
@@ -1810,7 +1860,7 @@ function update(dt) {
         const dx = z.x - b.x, dy = z.y - b.y, rr2 = z.r + 3;
         if (dx * dx + dy * dy < rr2 * rr2) {
           const bl = Math.hypot(b.vx, b.vy);
-          damageZombie(z, b.dmg, b.vx / bl * 4, b.vy / bl * 4);
+          const crit=Math.random()<perkStats().crit; damageZombie(z,b.dmg*(crit?2:1),b.vx/bl*4,b.vy/bl*4); if(crit)floatText(z.x,z.y-z.r-8,'KRİTİK!','#ffd36b');
           if (!b.hit) b.hit = [];
           b.hit.push(z); b.pierce--;
           if (b.pierce <= 0) { dead = true; break; }
@@ -1833,6 +1883,8 @@ function update(dt) {
       if (d < 380 || (victim.hi >= 0 && victim.hi === z.hi) || z.flash > 0) z.sleep = false; else continue;
     }
     z.flash -= dt; z.atk -= dt;
+    if(ZT[z.type].ranged&&d>150&&d<520&&z.atk<=0){if(victim.local)hurtPlayer(z.dmg*.7);z.atk=2.2;floatText(z.x,z.y-z.r,'TÜKÜRÜK','#82b96b');}
+    if(ZT[z.type].poison&&d<z.r+victim.r+8&&z.atk<=0&&victim.local){hurtPlayer(z.dmg*1.25);z.atk=1.2;}
     const realPlayer=player;
     if(!victim.local) player={...realPlayer,x:victim.x,y:victim.y,hi:victim.hi,hp:victim.hp,r:victim.r};
     const tgt = zombieTarget(z);
@@ -1873,7 +1925,7 @@ function update(dt) {
     const sameCtx = z.hi === victim.hi;
     const contact = sameCtx && d < z.r + victim.r + 3;
     if (!contact && !z.atkObj) {
-      let v = z.spd * (1 + Math.sin(anim * 3 + z.ph) * 0.22);
+      let v = z.spd * (1 + Math.sin(anim * 3 + z.ph) * 0.22) * (runEvent&&runEvent.id==='blackout'?1.12:1);
       if (z.dashT > 0) v *= 3.6;
       if (z.tele > 0) v *= 0.1;
       const px = z.x, py = z.y;
@@ -2329,7 +2381,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v21';
+const GAME_VERSION = 'v22';
 
 function drawHUD() {
   const p = player, L = spec || levelSpec(1), narrow = W < 760;
@@ -2361,6 +2413,10 @@ function drawHUD() {
   ctx.fillText('Bölüm ' + level + ' · ' + L.name, W / 2, ty);
   ctx.font = '600 14px ' + FONT; ctx.fillStyle = '#f0b429';
   ctx.fillText('Kalan zombi: ' + (zombies.length + queue.length), W / 2, ty + 22);
+  ctx.font='700 12px '+FONT;ctx.fillStyle=runEvent?'#ffb347':'#9fb6a4';
+  if(runEvent)ctx.fillText(runEvent.name,W/2,ty+40);
+  if(mission){ctx.fillStyle=mission.done?'#7fbf5a':'#d8d0b7';ctx.fillText('Görev: '+mission.name+' '+Math.min(mission.target,Math.floor(mission.progress))+'/'+mission.target,W/2,ty+(runEvent?56:40));}
+  ctx.textAlign='left';ctx.fillStyle='#9fb6a4';ctx.fillText('Survivor Lv.'+metaLevel+' · XP '+metaXP,20,112);
 
   // Patron çubuğu
   let boss = null, bc = 0;
