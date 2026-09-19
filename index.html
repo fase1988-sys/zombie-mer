@@ -344,6 +344,10 @@ async function connectRoom(code, asHost){
     if(q){ q.hp=0; q.dead=true; }
     if(net.host) checkOnlineTeamAlive();
   });
+  ch.on('broadcast',{event:'player_damage'},({payload})=>{
+    if(!payload || payload.target!==net.id || player.hp<=0) return;
+    hurtPlayer(Number(payload.damage)||0);
+  });
   ch.on('broadcast',{event:'level_start'},({payload})=>{
     if(!payload || net.host) return;
     level=Number(payload.level)||level;
@@ -417,7 +421,8 @@ function drawPeers(){
   for(const q of net.peers.values()){
     if(!q || typeof q.x!=='number') continue;
     ctx.save(); ctx.translate(q.x,q.y); ctx.rotate(q.ang||0);
-    ctx.fillStyle='#c96ad8'; ctx.beginPath(); ctx.arc(0,0,15,0,TAU); ctx.fill();
+    ctx.globalAlpha=q.dead?0.35:1;
+    ctx.fillStyle=q.dead?'#666':'#c96ad8'; ctx.beginPath(); ctx.arc(0,0,15,0,TAU); ctx.fill();
     ctx.fillStyle='#f0c79a'; ctx.beginPath(); ctx.arc(1,0,7,0,TAU); ctx.fill();
     ctx.fillStyle='#20252a'; ctx.fillRect(7,-3,22,6); ctx.restore();
     ctx.font='700 12px '+FONT; ctx.textAlign='center'; ctx.fillStyle='#fff'; ctx.fillText(q.name||'Oyuncu',q.x,q.y-24);
@@ -1541,6 +1546,32 @@ function hurtPlayer(d) {
     } else gameOver();
   }
 }
+function livingPlayerTargets(){
+  const out=[];
+  if(player && player.hp>0) out.push({id:net.id,local:true,x:player.x,y:player.y,hi:player.hi,r:player.r,hp:player.hp});
+  if(net.connected) for(const [id,q] of net.peers){
+    if(q && !q.dead && Number(q.hp)>0 && Number.isFinite(q.x) && Number.isFinite(q.y))
+      out.push({id,local:false,x:q.x,y:q.y,hi:houseAt(q.x,q.y),r:15,hp:Number(q.hp)});
+  }
+  return out;
+}
+function nearestLivingTarget(z){
+  let best=null,bd=Infinity;
+  for(const q of livingPlayerTargets()){
+    const d=Math.hypot(q.x-z.x,q.y-z.y);
+    if(d<bd){bd=d;best=q;}
+  }
+  return best;
+}
+function spectatorTarget(){
+  if(!net.connected || player.hp>0) return null;
+  let best=null;
+  for(const q of net.peers.values()){
+    if(q && !q.dead && Number(q.hp)>0 && Number.isFinite(q.x) && Number.isFinite(q.y)){ best=q; break; }
+  }
+  return best;
+}
+
 function onlineLivingCount(){
   let n=(player && player.hp>0)?1:0;
   for(const q of net.peers.values()) if(q && !q.dead && Number(q.hp)>0) n++;
@@ -1548,12 +1579,10 @@ function onlineLivingCount(){
 }
 function showDeadUntilNextLevel(){
   state='dead_wait';
-  showOverlay({
-    title:'Öldün',
-    text:'Takım arkadaşın hayatta. Oyun onun için devam ediyor. Bölüm tamamlanınca tekrar doğacaksın.',
-    extra:'<div class="note">Sonraki bölümü bekliyorsun.</div>',
-    btn:'Takım', onClick:()=>openTeamMenu()
-  });
+  hideOverlay();
+  mouse.down=false;
+  for(const k in keys) keys[k]=false;
+  toast('Öldün · İzleme modu · Bölüm sonunda yeniden doğacaksın');
 }
 function checkOnlineTeamAlive(){
   if(net.connected && net.host && onlineLivingCount()<=0) gameOver();
@@ -1621,9 +1650,10 @@ function update(dt) {
   p.hi = houseAt(p.x, p.y);
 
   // Hareket
-  let mx = (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0);
-  let my = (keys.KeyS || keys.ArrowDown ? 1 : 0) - (keys.KeyW || keys.ArrowUp ? 1 : 0);
-  if (touch.stick) {
+  const spectating = net.connected && p.hp<=0;
+  let mx = spectating ? 0 : (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0);
+  let my = spectating ? 0 : (keys.KeyS || keys.ArrowDown ? 1 : 0) - (keys.KeyW || keys.ArrowUp ? 1 : 0);
+  if (!spectating && touch.stick) {
     const dx = touch.stick.x - touch.stick.ox, dy = touch.stick.y - touch.stick.oy, l = Math.hypot(dx, dy);
     if (l > 8) { mx = dx / Math.max(l, 60); my = dy / Math.max(l, 60); }
   }
@@ -1641,11 +1671,17 @@ function update(dt) {
   pushOut(p);
   p.hi = houseAt(p.x, p.y);
 
-  // Kamera ve nişan
-  const lookX = (mouse.x - W / 2) * 0.2, lookY = (mouse.y - H / 2) * 0.2;
-  cam.x = clamp(p.x + lookX - W / 2, 0, Math.max(0, WORLD - W));
-  cam.y = clamp(p.y + lookY - H / 2, 0, Math.max(0, WORLD - H));
-  p.ang = Math.atan2(mouse.y + cam.y - p.y, mouse.x + cam.x - p.x);
+  // Kamera ve nişan / ölümde yaşayan takım arkadaşını izle
+  const watch=spectatorTarget();
+  if(spectating && watch){
+    cam.x=clamp(watch.x-W/2,0,Math.max(0,WORLD-W));
+    cam.y=clamp(watch.y-H/2,0,Math.max(0,WORLD-H));
+  } else {
+    const lookX = (mouse.x - W / 2) * 0.2, lookY = (mouse.y - H / 2) * 0.2;
+    cam.x = clamp(p.x + lookX - W / 2, 0, Math.max(0, WORLD - W));
+    cam.y = clamp(p.y + lookY - H / 2, 0, Math.max(0, WORLD - H));
+    p.ang = Math.atan2(mouse.y + cam.y - p.y, mouse.x + cam.x - p.x);
+  }
 
   // Eylemler
   p.cd -= dt; p.flash -= dt; p.hurt -= dt; mouse.buf -= dt;
@@ -1727,11 +1763,15 @@ function update(dt) {
   for (const z of zombies) if (!z.dead) z.hi = houseAt(z.x, z.y);
   for (const z of zombies) {
     if (z.dead) continue;
-    const dx = p.x - z.x, dy = p.y - z.y, d = Math.hypot(dx, dy) || 1;
+    const victim=nearestLivingTarget(z);
+    if(!victim) continue; // Ölü oyuncular hiçbir zaman hedef değildir.
+    const dx = victim.x - z.x, dy = victim.y - z.y, d = Math.hypot(dx, dy) || 1;
     if (z.sleep) {
-      if (d < 380 || (p.hi >= 0 && p.hi === z.hi) || z.flash > 0) z.sleep = false; else continue;
+      if (d < 380 || (victim.hi >= 0 && victim.hi === z.hi) || z.flash > 0) z.sleep = false; else continue;
     }
     z.flash -= dt; z.atk -= dt;
+    const realPlayer=player;
+    if(!victim.local) player={...realPlayer,x:victim.x,y:victim.y,hi:victim.hi,hp:victim.hp,r:victim.r};
     const tgt = zombieTarget(z);
     let ang = Math.atan2(tgt.y - z.y, tgt.x - z.x);
     const doorwayId = player && player.hi >= 0 ? houseDoorAt(z.x, z.y, z.r) : -1;
@@ -1752,7 +1792,7 @@ function update(dt) {
       z.skillT -= dt;
       if (z.type === 'b1') {
         if (z.dashT > 0) z.dashT -= dt;
-        else if (z.skillT <= 0 && d < 700 && d > 140 && z.hi === p.hi) { z.dashT = 0.55; z.skillT = 4.5; sfx('slam'); }
+        else if (z.skillT <= 0 && d < 700 && d > 140 && z.hi === victim.hi) { z.dashT = 0.55; z.skillT = 4.5; sfx('slam'); }
       } else if (z.type === 'b2') {
         if (z.skillT <= 0) {
           z.skillT = 9; sfx('boss'); toast('Çağırıcı zombi çağırdı!');
@@ -1767,8 +1807,8 @@ function update(dt) {
       }
     }
 
-    const sameCtx = z.hi === p.hi;
-    const contact = sameCtx && d < z.r + p.r + 3;
+    const sameCtx = z.hi === victim.hi;
+    const contact = sameCtx && d < z.r + victim.r + 3;
     if (!contact && !z.atkObj) {
       let v = z.spd * (1 + Math.sin(anim * 3 + z.ph) * 0.22);
       if (z.dashT > 0) v *= 3.6;
@@ -1803,9 +1843,12 @@ function update(dt) {
       else if (z.atk <= 0) { damageBuilt(o, z.dmg * 1.4); z.atk = 0.8; }
     }
     if (contact && z.atk <= 0) {
-      hurtPlayer(z.dmg); z.atk = 0.85;
-      if (state !== 'playing' && state !== 'dead_wait') return;
+      if(victim.local) hurtPlayer(z.dmg);
+      else if(net.connected && net.host && net.channel)
+        net.channel.send({type:'broadcast',event:'player_damage',payload:{target:victim.id,damage:z.dmg}});
+      z.atk = 0.85;
     }
+    player=realPlayer;
   }
   for (let i = 0; i < zombies.length; i++) {
     const a = zombies[i]; if (a.dead) continue;
@@ -2224,7 +2267,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v8';
+const GAME_VERSION = 'v9';
 
 function drawHUD() {
   const p = player, L = spec || levelSpec(1), narrow = W < 760;
