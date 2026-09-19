@@ -1365,8 +1365,8 @@ function renderShop() {
           shotgun:'https://commons.wikimedia.org/wiki/Special:FilePath/Remington_Model_10-A_Slide_Action_Shotgun_transparent.png',
           smg:'https://commons.wikimedia.org/wiki/Special:FilePath/Uzi-nobg.png',
           rifle:'https://commons.wikimedia.org/wiki/Special:FilePath/M4-Transparent.png',
-          sniper:'https://pngimg.com/uploads/sniper_rifle/sniper_rifle_PNG29.png',
-          minigun:'https://pngimg.com/uploads/minigun/minigun_PNG19.png',
+          sniper:'https://commons.wikimedia.org/wiki/Special:FilePath/Accuracy_International_AWM_338_LM.png',
+          minigun:'https://commons.wikimedia.org/wiki/Special:FilePath/M134_Minigun.png',
           pistol:'https://commons.wikimedia.org/wiki/Special:FilePath/Glock_17_MOD_45154998_(Transparent).png'
         };
         const preview=document.createElement('div');
@@ -2324,7 +2324,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v17';
+const GAME_VERSION = 'v18';
 
 function drawHUD() {
   const p = player, L = spec || levelSpec(1), narrow = W < 760;
