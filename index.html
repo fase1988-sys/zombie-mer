@@ -1151,20 +1151,17 @@ function openWorkbench(){
  if(state!=='playing'&&state!=='intermission')return;
  const w=nearWorkbench();if(!w){toast('Çalışma tezgâhı için kamp alanına yaklaş');return;}
  const prev=state;
- // Çalışma tezgâhı gün/gece mesajı üretmez; mevcut bannerı UI açıkken gizle.
- const savedBanner=banner; banner=null;
  state='craft';mouse.down=false;
  const cards=CRAFT.map(it=>{
    const req=it.logs?('🪵 '+it.logs+' kütük'):('$'+it.cost);
    return '<button class="craftCard" data-craft="'+it.id+'"><span class="craftPic">'+craftIcon(it.id)+'</span><span class="craftInfo"><b>'+it.name+'</b><small>'+it.desc+'</small><strong>'+req+' · Envanter: '+(inv[it.id]||0)+'</strong></span><span class="craftMake">ÜRET</span></button>';
  }).join('');
  const resource='<aside class="craftStock"><span>HAMMADDE</span><b>🪵 '+inv.logs+'</b><small>Kütük</small><em>Baltayı envanterden seç, ağaca yaklaş ve <strong>F</strong> ya da sol tık ile kes. Her vuruş +1 kütük.</em></aside>';
- showOverlay({title:'ÇALIŞMA TEZGÂHI',text:'Üretmek istediğin eşyayı seç.',extra:'<div class="craftLayout"><div class="craftGrid">'+cards+'</div>'+resource+'</div>',btn:'Kapat',onClick:()=>{state=prev;banner=null;hideOverlay();}});
+ showOverlay({title:'ÇALIŞMA TEZGÂHI',text:'Üretmek istediğin eşyayı seç.',extra:'<div class="craftLayout"><div class="craftGrid">'+cards+'</div>'+resource+'</div>',btn:'Kapat',onClick:()=>{state=prev;hideOverlay();}});
  setTimeout(()=>{
    document.querySelectorAll('.craftCard').forEach(b=>b.onclick=()=>{
      craftItem(b.dataset.craft);
      state=prev;
-     banner=null;
      hideOverlay();
      openWorkbench();
    });
@@ -1206,7 +1203,7 @@ window.addEventListener('keydown', e => {
   if (teamMenuOpen) { if (e.code === 'Escape') closeTeamMenu(); return; }
   if (state === 'shop') { if (e.code === 'Escape') closeShop(); return; }
   if(state==='craft'){
-    if(e.code==='Escape'){banner=null;state=(dayPhase==='day'||dayPhase==='dawn'||dayPhase==='dusk')?'intermission':'playing';hideOverlay();return;}
+    if(e.code==='Escape'){state=(dayPhase==='day'||dayPhase==='dawn'||dayPhase==='dusk')?'intermission':'playing';hideOverlay();return;}
     if(/^Digit[1-5]$/.test(e.code)){const it=CRAFT[Number(e.code.slice(5))-1];if(it)craftItem(it.id);}
     return;
   }
@@ -1883,8 +1880,7 @@ function update(dt) {
       dawnFade=Math.min(1,dawnFade+dt/8);
       if(dawnFade>=1){
         dayPhase='day';
-        banner={title:'SABAH OLDU',sub:'2 dakika hazırlık · kaynak topla ve üssünü güçlendir',t:3.5,max:3.5};
-        toast('Sabah oldu · 2 dakika hazırlık süren var');
+        banner=null;
       }
     }else if(dayPhase==='day'){
       prepLeft=Math.max(0,prepLeft-dt);
@@ -2595,7 +2591,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v35';
+const GAME_VERSION = 'v36';
 
 function drawHUD() {
   const p = player, L = spec || levelSpec(1), narrow = W < 760;
