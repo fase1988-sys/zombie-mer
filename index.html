@@ -169,7 +169,16 @@ div:has(> #legacyOnlineMarker){display:none!important}
 @keyframes jsStatic{0%{transform:translate(0,0)}25%{transform:translate(3%,-2%)}50%{transform:translate(-2%,3%)}75%{transform:translate(2%,2%)}100%{transform:translate(-3%,-3%)}}
 @keyframes jsVignette{0%{transform:scale(1)}100%{transform:scale(1.07)}}
 @keyframes jsEyes{0%{filter:brightness(.7)}100%{filter:brightness(1.8)}}
-</style></head>
+</style><style id="v87-craft-icons">
+.craftWallIcon{width:34px;height:38px;display:inline-flex;flex-direction:column;justify-content:center;gap:2px;filter:drop-shadow(0 3px 2px #0008)}
+.craftWallIcon>i{display:block;height:7px;border:1px solid #d39745;border-radius:2px;background:linear-gradient(90deg,#68401f 0 8%,#a66a31 9% 47%,#6f431f 48% 54%,#ad7338 55% 100%);box-shadow:inset 0 1px #d6a06455}
+.craftWallIcon>i:nth-child(even){transform:translateX(3px)}
+.logPileIcon{position:relative;width:31px;height:23px;display:inline-block;vertical-align:middle;margin-right:2px;filter:drop-shadow(0 2px 2px #0008)}
+.logPileIcon>i{position:absolute;width:24px;height:8px;left:3px;border:1px solid #d28b34;border-radius:5px;background:linear-gradient(90deg,#d79a49 0 14%,#70401e 15% 82%,#d79a49 83%);box-shadow:inset 0 1px #efbd72}
+.logPileIcon>i:nth-child(1){bottom:1px;left:0;transform:rotate(-7deg)}.logPileIcon>i:nth-child(2){bottom:1px;left:8px;transform:rotate(7deg)}.logPileIcon>i:nth-child(3){bottom:10px;left:4px}
+.craftStock>b .logPileIcon{width:35px;height:27px;transform:scale(1.12)}.craftInfo strong .logPileIcon{transform:scale(.72);transform-origin:left center;margin-right:-5px}
+</style>
+</head>
 <body id="artifacts-component-root-html">
 <canvas id="game" width="580" height="843" class=""></canvas><button id="adminBtn">ADMIN</button><div id="adminPanel"><div class="adminBox"><div class="adminHead"><div><span class="adminEyebrow">ZOMBIE CONTROL SYSTEM</span><h2>ADMIN COMMAND</h2><p>Oyuncu ve oyun akışını yönet</p></div><button id="adminClose" class="adminX">×</button></div><div id="adminLogin" class="adminLogin"><div class="adminLock">🔒</div><b>Yönetici erişimi</b><small>Devam etmek için şifreyi gir</small><input id="adminPass" type="password" placeholder="••••••••"><button id="adminLoginBtn">KİLİDİ AÇ</button><small id="adminLoginMsg"></small></div><div id="adminTools" hidden><div class="adminGrid"><section><div class="adminSectionTitle"><span>💰</span><div><b>EKONOMİ</b><small>Hesabına para ekle</small></div></div><div class="adminInline"><input id="adminMoney" type="number" value="1000"><button id="adminGiveMoney">+$ PARA</button></div></section><section><div class="adminSectionTitle"><span>🔫</span><div><b>CEPHANELİK</b><small>Silah envanterini yönet</small></div></div><select id="adminGun"><option value="shotgun">Pompalı tüfek</option><option value="smg">Hafif makineli</option><option value="rifle">Otomatik tüfek</option><option value="sniper">Keskin nişancı</option><option value="minigun">Minigun</option></select><div class="adminInline"><button id="adminGiveGun">SİLAH VER</button><button id="adminGiveAll">TÜMÜNÜ AÇ</button></div></section><section><div class="adminSectionTitle"><span>❤️</span><div><b>OYUNCU</b><small>Hayatta kalma kontrolleri</small></div></div><div class="adminInline"><button id="adminHeal">CAN DOLDUR</button><button id="adminGod" class="godBtn">GOD MODE: KAPALI</button></div></section><section><div class="adminSectionTitle"><span>☠️</span><div><b>BÖLÜM KONTROLÜ</b><small>İstediğin dalgaya atla</small></div></div><div class="adminInline"><input id="adminLevel" type="number" min="1" max="999" value="2" placeholder="Bölüm"><button id="adminGoLevel">BÖLÜME GEÇ</button></div></section></div><div class="adminWide">
 <section><div class="adminSectionTitle"><span>🧟</span><div><b>ZOMBİ KONTROLÜ</b><small>Spawn ve dalga testleri</small></div></div><select id="adminZombie"><option value="n">Normal zombi</option><option value="f">Hızlı zombi</option><option value="t">Tank</option><option value="a">Zırhlı</option><option value="x">Patlayan</option><option value="p">Zehirli</option><option value="s">Menzilli</option><option value="b1">Boss: Kasap</option><option value="b2">Boss: Çağırıcı</option><option value="b3">Boss: Yıkıcı</option></select><div class="adminInline"><button id="adminSpawnZombie">SPAWN</button><button id="adminKillAll">TÜM ZOMBİLERİ ÖLDÜR</button></div><div class="adminInline"><button id="adminClearZombies">ZOMBİLERİ TEMİZLE</button><button id="adminBoss">BOSS BAŞLAT</button></div></section>
@@ -186,7 +195,7 @@ div:has(> #legacyOnlineMarker){display:none!important}
 
 <div id="menuJumpScare" aria-hidden="true"><div class="jsFace"><div class="jsCrack"></div><div class="jsMouth"></div></div></div>
 
-<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v86</b></div></div></div>
+<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v87</b></div></div></div>
 
 <div id="onlinePanel">
   <b><span id="legacyOnlineMarker">ONLINE CO-OP v8 · CLEAN LOBBY</span></b>
@@ -1331,24 +1340,23 @@ const CRAFT=[
 ];
 function nearWorkbench(){const w=built.find(o=>o.t==='workbench');return w&&Math.hypot(w.x+w.w/2-player.x,w.y+w.h/2-player.y)<115?w:null;}
 function craftIcon(id){
- const icons={
-  block:'🪵',door:'🚪',turret:'⚙️',bomb:'💣',medkit:'🩹'
- };
+ const icons={block:'<i class="craftWallIcon"><i></i><i></i><i></i><i></i></i>',door:'🚪',turret:'⚙️',bomb:'💣',medkit:'🩹'};
  return icons[id]||'🔧';
 }
+function logResourceIcon(){return '<i class="logPileIcon"><i></i><i></i><i></i></i>';}
 function openWorkbench(){
  if(state!=='playing'&&state!=='intermission')return;
  const w=nearWorkbench();if(!w){toast('Çalışma tezgâhı için kamp alanına yaklaş');return;}
  const prev=state;
  state='craft';mouse.down=false;
  const cards=CRAFT.map(it=>{
-   const req=it.logs?('🪵 '+it.logs+' kütük'):('$'+it.cost);
+   const req=it.logs?(logResourceIcon()+' '+it.logs+' kütük'):('$'+it.cost);
    return '<button class="craftCard" data-craft="'+it.id+'"><span class="craftPic">'+craftIcon(it.id)+'</span><span class="craftInfo"><b>'+it.name+'</b><small>'+it.desc+'</small><strong>'+req+' · Envanter: '+(inv[it.id]||0)+'</strong></span><span class="craftMake">ÜRET</span></button>';
  }).join('');
  const prepClock=(prev==='intermission')
    ? '<div class="craftPrepClock" id="craftPrepClock"></div>'
    : '';
- const resource='<aside class="craftStock">'+prepClock+'<span>HAMMADDE</span><b>🪵 '+inv.logs+'</b><small>Kütük</small><em>Baltayı envanterden seç, ağaca yaklaş ve <strong>F</strong> ya da sol tık ile kes. Her vuruş +1 kütük.</em></aside>';
+ const resource='<aside class="craftStock">'+prepClock+'<span>HAMMADDE</span><b>'+logResourceIcon()+' '+inv.logs+'</b><small>Kütük</small><em>Baltayı envanterden seç, ağaca yaklaş ve <strong>F</strong> ya da sol tık ile kes. Her vuruş +1 kütük.</em></aside>';
  showOverlay({title:'ÇALIŞMA TEZGÂHI',text:'Üretmek istediğin eşyayı seç.',extra:'<div class="craftLayout"><div class="craftGrid">'+cards+'</div>'+resource+'</div>',btn:'Kapat',onClick:()=>{state=prev;hideOverlay();}});
  setTimeout(()=>{
    updateCraftPrepClock();
@@ -3085,7 +3093,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v86';
+const GAME_VERSION = 'v87';
 
 function drawHUD() {
   if(player&&abandonedCamps.length&&player.hi<0){let cp=null,bd=1e9;for(const q of abandonedCamps){const d=Math.hypot(q.x-player.x,q.y-player.y);if(d<bd){bd=d;cp=q}}if(cp&&bd>190){ctx.save();ctx.textAlign='center';ctx.font='900 11px '+FONT;ctx.fillStyle='#e3aa45';ctx.fillText('🏕 KAMP  '+Math.round(bd)+'m',W/2,82);ctx.restore();}}
