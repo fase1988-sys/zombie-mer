@@ -147,7 +147,7 @@ div:has(> #legacyOnlineMarker){display:none!important}
 <style id="adminFinalStyle">#adminBtn{display:block!important;visibility:visible!important;opacity:1!important;position:fixed!important;right:0!important;top:50%!important;transform:translateY(-50%)!important;z-index:2147483000!important;width:96px!important;height:50px!important;padding:0!important;margin:0!important;background:#a87316!important;color:#fff!important;border:2px solid #f0c35a!important;border-right:0!important;border-radius:9px 0 0 9px!important;font:900 14px system-ui,sans-serif!important;cursor:pointer!important;box-shadow:0 4px 20px #000!important}#adminPanel{position:fixed!important;inset:0!important;z-index:2147483001!important}#adminPanel.show{display:grid!important}</style>
 </head>
 <body id="artifacts-component-root-html">
-<canvas id="game" width="580" height="843" class=""></canvas><button id="adminBtn">ADMIN</button><div id="adminPanel"><div class="adminBox"><h2>ADMIN PANELİ</h2><div id="adminLogin"><input id="adminPass" type="password" placeholder="Şifre"><button id="adminLoginBtn">GİRİŞ</button><small id="adminLoginMsg"></small></div><div id="adminTools" hidden><input id="adminMoney" type="number" value="1000"><button id="adminGiveMoney">PARA EKLE</button><select id="adminGun"><option value="shotgun">Pompalı</option><option value="smg">SMG</option><option value="rifle">Tüfek</option><option value="sniper">Sniper</option><option value="minigun">Minigun</option></select><button id="adminGiveGun">SİLAH VER</button><button id="adminGiveAll">TÜM SİLAHLAR</button><button id="adminHeal">CAN DOLDUR</button><input id="adminLevel" type="number" min="1" max="999" value="2" placeholder="Bölüm"><button id="adminGoLevel">BÖLÜME GEÇ</button></div><button id="adminClose">KAPAT</button></div></div>
+<canvas id="game" width="580" height="843" class=""></canvas><button id="adminBtn">ADMIN</button><div id="adminPanel"><div class="adminBox"><h2>ADMIN PANELİ</h2><div id="adminLogin"><input id="adminPass" type="password" placeholder="Şifre"><button id="adminLoginBtn">GİRİŞ</button><small id="adminLoginMsg"></small></div><div id="adminTools" hidden><input id="adminMoney" type="number" value="1000"><button id="adminGiveMoney">PARA EKLE</button><select id="adminGun"><option value="shotgun">Pompalı</option><option value="smg">SMG</option><option value="rifle">Tüfek</option><option value="sniper">Sniper</option><option value="minigun">Minigun</option></select><button id="adminGiveGun">SİLAH VER</button><button id="adminGiveAll">TÜM SİLAHLAR</button><button id="adminHeal">CAN DOLDUR</button><button id="adminGod">GOD MODE: KAPALI</button><input id="adminLevel" type="number" min="1" max="999" value="2" placeholder="Bölüm"><button id="adminGoLevel">BÖLÜME GEÇ</button></div><button id="adminClose">KAPAT</button></div></div>
 
 
 <div id="onlinePanel">
@@ -951,9 +951,9 @@ const GUNS = {
   sniper:  { name: 'Keskin nişancı',   price: 900,  mag: 5,   rate: 1.0,  reload: 2.4, dmg: 180, spread: .004, pellets: 1, auto: false, speed: 2800, range: 1900, kick: 10, len: 46, pierce: 4, desc: 'Tek atışta zombileri deler geçer; patronlara karşı çok etkili.' },
   minigun: { name: 'Minigun',          price: 2000, mag: 120, rate: .045, reload: 4.0, dmg: 24,  spread: .11,  pellets: 1, auto: true,  speed: 1500, range: 1000, kick: 3,  len: 38, pierce: 1, desc: 'Kurşun yağmuru. Ağır ve pahalı ama durdurulamaz.' }
 };
-const ADMIN_PASSWORD='zombi42';let adminUnlocked=false;
+const ADMIN_PASSWORD='zombi42';let adminUnlocked=false,adminGodMode=false;
 function giveAdminGun(id){if(!player||!GUNS[id])return;if(!player.guns.includes(id))player.guns.push(id);player.ammo[id]=gunStats(id).mag;toast('Admin: '+GUNS[id].name+' verildi');}
-setTimeout(()=>{const $a=id=>document.getElementById(id),p=$a('adminPanel');$a('adminBtn').onclick=()=>p.classList.add('show');$a('adminClose').onclick=()=>p.classList.remove('show');$a('adminLoginBtn').onclick=()=>{if($a('adminPass').value!==ADMIN_PASSWORD){$a('adminLoginMsg').textContent='Şifre yanlış';return}adminUnlocked=true;$a('adminLogin').hidden=true;$a('adminTools').hidden=false};$a('adminGiveMoney').onclick=()=>{if(!adminUnlocked)return;const n=Math.max(1,Math.min(1e6,Math.floor(+$a('adminMoney').value||0)));money+=n;if(net.connected&&!net.host&&net.channel)net.channel.send({type:'broadcast',event:'money_delta',payload:{delta:n,from:net.id}});toast('Admin: +$'+n)};$a('adminGiveGun').onclick=()=>adminUnlocked&&giveAdminGun($a('adminGun').value);$a('adminGiveAll').onclick=()=>{if(adminUnlocked)for(const id of GUN_ORDER)giveAdminGun(id)};$a('adminHeal').onclick=()=>{if(adminUnlocked&&player){player.hp=player.max;toast('Admin: can doldu')}};$a('adminGoLevel').onclick=()=>{if(!adminUnlocked||!player)return;const n=Math.max(1,Math.min(999,Math.floor(+$a('adminLevel').value||1)));level=n;state='playing';hideOverlay();p.classList.remove('show');beginLevel();toast('Admin: Bölüm '+n+' başlatıldı');if(net.connected&&net.host&&net.channel)net.channel.send({type:'broadcast',event:'world',payload:worldSnapshot()})}},0);
+setTimeout(()=>{const $a=id=>document.getElementById(id),p=$a('adminPanel');$a('adminBtn').onclick=()=>p.classList.add('show');$a('adminClose').onclick=()=>p.classList.remove('show');$a('adminLoginBtn').onclick=()=>{if($a('adminPass').value!==ADMIN_PASSWORD){$a('adminLoginMsg').textContent='Şifre yanlış';return}adminUnlocked=true;$a('adminLogin').hidden=true;$a('adminTools').hidden=false};$a('adminGiveMoney').onclick=()=>{if(!adminUnlocked)return;const n=Math.max(1,Math.min(1e6,Math.floor(+$a('adminMoney').value||0)));money+=n;if(net.connected&&!net.host&&net.channel)net.channel.send({type:'broadcast',event:'money_delta',payload:{delta:n,from:net.id}});toast('Admin: +$'+n)};$a('adminGiveGun').onclick=()=>adminUnlocked&&giveAdminGun($a('adminGun').value);$a('adminGiveAll').onclick=()=>{if(adminUnlocked)for(const id of GUN_ORDER)giveAdminGun(id)};$a('adminHeal').onclick=()=>{if(adminUnlocked&&player){player.hp=player.max;toast('Admin: can doldu')}};$a('adminGod').onclick=()=>{if(!adminUnlocked)return;adminGodMode=!adminGodMode;$a('adminGod').textContent='GOD MODE: '+(adminGodMode?'AÇIK':'KAPALI');if(adminGodMode&&player)player.hp=player.max;toast('God Mode '+(adminGodMode?'açıldı':'kapatıldı'))};$a('adminGoLevel').onclick=()=>{if(!adminUnlocked||!player)return;const n=Math.max(1,Math.min(999,Math.floor(+$a('adminLevel').value||1)));level=n;state='playing';hideOverlay();p.classList.remove('show');beginLevel();toast('Admin: Bölüm '+n+' başlatıldı');if(net.connected&&net.host&&net.channel)net.channel.send({type:'broadcast',event:'world',payload:worldSnapshot()})}},0);
 const ZT = {
   n:  { hp: 70,   spd: 64,  r: 16, dmg: 11, score: 10,  money: 8,   col: '#6f8c57', arm: '#5c7848', head: '#82a068' },
   f:  { hp: 42,   spd: 122, r: 14, dmg: 8,  score: 15,  money: 12,  col: '#98a355', arm: '#7f8a45', head: '#aab566' },
@@ -1799,6 +1799,7 @@ function spawnZombie(type) {
 }
 function hurtPlayer(d) {
   if (state !== 'playing' || player.hp <= 0) return;
+  if(adminGodMode){player.hp=player.max;return;}
   player.hp -= d; player.hurt = 0.3; shake = Math.max(shake, 8); sfx('hurt');
   if (player.hp <= 0) {
     player.hp = 0;
@@ -2638,7 +2639,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v45';
+const GAME_VERSION = 'v46';
 
 function drawHUD() {
   const p = player, L = spec || levelSpec(1), narrow = W < 760;
