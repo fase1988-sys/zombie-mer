@@ -1589,7 +1589,7 @@ window.addEventListener('keydown', e => {
   if (state === 'playing' || state === 'intermission') {
     if (e.code === 'Escape') { openEscapeMenu(); return; }
     if (e.code === 'KeyR') startReload();
-    if (e.code === 'KeyE') { if(!nearHouseStairs()){ const uw=nearestUpgradeableWall(); if(uw) upgradeWall(uw); else if(nearWorkbench()) openWorkbench(); else { const cf=campfireObject();if(!(cf&&Math.hypot(player.x-(cf.x+cf.w/2),player.y-(cf.y+cf.h/2))<125)) openChest(); } } }
+    if (e.code === 'KeyE') { if(!nearHouseStairs()){ if(nearWorkbench()) openWorkbench(); else { const cf=campfireObject();if(!(cf&&Math.hypot(player.x-(cf.x+cf.w/2),player.y-(cf.y+cf.h/2))<125)) openChest(); } } }
     if (e.code === 'KeyF') chopTree();
     if (e.code === 'KeyG') plantTreeSeed();
     if (/^Digit\d$/.test(e.code)) { const n = parseInt(e.code.slice(5), 10); selectSlot(n === 0 ? 9 : n - 1); }
@@ -2434,7 +2434,15 @@ function update(dt) {
     if(adminInfAmmo)p.ammo[sl.id]=w.mag;if (fire && p.reload <= 0 && p.cd <= 0 && p.ammo[sl.id] > 0) { shoot(sl.id); if(adminInfAmmo)p.ammo[sl.id]=w.mag; mouse.buf = 0; }
   } else if (want && p.cd <= 0) {
     if(sl.k==='axe'){
-      if(mouse.buf>0){chopTree();p.cd=.32;mouse.buf=0;}
+      if(mouse.buf>0){
+        // v146: Balta ile yakındaki duvara vurmak para varsa duvarı yükseltir; E kullanılmaz.
+        const uw=nearestUpgradeableWall();
+        if(uw){
+          const dx=uw.x+uw.w/2-p.x,dy=uw.y+uw.h/2-p.y,aimDiff=Math.abs(Math.atan2(Math.sin(Math.atan2(dy,dx)-p.ang),Math.cos(Math.atan2(dy,dx)-p.ang)));
+          if(aimDiff<0.85){upgradeWall(uw);p.axeSwing=.16;p.cd=.32;mouse.buf=0;}
+          else {chopTree();p.cd=.32;mouse.buf=0;}
+        }else{chopTree();p.cd=.32;mouse.buf=0;}
+      }
     } else if(sl.k==='seed'){
       if(mouse.buf>0){if(plantTreeSeed())p.cd=.35;mouse.buf=0;}
     } else if (sl.k === 'block') { if (tryPlace('block')) p.cd = 0.07; else if (mouse.buf > 0) mouse.buf = 0; }
