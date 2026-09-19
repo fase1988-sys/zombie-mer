@@ -21,7 +21,7 @@ html, body, #artifacts-component-root-html {
 /* Shop weapon previews: real photographic assets, isolated from game canvas. */
 .gunPhoto{height:112px;margin:8px 0 9px;border:1px solid #314238;border-radius:7px;background:radial-gradient(circle at 50% 45%,#25332c 0,#0c1712 58%,#06100b 100%);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;box-shadow:inset 0 0 28px rgba(0,0,0,.48)}
 .gunPhoto:after{content:"";position:absolute;left:8%;right:8%;bottom:11px;height:8px;border-radius:50%;background:rgba(0,0,0,.36);filter:blur(5px)}
-.gunPhoto img{position:relative;z-index:1;display:block;max-width:92%;max-height:94px;width:auto;height:auto;object-fit:contain;mix-blend-mode:screen;filter:drop-shadow(0 8px 5px rgba(0,0,0,.72)) contrast(1.12) saturate(.92)}
+.gunPhoto img{position:relative;z-index:1;display:block;max-width:92%;max-height:94px;width:auto;height:auto;object-fit:contain;filter:drop-shadow(0 8px 5px rgba(0,0,0,.72)) contrast(1.12) saturate(.92)}
 </style>
 
 <title>Zombi İstilası</title>
@@ -1365,8 +1365,8 @@ function renderShop() {
           shotgun:'https://commons.wikimedia.org/wiki/Special:FilePath/Remington_Model_10-A_Slide_Action_Shotgun_transparent.png',
           smg:'https://commons.wikimedia.org/wiki/Special:FilePath/Uzi-nobg.png',
           rifle:'https://commons.wikimedia.org/wiki/Special:FilePath/M4-Transparent.png',
-          sniper:'https://commons.wikimedia.org/wiki/Special:FilePath/MK_17_Sniper_Support_Rifle.png',
-          minigun:'https://commons.wikimedia.org/wiki/Special:FilePath/XM214_Minigun.jpg',
+          sniper:'https://pngimg.com/uploads/sniper_rifle/sniper_rifle_PNG29.png',
+          minigun:'https://pngimg.com/uploads/minigun/minigun_PNG19.png',
           pistol:'https://commons.wikimedia.org/wiki/Special:FilePath/Glock_17_MOD_45154998_(Transparent).png'
         };
         const preview=document.createElement('div');
@@ -2324,7 +2324,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v16';
+const GAME_VERSION = 'v17';
 
 function drawHUD() {
   const p = player, L = spec || levelSpec(1), narrow = W < 760;
