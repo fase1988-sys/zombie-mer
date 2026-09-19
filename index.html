@@ -95,24 +95,7 @@ html, body, #artifacts-component-root-html {
 #onlinePanel .ok{color:#8ee08e} #onlinePanel .bad{color:#ff8a7d}
 </style>
 
-<style id="team-menu-style">
-#teamMenu{position:fixed;inset:0;display:none;z-index:40;background:rgba(3,7,6,.82);padding:18px;overflow:auto}
-#teamMenu.show{display:block}
-#teamMenuBox{max-width:720px;margin:48px auto;background:#101915;border:1px solid #425349;border-left:6px solid var(--amber);border-radius:8px;padding:20px;color:var(--bone);font:14px system-ui,sans-serif}
-#teamMenuHead{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-#teamMenuHead h2{margin:0;flex:1}
-#teamMenuClose{padding:9px 14px}
-.teamJoin{display:grid;grid-template-columns:1fr auto auto;gap:8px;margin:16px 0}
-.teamJoin input{min-width:0;padding:11px;border-radius:6px;border:1px solid #526258;background:#0b120f;color:#fff;text-transform:uppercase;font-size:16px}
-#teamRoomLine{padding:10px 0;color:#c8d2ca}
-#teamPlayers{display:grid;gap:8px;margin-top:10px}
-.teamPlayer{display:flex;align-items:center;gap:10px;padding:10px 12px;background:#17231d;border:1px solid #34463b;border-radius:6px}
-.teamPlayer .name{font-weight:800;flex:1}
-.teamPlayer .tag{font-size:11px;color:#f0b429}
-.teamPlayer button{padding:7px 10px;font-size:12px;background:#8f3434;color:white}
-#teamHint{font-size:12px;color:#9dac9f;margin-top:12px}
-@media(max-width:560px){.teamJoin{grid-template-columns:1fr 1fr}.teamJoin input{grid-column:1/-1}}
-</style>
+
 
 
 <style id="v8-cleanup">
@@ -203,7 +186,7 @@ div:has(> #legacyOnlineMarker){display:none!important}
 
 <div id="menuJumpScare" aria-hidden="true"><div class="jsFace"><div class="jsCrack"></div><div class="jsMouth"></div></div></div>
 
-<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v84</b></div></div></div>
+<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v85</b></div></div></div>
 
 <div id="onlinePanel">
   <b><span id="legacyOnlineMarker">ONLINE CO-OP v8 · CLEAN LOBBY</span></b>
@@ -225,24 +208,6 @@ div:has(> #legacyOnlineMarker){display:none!important}
   </div>
 </div>
 
-
-<div id="teamMenu" aria-hidden="true">
-  <div id="teamMenuBox">
-    <div id="teamMenuHead">
-      <h2>TAKIM / ONLINE ODA</h2>
-      <button id="teamMenuClose" class="alt">Oyuna dön · ESC</button>
-    </div>
-    <div id="teamRoomLine">Henüz bir odada değilsin.</div>
-    <div class="teamJoin">
-      <input id="teamRoomCode" maxlength="6" autocomplete="off" placeholder="ODA KODU">
-      <button id="teamCreate">ODA OLUŞTUR</button>
-      <button id="teamJoin">KATIL</button>
-    </div>
-    <div><b>Oyuncular</b></div>
-    <div id="teamPlayers"></div>
-    <div id="teamHint">Oda lideri oyuncuları odadan çıkarabilir. 6 karakterli kodu yazınca otomatik katılım da çalışır.</div>
-  </div>
-</div>
 
 <div id="shop">
   <div class="shopbox">
@@ -424,8 +389,7 @@ async function connectRoom(code, asHost){
     if(payload && payload.target===net.id){
       netStatus('Oda lideri seni takımdan çıkardı.');
       await leaveRoom();
-      renderTeamMenu();
-      openTeamMenu();
+      renderMainLobby();
     }
   });
   ch.on('broadcast',{event:'world'},({payload})=>applyWorld(payload));
@@ -558,8 +522,6 @@ function drawPeers(){
   }
 }
 
-let teamMenuOpen=false;
-
 function renderTeamMenu(){
   const line=document.getElementById('teamRoomLine');
   const list=document.getElementById('teamPlayers');
@@ -594,44 +556,6 @@ function renderTeamMenu(){
   }
 }
 function escapeTeam(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
-function openTeamMenu(){
-  teamMenuOpen=true;
-  for(const k in keys) keys[k]=false;
-  mouse.down=false;
-  const m=document.getElementById('teamMenu');
-  m.classList.add('show'); m.setAttribute('aria-hidden','false');
-  renderTeamMenu();
-}
-function closeTeamMenu(){
-  teamMenuOpen=false;
-  const m=document.getElementById('teamMenu');
-  m.classList.remove('show'); m.setAttribute('aria-hidden','true');
-  last=performance.now();
-}
-function bindTeamMenu(){
-  const input=document.getElementById('teamRoomCode');
-  const clean=v=>String(v||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,6);
-  document.getElementById('teamMenuClose').onclick=closeTeamMenu;
-  document.getElementById('teamCreate').onclick=()=>{
-    const c=roomCode(); input.value=c; connectRoom(c,true).then(renderTeamMenu);
-  };
-  document.getElementById('teamJoin').onclick=()=>{
-    const c=clean(input.value); input.value=c;
-    if(c.length!==6){ lineTeam('6 karakterli oda kodunu yaz.'); input.focus(); return; }
-    connectRoom(c,false).then(renderTeamMenu);
-  };
-  let timer=null,lastAuto='';
-  input.addEventListener('input',()=>{
-    input.value=clean(input.value); clearTimeout(timer);
-    if(input.value.length===6 && input.value!==lastAuto){
-      const c=input.value; timer=setTimeout(()=>{lastAuto=c;connectRoom(c,false).then(renderTeamMenu);},220);
-    }
-  });
-}
-function lineTeam(msg){const l=document.getElementById('teamRoomLine');if(l)l.textContent=msg;}
-bindTeamMenu();
-
-
 function bindOnlineButtons(){
   const root = document.querySelector('[data-online-room="1"]')?.closest('div');
   const input = document.querySelector('[data-online-room="1"]');
@@ -1472,15 +1396,14 @@ window.addEventListener('keydown', e => {
   const rep = e.repeat; keys[e.code] = true; if (rep) return;
   if (e.code === 'KeyM') muted = !muted;
   if (e.code === 'Tab') { if (state === 'shop') closeShop(); else openShop(); return; }
-  if (teamMenuOpen) { if (e.code === 'Escape') closeTeamMenu(); return; }
   if (state === 'shop') { if (e.code === 'Escape') closeShop(); return; }
   if(state==='craft'){
-    if(e.code==='Escape'){state=(dayPhase==='day'||dayPhase==='dawn'||dayPhase==='dusk')?'intermission':'playing';hideOverlay();return;}
+    if(e.code==='Escape'){openEscapeMenu();return;}
     if(/^Digit[1-5]$/.test(e.code)){const it=CRAFT[Number(e.code.slice(5))-1];if(it)craftItem(it.id);}
     return;
   }
   if (state === 'playing' || state === 'intermission') {
-    if (e.code === 'Escape') { openTeamMenu(); return; }
+    if (e.code === 'Escape') { openEscapeMenu(); return; }
     if (e.code === 'KeyR') startReload();
     if (e.code === 'KeyE') { if(nearWorkbench()) openWorkbench(); else openChest(); }
     if (e.code === 'KeyF') chopTree();
@@ -1613,6 +1536,16 @@ function showMenu() {
   state='menu'; hideOverlay();
   const m=document.getElementById('mainGameMenu');if(m)m.classList.remove('hidden');
   scheduleMenuJumpScare();
+}
+function returnToMainInterface(){
+  hideOverlay();mouse.down=false;for(const k in keys)keys[k]=false;
+  const finish=()=>{state='menu';const m=document.getElementById('mainGameMenu');if(m)m.classList.remove('hidden');scheduleMenuJumpScare();last=performance.now();};
+  if(net.connected)Promise.resolve(leaveRoom()).catch(()=>{}).finally(finish);else finish();
+}
+function openEscapeMenu(){
+  const resumeState=(state==='craft')?((dayPhase==='day'||dayPhase==='dawn'||dayPhase==='dusk')?'intermission':'playing'):state;
+  state='paused';mouse.down=false;for(const k in keys)keys[k]=false;
+  showOverlay({title:'OYUN MENÜSÜ',text:'Oyuna devam et veya ana arayüze dön.',btn:'Oyuna dön',onClick:()=>{state=resumeState;last=performance.now();},btn2:'Arayüze dön',onClick2:returnToMainInterface});
 }
 function pauseGame() {
   if (state !== 'playing') return;
@@ -3080,7 +3013,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v84';
+const GAME_VERSION = 'v85';
 
 function drawHUD() {
   if(player&&abandonedCamps.length&&player.hi<0){let cp=null,bd=1e9;for(const q of abandonedCamps){const d=Math.hypot(q.x-player.x,q.y-player.y);if(d<bd){bd=d;cp=q}}if(cp&&bd>190){ctx.save();ctx.textAlign='center';ctx.font='900 11px '+FONT;ctx.fillStyle='#e3aa45';ctx.fillText('🏕 KAMP  '+Math.round(bd)+'m',W/2,82);ctx.restore();}}
