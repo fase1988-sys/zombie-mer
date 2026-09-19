@@ -7,6 +7,11 @@
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#050806;color:#fff;font-family:system-ui,Arial}
 #game{position:fixed;inset:0}
 #hud{position:fixed;inset:0;pointer-events:none}
+#weapon{position:absolute;right:18%;bottom:-24px;width:250px;height:170px;background:linear-gradient(150deg,#30343a,#11151a 58%,#080a0d);clip-path:polygon(28% 0,72% 0,100% 100%,0 100%);filter:drop-shadow(0 0 12px #000);transform-origin:70% 100%}
+#weapon:after{content:"";position:absolute;right:32px;bottom:0;width:52px;height:96px;background:#171a1d;transform:skew(-8deg);border-radius:5px}
+.gunbarrel{position:absolute;left:93px;top:-62px;width:62px;height:92px;background:linear-gradient(90deg,#101316,#454b50,#0c0f11);clip-path:polygon(30% 0,70% 0,100% 100%,0 100%)}
+.gunsight{position:absolute;left:111px;top:-80px;width:26px;height:25px;border:5px solid #171a1d;border-bottom:0}
+#damage{position:absolute;inset:0;background:rgba(170,0,0,0);transition:background .08s}
 #cross{position:absolute;left:50%;top:50%;width:18px;height:18px;transform:translate(-50%,-50%)}
 #cross:before,#cross:after{content:"";position:absolute;background:#fff;box-shadow:0 0 4px #000}
 #cross:before{width:18px;height:2px;left:0;top:8px}#cross:after{width:2px;height:18px;left:8px;top:0}
@@ -20,8 +25,8 @@ button{border:0;border-radius:12px;padding:14px 24px;font-weight:900;font-size:1
 </style>
 </head><body>
 <a id="back" href="./">← 2D OYUNA DÖN</a><div id="game"></div>
-<div id="hud"><div id="cross"></div><div id="msg">3D FPS PROTOTİP</div><div id="stats">CAN 100<br>WASD · Mouse · Sol tık ateş</div><div id="ammo">12 / ∞</div></div>
-<div id="start"><div class="card"><h1>ZOMBIE-MER 3D</h1><p>Gerçek first-person prototip. WASD ile yürü, mouse ile bak, sol tıkla ateş et. Zombiler sana doğru gelir.</p><button id="play">3D TESTİ BAŞLAT</button></div></div>
+<div id="hud"><div id="weapon"><div class="gunbarrel"></div><div class="gunsight"></div></div><div id="cross"></div><div id="msg">3D FPS PROTOTİP</div><div id="stats">CAN 100<br>WASD · Mouse · Sol tık ateş</div><div id="ammo">12 / ∞</div></div>
+<div id="damage"></div><div id="start"><div class="card"><h1>ZOMBIE-MER 3D</h1><p>Gerçek first-person prototip. WASD ile yürü, mouse ile bak, sol tıkla ateş et. Zombiler sana doğru gelir.</p><button id="play">3D TESTİ BAŞLAT</button></div></div>
 <script type="module">
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js';
 class FPSControls{
@@ -51,12 +56,12 @@ const body=new THREE.Mesh(new THREE.BoxGeometry(.75,1.05,.4),cloth);body.positio
 for(const sx of [-.5,.5]){const arm=new THREE.Mesh(new THREE.BoxGeometry(.22,.9,.22),skin);arm.position.set(sx,1.45,-.15);arm.rotation.x=-.8;g.add(arm)}
 g.position.set(x,0,z);g.userData={hp:3,speed:1.25+Math.random()*.65};scene.add(g);zombies.push(g)}
 for(let i=0;i<10;i++){const a=Math.random()*Math.PI*2,r=16+Math.random()*25;zombie(Math.cos(a)*r,Math.sin(a)*r)}
-const controls=new FPSControls(camera,renderer.domElement),keys={};let hp=100,ammo=12,last=performance.now(),dead=false;
+const controls=new FPSControls(camera,renderer.domElement),keys={};let hp=100,ammo=12,last=performance.now(),dead=false,bob=0,reload=false;
 document.getElementById('play').onclick=()=>{try{controls.lock()}catch(e){document.getElementById('msg').textContent='Mouse kilidi açılamadı · tekrar tıkla'}};controls.addEventListener('lock',()=>document.getElementById('start').style.display='none');controls.addEventListener('unlock',()=>{if(!dead)document.getElementById('start').style.display='grid'});
-addEventListener('keydown',e=>keys[e.code]=true);addEventListener('keyup',e=>keys[e.code]=false);
-const ray=new THREE.Raycaster();addEventListener('mousedown',e=>{if(e.button!==0||!controls.isLocked||dead)return;if(ammo<=0){ammo=12;return}ammo--;document.getElementById('ammo').textContent=ammo+' / ∞';ray.setFromCamera(new THREE.Vector2(0,0),camera);const hits=ray.intersectObjects(zombies,true);if(hits.length){let g=hits[0].object;while(g.parent&&!zombies.includes(g))g=g.parent;if(zombies.includes(g)){g.userData.hp--;g.position.addScaledVector(ray.ray.direction,.25);if(g.userData.hp<=0){scene.remove(g);zombies.splice(zombies.indexOf(g),1);setTimeout(()=>{const a=Math.random()*Math.PI*2;zombie(camera.position.x+Math.cos(a)*28,camera.position.z+Math.sin(a)*28)},1200)}}}});
-function loop(t){requestAnimationFrame(loop);const dt=Math.min(.04,(t-last)/1000);last=t;if(controls.isLocked&&!dead){const sp=6*dt;if(keys.KeyW)controls.moveForward(sp);if(keys.KeyS)controls.moveForward(-sp);if(keys.KeyA)controls.moveRight(-sp);if(keys.KeyD)controls.moveRight(sp);camera.position.y=1.7;camera.position.x=Math.max(-55,Math.min(55,camera.position.x));camera.position.z=Math.max(-55,Math.min(55,camera.position.z));
-for(const z of zombies){const dx=camera.position.x-z.position.x,dz=camera.position.z-z.position.z,d=Math.hypot(dx,dz)||1;z.lookAt(camera.position.x,z.position.y,camera.position.z);z.position.x+=dx/d*z.userData.speed*dt;z.position.z+=dz/d*z.userData.speed*dt;if(d<1.15){hp-=22*dt;document.getElementById('stats').innerHTML='CAN '+Math.max(0,Math.ceil(hp))+'<br>WASD · Mouse · Sol tık ateş';if(hp<=0){dead=true;controls.unlock();document.getElementById('msg').textContent='ÖLDÜN · sayfayı yenile';document.getElementById('start').style.display='none'}}}}
+addEventListener('keydown',e=>{keys[e.code]=true;if(e.code==='KeyR'&&!reload&&ammo<12){reload=true;document.getElementById('ammo').textContent='YENİLENİYOR...';setTimeout(()=>{ammo=12;reload=false;document.getElementById('ammo').textContent='12 / ∞'},900)}});addEventListener('keyup',e=>keys[e.code]=false);
+const ray=new THREE.Raycaster();addEventListener('mousedown',e=>{if(e.button!==0||!controls.isLocked||dead||reload)return;if(ammo<=0)return;ammo--;const w=document.getElementById('weapon');w.animate([{transform:'translateY(0) rotate(0deg)'},{transform:'translateY(9px) rotate(2deg)'},{transform:'translateY(0) rotate(0deg)'}],{duration:110});document.getElementById('ammo').textContent=ammo+' / ∞';ray.setFromCamera(new THREE.Vector2(0,0),camera);const hits=ray.intersectObjects(zombies,true);if(hits.length){let g=hits[0].object;while(g.parent&&!zombies.includes(g))g=g.parent;if(zombies.includes(g)){g.userData.hp--;g.position.addScaledVector(ray.ray.direction,.25);if(g.userData.hp<=0){scene.remove(g);zombies.splice(zombies.indexOf(g),1);setTimeout(()=>{const a=Math.random()*Math.PI*2;zombie(camera.position.x+Math.cos(a)*28,camera.position.z+Math.sin(a)*28)},1200)}}}});
+function loop(t){requestAnimationFrame(loop);const dt=Math.min(.04,(t-last)/1000);last=t;if(controls.isLocked&&!dead){const sp=6*dt;if(keys.KeyW)controls.moveForward(sp);if(keys.KeyS)controls.moveForward(-sp);if(keys.KeyA)controls.moveRight(-sp);if(keys.KeyD)controls.moveRight(sp);bob+=dt*10;camera.position.y=1.7+Math.sin(bob)*((keys.KeyW||keys.KeyS||keys.KeyA||keys.KeyD)?.018:0);const wp=document.getElementById('weapon');if(wp)wp.style.transform='translateY('+Math.sin(bob)*((keys.KeyW||keys.KeyS||keys.KeyA||keys.KeyD)?4:0)+'px)';camera.position.x=Math.max(-55,Math.min(55,camera.position.x));camera.position.z=Math.max(-55,Math.min(55,camera.position.z));
+for(const z of zombies){const dx=camera.position.x-z.position.x,dz=camera.position.z-z.position.z,d=Math.hypot(dx,dz)||1;z.lookAt(camera.position.x,z.position.y,camera.position.z);z.position.x+=dx/d*z.userData.speed*dt;z.position.z+=dz/d*z.userData.speed*dt;if(d<1.15){hp-=22*dt;const dmg=document.getElementById('damage');dmg.style.background='rgba(170,0,0,.18)';clearTimeout(dmg._t);dmg._t=setTimeout(()=>dmg.style.background='rgba(170,0,0,0)',80);document.getElementById('stats').innerHTML='CAN '+Math.max(0,Math.ceil(hp))+'<br>WASD · Mouse · Sol tık ateş';if(hp<=0){dead=true;controls.unlock();document.getElementById('msg').textContent='ÖLDÜN · sayfayı yenile';document.getElementById('start').style.display='none'}}}}
 renderer.render(scene,camera)}
 requestAnimationFrame(loop);addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
 
