@@ -166,6 +166,7 @@ div:has(> #legacyOnlineMarker){display:none!important}
 </style>
 <style id="legacyOnlineHideV49">#onlinePanel{display:none!important}</style>
 <style id="mapProgressV50Style">.mapProgress{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:18px;padding:12px 8px;border:1px solid #29372e;border-radius:9px;background:#090e0b;color:#65736a;font:700 9px system-ui;text-align:center}.mapProgress span{flex:1}.mapProgress b{display:block;margin-top:3px;color:#b9c2bb;font-size:9px}.mapProgress i{color:#8a6728;font-style:normal;font-size:18px}@media(max-width:620px){.mapProgress{gap:2px;padding:9px 3px}.mapProgress b{font-size:7px}.mapProgress i{font-size:12px}}</style>
+<style id="lobbyV51Style">.roomLobby{margin-top:16px;padding:16px;border:1px solid #526449;border-radius:10px;background:#080d0a}.lobbyCode{text-align:center;padding-bottom:13px;border-bottom:1px solid #29352d}.lobbyCode small{display:block;color:#728077;font-size:9px;letter-spacing:.2em}.lobbyCode strong{display:block;margin-top:4px;color:#e2ad46;font:900 28px ui-monospace,monospace;letter-spacing:.22em}.lobbyPlayers{margin:13px 0}.lobbyPlayers>b{font-size:9px;color:#748078;letter-spacing:.15em}.lobbyPlayerRow{display:flex;justify-content:space-between;padding:8px 10px;margin-top:6px;border-radius:6px;background:#111a14;color:#d5ddd7;font-size:12px}.lobbyPlayerRow i{font-style:normal;color:#d29b38;font-size:9px;font-weight:900}.startGameBtn{width:100%!important;height:48px!important;margin:8px 0 0!important;background:linear-gradient(#b77b1d,#81520e)!important;border:1px solid #e1ae4d!important;border-radius:8px!important;color:#fff!important;font-weight:900!important;letter-spacing:.08em}#lobbyWait{display:block;text-align:center;color:#7d8a81;margin-top:10px}</style>
 </head>
 <body id="artifacts-component-root-html">
 <canvas id="game" width="580" height="843" class=""></canvas><button id="adminBtn">ADMIN</button><div id="adminPanel"><div class="adminBox"><div class="adminHead"><div><span class="adminEyebrow">ZOMBIE CONTROL SYSTEM</span><h2>ADMIN COMMAND</h2><p>Oyuncu ve oyun akışını yönet</p></div><button id="adminClose" class="adminX">×</button></div><div id="adminLogin" class="adminLogin"><div class="adminLock">🔒</div><b>Yönetici erişimi</b><small>Devam etmek için şifreyi gir</small><input id="adminPass" type="password" placeholder="••••••••"><button id="adminLoginBtn">KİLİDİ AÇ</button><small id="adminLoginMsg"></small></div><div id="adminTools" hidden><div class="adminGrid"><section><div class="adminSectionTitle"><span>💰</span><div><b>EKONOMİ</b><small>Hesabına para ekle</small></div></div><div class="adminInline"><input id="adminMoney" type="number" value="1000"><button id="adminGiveMoney">+$ PARA</button></div></section><section><div class="adminSectionTitle"><span>🔫</span><div><b>CEPHANELİK</b><small>Silah envanterini yönet</small></div></div><select id="adminGun"><option value="shotgun">Pompalı tüfek</option><option value="smg">Hafif makineli</option><option value="rifle">Otomatik tüfek</option><option value="sniper">Keskin nişancı</option><option value="minigun">Minigun</option></select><div class="adminInline"><button id="adminGiveGun">SİLAH VER</button><button id="adminGiveAll">TÜMÜNÜ AÇ</button></div></section><section><div class="adminSectionTitle"><span>❤️</span><div><b>OYUNCU</b><small>Hayatta kalma kontrolleri</small></div></div><div class="adminInline"><button id="adminHeal">CAN DOLDUR</button><button id="adminGod" class="godBtn">GOD MODE: KAPALI</button></div></section><section><div class="adminSectionTitle"><span>☠️</span><div><b>BÖLÜM KONTROLÜ</b><small>İstediğin dalgaya atla</small></div></div><div class="adminInline"><input id="adminLevel" type="number" min="1" max="999" value="2" placeholder="Bölüm"><button id="adminGoLevel">BÖLÜME GEÇ</button></div></section></div><div class="adminWide">
@@ -180,7 +181,7 @@ div:has(> #legacyOnlineMarker){display:none!important}
 </div><div class="adminFooter"><span>● ADMIN ACCESS</span><span>v48 CONTROL CONSOLE</span></div></div></div></div>
 
 
-<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v50</b></div></div></div>
+<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v51</b></div></div></div>
 
 <div id="onlinePanel">
   <b><span id="legacyOnlineMarker">ONLINE CO-OP v8 · CLEAN LOBBY</span></b>
@@ -378,6 +379,7 @@ async function connectRoom(code, asHost){
     const ri=document.querySelector('[data-online-info="1"]');
     if(ri) ri.textContent='Oda: '+code+' · '+(net.peers.size+1)+' oyuncu'+(net.host?' · HOST':'');
     renderTeamMenu();
+    if(typeof renderMainLobby==='function')renderMainLobby();
   });
   ch.on('broadcast',{event:'player'},({payload})=>{ upsertRemotePlayer(payload); });
   ch.on('broadcast',{event:'kick'},async ({payload})=>{
@@ -417,6 +419,11 @@ async function connectRoom(code, asHost){
     if(!payload || payload.target!==net.id || player.hp<=0) return;
     hurtPlayer(Number(payload.damage)||0);
   });
+  ch.on('broadcast',{event:'game_start'},({payload})=>{
+    if(!payload||net.host)return;
+    const mm=document.getElementById('mainGameMenu');if(mm)mm.classList.add('hidden');
+    if(state==='menu'){newGame();}
+  });
   ch.on('broadcast',{event:'level_start'},({payload})=>{
     if(!payload || net.host) return;
     level=Number(payload.level)||level;
@@ -432,8 +439,8 @@ async function connectRoom(code, asHost){
         const tr = await ch.track({id:net.id,name:net.name,x:player?player.x:MID,y:player?player.y:MID,ang:0,hp:player?player.hp:100,dead:player?player.hp<=0:false,host:net.host});
         console.log('Presence track:', tr);
       } catch(e) { console.error('Presence error:', e); }
-      if(net.host && state==='menu') newGame();
       renderTeamMenu();
+      if(typeof renderMainLobby==='function')renderMainLobby();
     } else if(status==='CHANNEL_ERROR'){
       netStatus('CHANNEL_ERROR: '+(err?.message || 'Realtime bağlantısı reddedildi'));
     } else if(status==='TIMED_OUT'){
@@ -2717,7 +2724,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v50';
+const GAME_VERSION = 'v51';
 
 function drawHUD() {
   const p = player, L = spec || levelSpec(1), narrow = W < 760;
@@ -2951,14 +2958,23 @@ function frame(now) {
   requestAnimationFrame(frame);
 }
 
+function renderMainLobby(){
+ const lobby=document.getElementById('roomLobby'),list=document.getElementById('lobbyPlayerList'),start=document.getElementById('menuStartGame'),wait=document.getElementById('lobbyWait'),code=document.getElementById('lobbyCodeText');
+ if(!lobby||!net.connected)return;
+ lobby.hidden=false;code.textContent=net.room||'------';list.innerHTML='';
+ const add=(name,host,me)=>{const r=document.createElement('div');r.className='lobbyPlayerRow';const n=document.createElement('span');n.textContent=(name||'Oyuncu')+(me?' (Sen)':'');const tag=document.createElement('i');tag.textContent=host?'LİDER':'HAZIR';r.append(n,tag);list.appendChild(r)};
+ add(net.name,net.host,true);for(const p of net.peers.values())add(p.name,p.host,false);
+ start.hidden=!net.host;wait.hidden=net.host;
+}
 function bindMainGameMenu(){
- const menu=document.getElementById('mainGameMenu'),cards=document.querySelector('.modeCards'),setup=document.getElementById('multiSetup'),name=document.getElementById('menuPlayerName'),code=document.getElementById('menuRoomCode'),status=document.getElementById('menuNetStatus');
+ const menu=document.getElementById('mainGameMenu'),cards=document.querySelector('.modeCards'),setup=document.getElementById('multiSetup'),name=document.getElementById('menuPlayerName'),code=document.getElementById('menuRoomCode'),status=document.getElementById('menuNetStatus'),lobby=document.getElementById('roomLobby');
  const clean=v=>String(v||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,6);
  document.getElementById('singleMode').onclick=async()=>{if(net.connected)await leaveRoom();newGame()};
  document.getElementById('multiMode').onclick=()=>{cards.style.display='none';setup.hidden=false;name.value=document.getElementById('netName').value||net.name||'Oyuncu'};
- document.getElementById('multiBack').onclick=()=>{setup.hidden=true;cards.style.display='grid'};
- document.getElementById('menuCreateRoom').onclick=async()=>{const n=(name.value||'Oyuncu').slice(0,14);document.getElementById('netName').value=n;net.name=n;const rc=roomCode();code.value=rc;status.textContent='Oda oluşturuluyor… '+rc;await connectRoom(rc,true);if(net.connected){menu.classList.add('hidden');status.textContent='Bağlandı · Oda '+rc}};
- document.getElementById('menuJoinRoom').onclick=async()=>{const rc=clean(code.value);code.value=rc;if(rc.length!==6){status.textContent='6 karakterli oda kodunu yaz.';return}const n=(name.value||'Oyuncu').slice(0,14);document.getElementById('netName').value=n;net.name=n;status.textContent='Odaya bağlanılıyor… '+rc;await connectRoom(rc,false);if(net.connected){menu.classList.add('hidden');status.textContent='Bağlandı · Oda '+rc}};
+ document.getElementById('multiBack').onclick=async()=>{if(net.connected)await leaveRoom();lobby.hidden=true;setup.hidden=true;cards.style.display='grid'};
+ document.getElementById('menuCreateRoom').onclick=async()=>{const n=(name.value||'Oyuncu').slice(0,14);document.getElementById('netName').value=n;net.name=n;const rc=roomCode();code.value=rc;status.textContent='Oda oluşturuluyor… '+rc;await connectRoom(rc,true);if(net.connected){status.textContent='Oda hazır · Arkadaşlarının katılmasını bekle.';renderMainLobby()}};
+ document.getElementById('menuJoinRoom').onclick=async()=>{const rc=clean(code.value);code.value=rc;if(rc.length!==6){status.textContent='6 karakterli oda kodunu yaz.';return}const n=(name.value||'Oyuncu').slice(0,14);document.getElementById('netName').value=n;net.name=n;status.textContent='Odaya bağlanılıyor… '+rc;await connectRoom(rc,false);if(net.connected){status.textContent='Odaya katıldın.';renderMainLobby()}};
+ document.getElementById('menuStartGame').onclick=()=>{if(!net.connected||!net.host)return;newGame();if(net.channel)net.channel.send({type:'broadcast',event:'game_start',payload:{level:1}});adminWorldBroadcast()};
  code.addEventListener('input',()=>code.value=clean(code.value));
 }
 bindMainGameMenu();
