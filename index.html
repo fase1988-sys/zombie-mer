@@ -726,6 +726,17 @@ function houseAt(x, y) {
   }
   return -1;
 }
+function houseDoorAt(x, y, r = 0) {
+  for (let i = 0; i < houses.length; i++) {
+    const d = houses[i].door;
+    const rx = x - d.x, ry = y - d.y;
+    const along = rx * d.nx + ry * d.ny;
+    const lat = -rx * d.ny + ry * d.nx;
+    // Kapının gerçek açıklığını kullan; eşikte iç/dış houseAt değişimine bağlı kalma.
+    if (Math.abs(lat) < d.w / 2 - Math.min(r * 0.15, 6) && along > -105 && along < 105) return i;
+  }
+  return -1;
+}
 function circleHitsObs(x, y, r) {
   const x0 = clamp(Math.floor((x - r) / CELL), 0, GN - 1), x1 = clamp(Math.floor((x + r) / CELL), 0, GN - 1);
   const y0 = clamp(Math.floor((y - r) / CELL), 0, GN - 1), y1 = clamp(Math.floor((y + r) / CELL), 0, GN - 1);
@@ -766,20 +777,11 @@ function pushOut(e) {
       // Oyuncunun yaptığı kapı oyuncuya açıktır; zombiler onu kırmak zorundadır.
       if (o.t === 'door' && e === player) continue;
 
-      // Haritadaki EV kapıları zombilere geçiş verir. Bu yalnızca ev kapısı koridorunda
-      // sabit çevre geometrisini yok sayar; built içindeki oyuncu kapıları etkilenmez.
+      // Haritadaki ev kapısı açıklığında zombiyi duvar çarpışmasına sokma.
+      // Geometrik kontrol sayesinde eşikte houseAt() -1 olsa bile kapıdan geçiş sürer.
       if (e !== player && e && e.type && built.indexOf(o) < 0) {
-        const eh = houseAt(e.x, e.y);
-        const ph = player ? player.hi : -1;
-        const hid = eh >= 0 ? eh : ph;
-        if (hid >= 0 && houses[hid] && houses[hid].door) {
-          const hd = houses[hid].door;
-          const rx = e.x - hd.x, ry = e.y - hd.y;
-          const along = rx * hd.nx + ry * hd.ny;
-          const lat = -rx * hd.ny + ry * hd.nx;
-          if (Math.abs(lat) < Math.max(8, hd.w / 2 - e.r * 0.25) && along > -90 && along < 135 &&
-              distToRect(hd.x, hd.y, o) < hd.w + 70) continue;
-        }
+        const hid = houseDoorAt(e.x, e.y, e.r);
+        if (hid >= 0 && o.hs === houses[hid] && o.t === 'w') continue;
       }
       if (e.x + e.r < o.x || e.x - e.r > o.x + o.w || e.y + e.r < o.y || e.y - e.r > o.y + o.h) continue;
       const cx = clamp(e.x, o.x, o.x + o.w), cy = clamp(e.y, o.y, o.y + o.h);
@@ -1325,28 +1327,15 @@ function nearestBuilt(z) {
    Oyuncunun inşa ettiği savunmalar bu kontrolden hariçtir; zombiler onları kırmaya devam eder. */
 function zombieMoveClear(z, ang, step) {
   const nx = z.x + Math.cos(ang) * step, ny = z.y + Math.sin(ang) * step;
-
-  // Ev kapısı koridoru: oyuncu evdeyken zombi kapıdan içeri,
-  // zombi evdeyken kapıdan dışarı geçebilsin. Oyuncunun yaptığı kapılar buna dahil değildir.
-  let doorPass = null;
-  const pHi = player ? player.hi : -1;
-  const houseId = z.hi >= 0 ? z.hi : pHi;
-  if (houseId >= 0 && houses[houseId] && houses[houseId].door) {
-    const d = houses[houseId].door;
-    const rx = nx - d.x, ry = ny - d.y;
-    const along = rx * d.nx + ry * d.ny;
-    const lat = -rx * d.ny + ry * d.nx;
-    if (Math.abs(lat) < Math.max(8, d.w / 2 - z.r * 0.35) && along > -95 && along < 145) doorPass = d;
-  }
-
+  const doorId = houseDoorAt(nx, ny, z.r);
   const x0 = clamp(Math.floor((nx - z.r - 3) / CELL), 0, GN - 1), x1 = clamp(Math.floor((nx + z.r + 3) / CELL), 0, GN - 1);
   const y0 = clamp(Math.floor((ny - z.r - 3) / CELL), 0, GN - 1), y1 = clamp(Math.floor((ny + z.r + 3) / CELL), 0, GN - 1);
   for (let gy = y0; gy <= y1; gy++) for (let gx = x0; gx <= x1; gx++) {
     const cell = grid[gy * GN + gx];
     for (const o of cell) {
       if (built.indexOf(o) >= 0) continue;
-      // Kapı koridorunda sabit ev geometrisini yol engeli sayma; gerçek çarpışma pushOut tarafından korunur.
-      if (doorPass && distToRect(doorPass.x, doorPass.y, o) < doorPass.w + 70) continue;
+      // Sadece ilgili evin kapı açıklığını oluşturan duvar parçalarını yok say.
+      if (doorId >= 0 && o.hs === houses[doorId] && o.t === 'w') continue;
       if (distToRect(nx, ny, o) < z.r + 3) return false;
     }
   }
@@ -1609,6 +1598,16 @@ function update(dt) {
     z.flash -= dt; z.atk -= dt;
     const tgt = zombieTarget(z);
     let ang = Math.atan2(tgt.y - z.y, tgt.x - z.x);
+    const doorwayId = houseDoorAt(z.x, z.y, z.r);
+    if (doorwayId >= 0) {
+      const hd = houses[doorwayId].door;
+      // Eşikte doğrudan kapının merkez hattına kilitlen; yanlara kaçıp pervaza takılmasın.
+      const wantInside = player.hi === doorwayId;
+      const tx = hd.x + hd.nx * (wantInside ? -70 : 70);
+      const ty = hd.y + hd.ny * (wantInside ? -70 : 70);
+      ang = Math.atan2(ty - z.y, tx - z.x);
+      z.detour = 0;
+    }
     z.a = ang;
     if (z.detour > 0) { z.detour -= dt; ang += z.dd * 1.35; }
 
@@ -2086,7 +2085,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v2';
+const GAME_VERSION = 'v3';
 
 function drawHUD() {
   const p = player, L = spec || levelSpec(1), narrow = W < 760;
