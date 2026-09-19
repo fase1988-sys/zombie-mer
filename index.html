@@ -938,6 +938,14 @@ const BLOCK_COST = 6, BLOCK_HP = 120, DOOR_COST = 10, DOOR_HP = 160, TURRET_HP =
 /* Mağaza envanteri */
 const inv = { turret: 0, bomb: 0, medkit: 0 };
 let up = { wall: 0, turret: 0, hp: 0 };
+let gunUp = Object.fromEntries(GUN_ORDER.map(id => [id, 0]));
+const GUN_UPGRADE_COST = { pistol: 90, shotgun: 180, smg: 200, rifle: 300, sniper: 420, minigun: 650 };
+function gunLevel(id) { return gunUp[id] || 0; }
+function gunStats(id) {
+  const w = GUNS[id], lv = gunLevel(id);
+  return {...w, dmg:Math.round(w.dmg*(1+.20*lv)), mag:Math.round(w.mag*(1+.15*lv)),
+    rate:w.rate*Math.pow(.92,lv), reload:w.reload*Math.pow(.94,lv), spread:w.spread*Math.pow(.94,lv)};
+}
 const SHOP = [
   { cat: 'Silahlar', items: GUN_ORDER.filter(g => GUNS[g].price > 0).map(g => ({ id: g, gun: g, name: GUNS[g].name, price: GUNS[g].price, desc: GUNS[g].desc })) },
   { cat: 'Savunma', items: [
@@ -1222,7 +1230,7 @@ function beginLevel() {
   const p = player;
   p.x = MID; p.y = MID + 60; p.hi = -1;
   p.hp = p.max; // Yeni bölümde tüm oyuncular yeniden doğar.
-  p.ammo = {}; for (const g of p.guns) p.ammo[g] = GUNS[g].mag;
+  p.ammo = {}; for (const g of p.guns) p.ammo[g] = gunStats(g).mag;
   p.reload = 0; p.stam = 100; p.tired = false; p.hurt = 0; p.cd = 0;
   for (const c of chests) c.open = false;
   for (const o of built) o.hp = o.max;
@@ -1282,16 +1290,27 @@ function closeShop() {
 $('shopClose').onclick = closeShop;
 
 function itemState(it) {
-  if (it.gun) return player.guns.includes(it.gun) ? 'own' : money < it.price ? 'poor' : 'ok';
+  if (it.gun) {
+    if (!player.guns.includes(it.gun)) return money < it.price ? 'poor' : 'ok';
+    if (gunLevel(it.gun) >= 3) return 'max';
+    return money < GUN_UPGRADE_COST[it.gun] ? 'poorup' : 'upgrade';
+  }
   if (it.max && it.lvl() >= it.max) return 'max';
   return money < it.price ? 'poor' : 'ok';
 }
 function buy(it) {
-  if (itemState(it) !== 'ok') return;
+  const st=itemState(it);
+  if (it.gun && st==='upgrade') {
+    const cost=GUN_UPGRADE_COST[it.gun]; money-=cost;
+    if(net.connected&&!net.host&&net.channel) net.channel.send({type:'broadcast',event:'money_delta',payload:{delta:-cost,from:net.id}});
+    gunUp[it.gun]=Math.min(3,gunLevel(it.gun)+1); player.ammo[it.gun]=gunStats(it.gun).mag;
+    sfx('buy'); toast(GUNS[it.gun].name+' upgrade '+gunLevel(it.gun)+'/3'); renderShop(); return;
+  }
+  if (st !== 'ok') return;
   money -= it.price;
   if(net.connected && !net.host && net.channel) net.channel.send({type:'broadcast',event:'money_delta',payload:{delta:-it.price,from:net.id}});
   sfx('buy');
-  if (it.gun) { player.guns.push(it.gun); player.ammo[it.gun] = GUNS[it.gun].mag; const s = slots(); selectSlot(s.findIndex(x => x.id === it.gun)); toast(GUNS[it.gun].name + ' envantere eklendi'); }
+  if (it.gun) { player.guns.push(it.gun); player.ammo[it.gun] = gunStats(it.gun).mag; const s = slots(); selectSlot(s.findIndex(x => x.id === it.gun)); toast(GUNS[it.gun].name + ' envantere eklendi'); }
   else if (it.id === 'turret') inv.turret++;
   else if (it.id === 'bomb') inv.bomb++;
   else if (it.id === 'bomb5') inv.bomb += 5;
@@ -1313,14 +1332,14 @@ function renderShop() {
     for (const it of c.items) {
       const st = itemState(it), card = document.createElement('div'); card.className = 'item';
       let stats = '';
-      if (it.gun) { const w = GUNS[it.gun]; stats = `Hasar ${w.dmg}${w.pellets > 1 ? '×' + w.pellets : ''} · ${(1 / w.rate).toFixed(1)} atış/sn · Şarjör ${w.mag}`; }
+      if (it.gun) { const w=gunStats(it.gun); stats=`Upgrade ${gunLevel(it.gun)}/3 · Hasar ${w.dmg}${w.pellets>1?'×'+w.pellets:''} · ${(1/w.rate).toFixed(1)} atış/sn · Şarjör ${w.mag}`; }
       else if (it.lvl) stats = `Seviye ${it.lvl()} / ${it.max}`;
       else if (it.count) stats = `Envanterde: ${it.count()}`;
       card.innerHTML = `<b></b><div class="d"></div><div class="s"></div>`;
       card.children[0].textContent = it.name; card.children[1].textContent = it.desc; card.children[2].textContent = stats;
       const b = document.createElement('button');
-      b.textContent = st === 'own' ? 'Sahipsin' : st === 'max' ? 'Maksimum seviye' : st === 'poor' ? '$' + it.price + ' · Yetersiz para' : '$' + it.price + ' · Satın al';
-      b.disabled = st !== 'ok'; b.onclick = () => buy(it);
+      b.textContent=st==='max'?'Maksimum upgrade 3/3':st==='upgrade'?'$'+GUN_UPGRADE_COST[it.gun]+' · Upgrade '+(gunLevel(it.gun)+1)+'/3':st==='poorup'?'$'+GUN_UPGRADE_COST[it.gun]+' · Upgrade için para yetersiz':st==='poor'?'$'+it.price+' · Yetersiz para':'$'+it.price+' · Satın al';
+      b.disabled=!(st==='ok'||st==='upgrade'); b.onclick=()=>buy(it);
       card.appendChild(b); g.appendChild(card);
     }
   }
@@ -1329,17 +1348,17 @@ function renderShop() {
 /* =====================================================
    Silah, üs kurma, bomba, sandık
    ===================================================== */
-function curGun() { const s = slots()[player.sel]; return s && s.k === 'gun' ? GUNS[s.id] : null; }
+function curGun() { const s = slots()[player.sel]; return s && s.k === 'gun' ? gunStats(s.id) : null; }
 function curGunId() { const s = slots()[player.sel]; return s && s.k === 'gun' ? s.id : null; }
 
 function startReload() {
   const id = curGunId(); if (!id) return;
-  const w = GUNS[id];
+  const w = gunStats(id);
   if (player.reload > 0 || player.ammo[id] >= w.mag) return;
   player.reload = player.reloadMax = w.reload; sfx('reload');
 }
 function shoot(id) {
-  const w = GUNS[id], p = player;
+  const w = gunStats(id), p = player;
   p.ammo[id]--; p.cd = w.rate; p.flash = 0.06;
   shake = Math.max(shake, w.kick);
   const mx = p.x + Math.cos(p.ang) * (p.r + w.len - 4), my = p.y + Math.sin(p.ang) * (p.r + w.len - 4);
@@ -1349,7 +1368,7 @@ function shoot(id) {
   }
   sfx('shot_' + id);
   if (net.connected && !net.host && net.channel) {
-    const ww=GUNS[id], a=p.ang;
+    const ww=gunStats(id), a=p.ang;
     net.channel.send({type:'broadcast',event:'shot',payload:{x:p.x+Math.cos(a)*(p.r+ww.len),y:p.y+Math.sin(a)*(p.r+ww.len),ang:a,sp:1400,life:ww.range/1400,dmg:ww.dmg,pierce:ww.pierce}});
   }
   for (let i = 0; i < 2; i++) parts.push({ x: mx, y: my, vx: Math.cos(p.ang + (Math.random() - .5)) * 160, vy: Math.sin(p.ang + (Math.random() - .5)) * 160, life: .12, max: .12, col: '#ffd36b', s: 3 });
@@ -1688,7 +1707,7 @@ function update(dt) {
   const sl = slots()[p.sel] || slots()[0];
   const want = p.hp > 0 && (mouse.down || mouse.buf > 0);
   if (sl.k === 'gun') {
-    const w = GUNS[sl.id];
+    const w = gunStats(sl.id);
     if (p.reload > 0) {
       p.reload -= dt;
       if (p.reload <= 0) { p.reload = 0; p.ammo[sl.id] = w.mag; }
@@ -2227,14 +2246,13 @@ function bar(x, y, w, h, f, col) {
 function drawItemIcon(sl, cx, cy, s) {
   ctx.save(); ctx.translate(cx, cy);
   if (sl.k === 'gun') {
-    const id = sl.id; ctx.fillStyle = '#d5dbd6';
-    const L = s * (id === 'pistol' ? .5 : id === 'smg' ? .62 : id === 'sniper' ? .95 : .8);
-    ctx.fillRect(-L / 2, -s * .1, L, s * .14);
-    ctx.fillRect(-L / 2 + L * .15, s * .02, s * .13, s * .26);
-    if (id === 'shotgun') ctx.fillRect(-L / 2, -s * .2, L * .7, s * .07);
-    if (id === 'smg' || id === 'rifle') ctx.fillRect(-L * .1, s * .02, s * .1, s * .28);
-    if (id === 'sniper') { ctx.fillStyle = '#7fb0d0'; ctx.fillRect(-L * .1, -s * .22, s * .3, s * .1); }
-    if (id === 'minigun') { ctx.fillRect(-L / 2, -s * .2, L, s * .07); ctx.fillRect(-L / 2, s * .04, L, s * .07); }
+    const id=sl.id; ctx.lineJoin='round'; ctx.lineCap='round';
+    if(id==='pistol'){ctx.fillStyle='#c7cdd0';ctx.fillRect(-s*.30,-s*.13,s*.48,s*.14);ctx.fillStyle='#50585d';ctx.fillRect(-s*.05,0,s*.14,s*.29);ctx.fillStyle='#e0b95b';ctx.fillRect(s*.18,-s*.10,s*.13,s*.04);}
+    else if(id==='shotgun'){ctx.fillStyle='#80562f';ctx.fillRect(-s*.40,-s*.02,s*.34,s*.13);ctx.fillStyle='#c7cdd0';ctx.fillRect(-s*.10,-s*.11,s*.52,s*.08);ctx.fillRect(-s*.10,s*.01,s*.45,s*.06);ctx.fillStyle='#80562f';ctx.fillRect(s*.02,s*.05,s*.12,s*.18);}
+    else if(id==='smg'){ctx.fillStyle='#50585d';ctx.fillRect(-s*.31,-s*.14,s*.53,s*.20);ctx.fillRect(-s*.07,s*.04,s*.13,s*.27);ctx.fillStyle='#c7cdd0';ctx.fillRect(s*.19,-s*.09,s*.20,s*.05);ctx.fillStyle='#30363a';ctx.fillRect(-s*.23,s*.03,s*.11,s*.15);}
+    else if(id==='rifle'){ctx.fillStyle='#485157';ctx.fillRect(-s*.31,-s*.11,s*.53,s*.15);ctx.fillRect(-s*.05,s*.02,s*.11,s*.25);ctx.fillStyle='#c7cdd0';ctx.fillRect(s*.18,-s*.08,s*.25,s*.05);ctx.fillStyle='#7a512d';ctx.beginPath();ctx.moveTo(-s*.30,-s*.05);ctx.lineTo(-s*.46,s*.10);ctx.lineTo(-s*.24,s*.10);ctx.closePath();ctx.fill();}
+    else if(id==='sniper'){ctx.fillStyle='#59656b';ctx.fillRect(-s*.43,-s*.06,s*.72,s*.09);ctx.fillStyle='#c7cdd0';ctx.fillRect(s*.25,-s*.04,s*.25,s*.04);ctx.fillStyle='#73a7c7';ctx.fillRect(-s*.10,-s*.21,s*.30,s*.09);ctx.beginPath();ctx.arc(-s*.02,-s*.165,s*.07,0,TAU);ctx.fill();ctx.fillStyle='#4d5559';ctx.fillRect(-s*.12,s*.01,s*.09,s*.22);}
+    else {ctx.fillStyle='#444d52';ctx.fillRect(-s*.28,-s*.12,s*.34,s*.22);ctx.beginPath();ctx.arc(-s*.18,s*.13,s*.14,0,TAU);ctx.fill();ctx.fillStyle='#c7cdd0';for(let k=-1;k<=1;k++)ctx.fillRect(s*.02,k*s*.065,s*.43,s*.03);ctx.fillStyle='#596166';ctx.fillRect(-s*.02,s*.05,s*.10,s*.23);}
   } else if (sl.k === 'block') {
     ctx.fillStyle = '#a9773f'; ctx.fillRect(-s * .3, -s * .3, s * .6, s * .6);
     ctx.strokeStyle = '#5a3d1e'; ctx.lineWidth = 2; ctx.strokeRect(-s * .3, -s * .3, s * .6, s * .6);
@@ -2267,7 +2285,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v9';
+const GAME_VERSION = 'v10';
 
 function drawHUD() {
   const p = player, L = spec || levelSpec(1), narrow = W < 760;
@@ -2343,11 +2361,11 @@ function drawHUD() {
     if (count !== null) ctx.fillText('×' + count, x + ss - 5, y0 + ss - 6);
     else if (s.k === 'block') { ctx.fillStyle = '#f0b429'; ctx.fillText('$' + BLOCK_COST, x + ss - 5, y0 + ss - 6); }
     else if (s.k === 'door') { ctx.fillStyle = '#f0b429'; ctx.fillText('$' + DOOR_COST, x + ss - 5, y0 + ss - 6); }
-    else if (s.k === 'gun') { ctx.fillStyle = p.ammo[s.id] <= Math.ceil(GUNS[s.id].mag * .25) ? '#e0483a' : '#ece6d6'; ctx.fillText(p.ammo[s.id], x + ss - 5, y0 + ss - 6); }
+    else if (s.k === 'gun') { ctx.fillStyle = p.ammo[s.id] <= Math.ceil(gunStats(s.id).mag * .25) ? '#e0483a' : '#ece6d6'; ctx.fillText(p.ammo[s.id], x + ss - 5, y0 + ss - 6); }
   }
   // Seçili eşya açıklaması
   const cs = sls[p.sel]; let info = '';
-  if (cs.k === 'gun') { const w = GUNS[cs.id]; info = w.name + '   ' + p.ammo[cs.id] + ' / ' + w.mag; }
+  if (cs.k === 'gun') { const w=gunStats(cs.id); info=w.name+' · Upgrade '+gunLevel(cs.id)+'/3   '+p.ammo[cs.id]+' / '+w.mag; }
   else if (cs.k === 'block') info = 'Odun blok · $' + BLOCK_COST + ' · Sol tık: yerleştir · Sağ tık: yık';
   else if (cs.k === 'door') info = 'Kapı · $' + DOOR_COST + ' · 160 HP · Sol tık: yerleştir · Sağ tık: yık';
   else if (cs.k === 'turret') info = 'Taret (' + inv.turret + ') · Sol tık: yerleştir';
