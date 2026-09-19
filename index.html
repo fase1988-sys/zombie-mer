@@ -1189,14 +1189,8 @@ function beginLevel() {
   p.reload = 0; p.stam = 100; p.tired = false; p.hurt = 0; p.cd = 0;
   for (const c of chests) c.open = false;
   for (const o of built) o.hp = o.max;
-  // evlerde uyuyan zombiler
-  const far = houses.filter(h => distToRect(MID, MID, h) > 520);
-  let inHouse = 0;
-  for (let i = 0; i < spec.house && far.length; i++) {
-    const hs = far[Math.floor(Math.random() * far.length)];
-    const r = Math.random(), type = level >= 3 && r < 0.12 ? 't' : r < 0.3 && level >= 2 ? 'f' : 'n';
-    spawnInside(type, hs); inHouse++;
-  }
+  // Zombiler artık hiçbir bölümde evlerin içinde doğmaz.
+  // Tüm zombiler dışarıdaki normal spawn sistemi üzerinden gelir.
   const total = queue.length + zombies.length;
   const bossNames = spec.bosses.map(b => ZT[b].name);
   banner = { title: 'Bölüm ' + level, sub: spec.name + ' · ' + total + ' zombi' + (bossNames.length ? ' · Patron: ' + bossNames.join(', ') : ''), t: 3.6, max: 3.6 };
@@ -1464,18 +1458,22 @@ function makeZombie(type, x, y) {
 function spawnZombie(type) {
   const T = ZT[type];
   let x = 0, y = 0, ok = false;
-  for (let i = 0; i < 40 && !ok; i++) {
+  for (let i = 0; i < 120 && !ok; i++) {
     const a = Math.random() * TAU, d = Math.hypot(W, H) / 2 + 80 + Math.random() * 320;
     x = clamp(player.x + Math.cos(a) * d, 60, WORLD - 60);
     y = clamp(player.y + Math.sin(a) * d, 60, WORLD - 60);
     if (circleHitsObs(x, y, T.r + 8)) continue;
     if (houseAt(x, y) >= 0) continue;
+    // Evin dış duvar/kapı eşiğinin hemen üstünde de doğmasın.
+    if (houses.some(h => distToRect(x, y, h) < T.r + 24)) continue;
     if (Math.hypot(x - player.x, y - player.y) < 420) continue;
     ok = true;
   }
+  if (!ok) return false;
   zombies.push(makeZombie(type, x, y));
   if (T.boss) { sfx('boss'); toast('Patron geldi: ' + T.name); }
   else sfx('spawn');
+  return true;
 }
 function hurtPlayer(d) {
   if (state !== 'playing') return;
@@ -2147,7 +2145,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v5';
+const GAME_VERSION = 'v6';
 
 function drawHUD() {
   const p = player, L = spec || levelSpec(1), narrow = W < 760;
