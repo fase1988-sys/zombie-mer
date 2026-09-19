@@ -7,7 +7,18 @@
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#050806;color:#fff;font-family:system-ui,Arial}
 #game{position:fixed;inset:0}
 #hud{position:fixed;inset:0;pointer-events:none}
-#weapon{position:absolute;left:50%;bottom:-34px;width:300px;height:205px;background:linear-gradient(145deg,#3b4045,#181b1f 55%,#080a0c);clip-path:polygon(22% 8%,70% 0,100% 100%,0 100%);filter:drop-shadow(0 10px 14px #000);transform:translateX(-20%) rotate(-2deg);transform-origin:72% 100%;will-change:transform}.barrel{position:absolute;left:105px;top:-74px;width:68px;height:112px;background:linear-gradient(90deg,#0d1012,#555b60,#111417);clip-path:polygon(35% 0,65% 0,100% 100%,0 100%)}.sight{position:absolute;left:126px;top:-91px;width:25px;height:24px;border:5px solid #111;border-bottom:0}#weapon:after{content:"";position:absolute;right:34px;bottom:0;width:58px;height:110px;background:#111417;transform:skew(-8deg);border-radius:7px}.hand{position:absolute;background:linear-gradient(145deg,#c08b67,#8b5c43);border-radius:28px;box-shadow:inset 0 0 0 2px #0003}.hand.right{right:18px;bottom:45px;width:72px;height:62px;transform:rotate(-18deg)}.hand.left{left:34px;bottom:35px;width:82px;height:58px;transform:rotate(18deg)}.sleeve{position:absolute;background:#252b27;border-radius:18px}.sleeve.right{right:-4px;bottom:0;width:82px;height:70px;transform:rotate(-12deg)}.sleeve.left{left:-5px;bottom:-4px;width:88px;height:72px;transform:rotate(15deg)}
+#weapon{position:absolute;left:50%;bottom:-26px;width:330px;height:220px;filter:drop-shadow(0 12px 14px #000);transform:translateX(-18%) rotate(-2deg);transform-origin:72% 100%;will-change:transform}
+#weapon .slide{position:absolute;left:62px;top:38px;width:205px;height:55px;background:linear-gradient(#3f4448,#171a1d 58%,#090b0d);clip-path:polygon(4% 12%,92% 0,100% 25%,96% 100%,8% 100%,0 70%);border-bottom:4px solid #08090a}
+#weapon .slide:after{content:"";position:absolute;right:25px;top:11px;width:55px;height:5px;background:repeating-linear-gradient(90deg,#090a0b 0 4px,#555 4px 6px)}
+.muzzle{position:absolute;left:255px;top:49px;width:55px;height:28px;background:linear-gradient(#202428,#070809);border-radius:0 8px 8px 0;box-shadow:inset -8px 0 #020303}
+.frontSight{position:absolute;left:250px;top:27px;width:8px;height:16px;background:#090a0b;border-radius:2px 2px 0 0}
+.rearSight{position:absolute;left:83px;top:25px;width:28px;height:14px;border:6px solid #0a0b0c;border-bottom:0;border-radius:3px 3px 0 0}
+.grip{position:absolute;left:128px;top:86px;width:72px;height:118px;background:linear-gradient(100deg,#111417,#2c3033 55%,#0a0c0e);clip-path:polygon(10% 0,88% 0,72% 100%,0 100%);box-shadow:inset 9px 0 #ffffff0a}
+.grip:after{content:"";position:absolute;left:12px;top:18px;width:42px;height:70px;background:repeating-linear-gradient(0deg,#202427 0 5px,#111416 5px 9px);opacity:.85}
+.triggerGuard{position:absolute;left:184px;top:87px;width:60px;height:55px;border:9px solid #111416;border-top-width:7px;border-radius:8px 8px 28px 28px;transform:rotate(-4deg)}
+.trigger{position:absolute;left:208px;top:96px;width:7px;height:31px;background:#08090a;border-radius:5px;transform:rotate(12deg)}
+.mag{position:absolute;left:143px;top:178px;width:49px;height:39px;background:linear-gradient(90deg,#0a0c0e,#303438,#0b0d0f);transform:skew(-7deg);border-radius:2px 2px 7px 7px}
+.hand{position:absolute;background:linear-gradient(145deg,#c08b67,#8b5c43);border-radius:28px;box-shadow:inset 0 0 0 2px #0003}.hand.right{left:116px;bottom:34px;width:80px;height:62px;transform:rotate(-10deg)}.hand.left{left:36px;bottom:28px;width:92px;height:58px;transform:rotate(14deg)}.sleeve{position:absolute;background:#252b27;border-radius:18px}.sleeve.right{left:112px;bottom:-10px;width:90px;height:72px;transform:rotate(-8deg)}.sleeve.left{left:-5px;bottom:-7px;width:96px;height:72px;transform:rotate(14deg)}
 #cross{position:absolute;left:50%;top:50%;width:18px;height:18px;transform:translate(-50%,-50%)}
 #cross:before,#cross:after{content:"";position:absolute;background:#fff;box-shadow:0 0 4px #000}
 #cross:before{width:18px;height:2px;left:0;top:8px}#cross:after{width:2px;height:18px;left:8px;top:0}
@@ -21,7 +32,7 @@ button{border:0;border-radius:12px;padding:14px 24px;font-weight:900;font-size:1
 </style>
 </head><body>
 <div id="game"></div>
-<div id="hud"><div id="weapon"><div class="barrel"></div><div class="sight"></div><div class="sleeve left"></div><div class="hand left"></div><div class="sleeve right"></div><div class="hand right"></div></div><div id="cross"></div><div id="msg">ZOMBIE-MER 3D</div><div id="stats">CAN 100<br>WASD · Mouse · Sol tık ateş</div><div id="ammo">12 / ∞</div></div>
+<div id="hud"><div id="weapon"><div class="slide"></div><div class="muzzle"></div><div class="frontSight"></div><div class="rearSight"></div><div class="triggerGuard"></div><div class="trigger"></div><div class="grip"></div><div class="mag"></div><div class="sleeve left"></div><div class="hand left"></div><div class="sleeve right"></div><div class="hand right"></div></div><div id="cross"></div><div id="msg">ZOMBIE-MER 3D</div><div id="stats">CAN 100<br>WASD · Mouse · Sol tık ateş</div><div id="ammo">12 / ∞</div></div>
 <div id="start"><div class="card"><h1>ZOMBIE-MER 3D</h1><p>Yeni 3D survival temel sürümü. WASD hareket · Mouse bakış · Sol tık ateş · R şarjör.</p><button id="play">OYUNA BAŞLA</button></div></div>
 <script type="module">
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js';
