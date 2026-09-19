@@ -195,7 +195,7 @@ div:has(> #legacyOnlineMarker){display:none!important}
 
 <div id="menuJumpScare" aria-hidden="true"><div class="jsFace"><div class="jsCrack"></div><div class="jsMouth"></div></div></div>
 
-<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v135</b></div></div></div>
+<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v136</b></div></div></div>
 
 <div id="onlinePanel">
   <b><span id="legacyOnlineMarker">ONLINE CO-OP v8 · CLEAN LOBBY</span></b>
@@ -726,7 +726,11 @@ function makeHouse(c, id, roofs) {
   hs.inner = { x: c.x + T, y: c.y + T, w: c.w - 2 * T, h: c.h - 2 * T };
   // Tüm evler tam olarak 2 katlıdır.
   hs.floors = 2;
-  hs.stairs = hs.floors>1 ? {x:hs.inner.x+hs.inner.w-52,y:hs.inner.y+hs.inner.h-76,w:36,h:58} : null;
+  if(side==='N') hs.stairs={x:c.x+c.w-62,y:c.y+c.h+18,w:44,h:72};
+  else if(side==='S') hs.stairs={x:c.x+18,y:c.y-90,w:44,h:72};
+  else if(side==='W') hs.stairs={x:c.x+c.w+18,y:c.y+18,w:72,h:44};
+  else hs.stairs={x:c.x-90,y:c.y+c.h-62,w:72,h:44};
+  hs.stairs.outside=true;
 
   const x = c.x, y = c.y, w = c.w, h = c.h, segs = [];
   if (side === 'N') segs.push([x, y, d.x - dw / 2 - x, T], [d.x + dw / 2, y, x + w - (d.x + dw / 2), T]); else segs.push([x, y, w, T]);
@@ -783,7 +787,7 @@ function makeHouse(c, id, roofs) {
   for(const q of downstairs){
     const up={x:inn.x+inn.w-(q.x-inn.x)-q.w,y:inn.y+inn.h-(q.y-inn.y)-q.h,w:q.w,h:q.h,t:'k',sb:false,open:false,floor:2,hs};
     // Merdivenin üstüne sandık koyma.
-    if(!hs.stairs||!rectsNear(up,hs.stairs,22)){hs.chests.push(up);chests.push(up);}
+    hs.chests.push(up);chests.push(up);
   }
   return hs;
 }
@@ -881,15 +885,29 @@ function houseAt(x, y) {
   }
   return -1;
 }
-let stairTransitionUntil=0;
-function houseFloor(){return player?clamp(Number(player.houseFloor||1),1,5):1;}
-function nearHouseStairs(){if(!player||player.hi<0)return null;const h=houses[player.hi],s=h&&h.stairs;if(!s)return null;return Math.hypot(player.x-(s.x+s.w/2),player.y-(s.y+s.h/2))<92?h:null;}
-function useHouseStairs(){
- const h=nearHouseStairs();if(!h||performance.now()<stairTransitionUntil)return false;
- const s=h.stairs,cur=houseFloor(),next=cur<h.floors?cur+1:1,up=next>cur;player.houseFloor=next;
- player.x=clamp(s.x+s.w/2+(up?-58:58),h.inner.x+28,h.inner.x+h.inner.w-28);
- player.y=clamp(s.y+s.h/2+(up?-34:34),h.inner.y+28,h.inner.y+h.inner.h-28);
- stairTransitionUntil=performance.now()+700;toast(next===1?'Merdivenden 1. kata indin':next+'. kata çıktın');return true;
+let stairTransitionUntil=0, stairHold=0, stairHoldLatch=false;
+function houseFloor(){return player?clamp(Number(player.houseFloor||1),1,2):1;}
+function nearHouseStairs(){
+  if(!player)return null;
+  let best=null,bd=100;
+  for(const h of houses){
+    const s=h.stairs;if(!s)continue;
+    const d=Math.hypot(player.x-(s.x+s.w/2),player.y-(s.y+s.h/2));
+    if(d<bd){bd=d;best=h;}
+  }
+  return best;
+}
+function useHouseStairs(h=nearHouseStairs()){
+  if(!h||performance.now()<stairTransitionUntil)return false;
+  const s=h.stairs,cur=houseFloor(),next=cur===1?2:1;
+  player.houseFloor=next;
+  // Kat değişiminden sonra oyuncu evin içine alınır; aynı dış merdiven iki kat için kullanılır.
+  player.x=clamp(h.inner.x+h.inner.w/2,h.inner.x+30,h.inner.x+h.inner.w-30);
+  player.y=clamp(h.inner.y+h.inner.h/2,h.inner.y+30,h.inner.y+h.inner.h-30);
+  player.hi=houses.indexOf(h);
+  stairTransitionUntil=performance.now()+800;
+  toast(next===2?'2. kata çıktın':'1. kata indin');
+  return true;
 }
 function houseDoorAt(x, y, r = 0) {
   for (let i = 0; i < houses.length; i++) {
@@ -1539,7 +1557,7 @@ window.addEventListener('keydown', e => {
   if (state === 'playing' || state === 'intermission') {
     if (e.code === 'Escape') { openEscapeMenu(); return; }
     if (e.code === 'KeyR') startReload();
-    if (e.code === 'KeyE') { if(useHouseStairs()){} else if(nearWorkbench()) openWorkbench(); else { const cf=campfireObject();if(!(cf&&Math.hypot(player.x-(cf.x+cf.w/2),player.y-(cf.y+cf.h/2))<125)) openChest(); } }
+    if (e.code === 'KeyE') { if(!nearHouseStairs()){ if(nearWorkbench()) openWorkbench(); else { const cf=campfireObject();if(!(cf&&Math.hypot(player.x-(cf.x+cf.w/2),player.y-(cf.y+cf.h/2))<125)) openChest(); } } }
     if (e.code === 'KeyF') chopTree();
     if (e.code === 'KeyG') plantTreeSeed();
     if (/^Digit\d$/.test(e.code)) { const n = parseInt(e.code.slice(5), 10); selectSlot(n === 0 ? 9 : n - 1); }
@@ -2343,6 +2361,16 @@ function update(dt) {
     cam.x = clamp(p.x + lookX - W / 2, 0, Math.max(0, WORLD - W));
     cam.y = clamp(p.y + lookY - H / 2, 0, Math.max(0, WORLD - H));
     p.ang = Math.atan2(mouse.y + cam.y - p.y, mouse.x + cam.x - p.x);
+  }
+
+  // Dış merdiven: E tuşunu 2 saniye basılı tutmadan kat değişmez.
+  const stairHouse=nearHouseStairs();
+  if(stairHouse&&keys.KeyE){
+    stairHold=Math.min(2,stairHold+dt);
+    if(stairHold>=2&&!stairHoldLatch){stairHoldLatch=true;useHouseStairs(stairHouse);stairHold=0;}
+  }else{
+    stairHold=0;
+    if(!keys.KeyE)stairHoldLatch=false;
   }
 
   // Çadıra gerçekten gir: içeride evlerden farklı kamp iç mekânı görünür.
@@ -3151,6 +3179,17 @@ function drawRoof(h) {
     ctx.fillStyle='#493a31';ctx.fillRect(ux+uw-48,uy+8,16,25);
     ctx.fillStyle='#826958';ctx.fillRect(ux+uw-50,uy+7,20,5);
   }
+  // Dış merdiven: sandıklardan ve iç mobilyalardan tamamen ayrı.
+  if(h.stairs){
+    const s=h.stairs;
+    ctx.fillStyle='rgba(0,0,0,.34)';ctx.fillRect(s.x+5,s.y+6,s.w,s.h);
+    ctx.fillStyle='#70543a';ctx.fillRect(s.x,s.y,s.w,s.h);
+    ctx.strokeStyle='#c49b62';ctx.lineWidth=2;
+    if(s.h>=s.w){for(let yy=s.y+7;yy<s.y+s.h;yy+=9){ctx.beginPath();ctx.moveTo(s.x+4,yy);ctx.lineTo(s.x+s.w-4,yy);ctx.stroke();}}
+    else{for(let xx=s.x+7;xx<s.x+s.w;xx+=9){ctx.beginPath();ctx.moveTo(xx,s.y+4);ctx.lineTo(xx,s.y+s.h-4);ctx.stroke();}}
+    ctx.strokeStyle='#3a281b';ctx.lineWidth=3;ctx.strokeRect(s.x,s.y,s.w,s.h);
+  }
+
   // kapı işareti
   const d = h.door;
   ctx.fillStyle = '#9a7a4e';
@@ -3173,15 +3212,7 @@ function drawInteriorScene(hs) {
     ctx.fillStyle='rgba(205,165,110,.035)';ctx.fillRect(n.x,yy+2,n.w,2);
   }
   // 1. ve 2. kat aynı temel tasarıma sahiptir.
-  if(hs.stairs){
-    const s=hs.stairs;
-    ctx.fillStyle='rgba(0,0,0,.38)';ctx.fillRect(s.x+6,s.y+7,s.w,s.h);
-    ctx.fillStyle=upper?'#52646c':'#765638';ctx.fillRect(s.x,s.y,s.w,s.h);
-    ctx.strokeStyle=upper?'#b7cdd2':'#3c291b';ctx.lineWidth=2;
-    for(let yy=s.y+6;yy<s.y+s.h;yy+=8){ctx.beginPath();ctx.moveTo(s.x+5,yy);ctx.lineTo(s.x+s.w-5,yy);ctx.stroke();}
-    ctx.strokeStyle='#c79d62';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(s.x-4,s.y+s.h);ctx.lineTo(s.x-4,s.y);ctx.moveTo(s.x+s.w+4,s.y+s.h);ctx.lineTo(s.x+s.w+4,s.y);ctx.stroke();
-    ctx.fillStyle='#f5d995';ctx.font='900 12px '+FONT;ctx.textAlign='center';ctx.fillText(floor===1?'↑ 2. KATA ÇIK':'↓ 1. KATA İN',s.x+s.w/2,s.y-8);
-  }
+
     // Orta halı: çerçeve, desen ve hafif aşınma.
   const rx=n.x+n.w*.27,ry=n.y+n.h*.29,rw=n.w*.46,rh=n.h*.42;
   ctx.fillStyle=upper?'rgba(38,72,88,.72)':'rgba(105,35,32,.62)';ctx.fillRect(rx,ry,rw,rh);
@@ -3468,7 +3499,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v135';
+const GAME_VERSION = 'v136';
 
 function drawHUD() {
   if(player&&abandonedCamps.length&&player.hi<0){let cp=null,bd=1e9;for(const q of abandonedCamps){const d=Math.hypot(q.x-player.x,q.y-player.y);if(d<bd){bd=d;cp=q}}if(cp&&bd>190){ctx.save();ctx.textAlign='center';ctx.font='900 11px '+FONT;ctx.fillStyle='#e3aa45';ctx.fillText('🏕 KAMP  '+Math.round(bd)+'m',W/2,82);ctx.restore();}}
@@ -3514,7 +3545,7 @@ function drawHUD() {
   if(mission){ctx.fillStyle=mission.done?'#7fbf5a':'#d8d0b7';ctx.fillText('Görev: '+mission.name+' '+Math.min(mission.target,Math.floor(mission.progress))+'/'+mission.target,W/2,ty+(runEvent?56:40));}
   ctx.textAlign='left';ctx.fillStyle='#9fb6a4';ctx.fillText('Survivor Lv.'+metaLevel+' · XP '+metaXP,20,112);
   const cf=campfireObject();const nearFire=cf&&Math.hypot(p.x-(cf.x+cf.w/2),p.y-(cf.y+cf.h/2))<125;
-  if(nearHouseStairs()){ctx.fillStyle='#f0d28a';ctx.font='800 14px '+FONT;ctx.fillText('[E] MERDİVEN · '+(houseFloor()<houses[player.hi].floors?(houseFloor()+1)+'. KATA ÇIK':'1. KATA İN'),20,136);}
+  if(nearHouseStairs()){ctx.fillStyle='#f0d28a';ctx.font='800 14px '+FONT;ctx.fillText('[E] 2 SN BASILI TUT · '+(houseFloor()===1?'2. KATA ÇIK':'1. KATA İN'),20,136);if(stairHold>0)bar(20,144,190,8,stairHold/2,'#d2a45e');}
   else if(nearWorkbench()){ctx.fillStyle='#f0d28a';ctx.font='800 14px '+FONT;ctx.fillText('[E] ÇALIŞMA TEZGÂHI · üretim',20,136);}
   else if(nearFire&&!fireBossActive){ctx.fillStyle='#ffb04a';ctx.font='800 14px '+FONT;ctx.fillText('[E] 5 SN BASILI TUT · ATEŞE 3 ODUN',20,136);if(fireHold>0){bar(20,144,190,8,fireHold/5,'#e88724');}}
   const fw=Math.min(280,W-40),fx=W/2-fw/2,fy=ty+76;
