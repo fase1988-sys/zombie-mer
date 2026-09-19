@@ -1115,6 +1115,7 @@ function floatText(x, y, text, col) { floats.push({ x, y, text, t: 0.9, col: col
 function slots() {
   const s = [];
   for (const id of GUN_ORDER) if (player.guns.includes(id)) s.push({ k: 'gun', id });
+  s.push({k:'axe'});
   if(inv.block>0)s.push({ k:'block' });
   if(inv.door>0)s.push({ k:'door' });
   if(inv.turret>0)s.push({ k:'turret' });
@@ -1153,7 +1154,7 @@ function openWorkbench(){
    const req=it.logs?('🪵 '+it.logs+' kütük'):('$'+it.cost);
    return '<button class="craftCard" data-craft="'+it.id+'"><span class="craftPic">'+craftIcon(it.id)+'</span><span class="craftInfo"><b>'+it.name+'</b><small>'+it.desc+'</small><strong>'+req+' · Envanter: '+(inv[it.id]||0)+'</strong></span><span class="craftMake">ÜRET</span></button>';
  }).join('');
- const resource='<aside class="craftStock"><span>HAMMADDE</span><b>🪵 '+inv.logs+'</b><small>Kütük</small><em>Ağaçlara yaklaş ve <strong>F</strong> ile kes. Her vuruş +1 kütük.</em></aside>';
+ const resource='<aside class="craftStock"><span>HAMMADDE</span><b>🪵 '+inv.logs+'</b><small>Kütük</small><em>Baltayı envanterden seç, ağaca yaklaş ve <strong>F</strong> ya da sol tık ile kes. Her vuruş +1 kütük.</em></aside>';
  showOverlay({title:'ÇALIŞMA TEZGÂHI',text:'Üretmek istediğin eşyayı seç.',extra:'<div class="craftLayout"><div class="craftGrid">'+cards+'</div>'+resource+'</div>',btn:'Kapat',onClick:()=>{state=prev;hideOverlay();}});
  setTimeout(()=>{
    document.querySelectorAll('.craftCard').forEach(b=>b.onclick=()=>{
@@ -1295,7 +1296,7 @@ const CONTROLS = `
   <dt><kbd>1</kbd>…<kbd>0</kbd></dt><dd>Envanterden eşya seç (fare tekerleği de çalışır)</dd>
   <dt><kbd>Tab</kbd></dt><dd>Mağazayı aç: silah, taret, bomba satın al</dd>
   <dt><kbd>E</kbd></dt><dd>Sandık aç / kamp alanındaki çalışma tezgâhını kullan</dd>
-  <dt><kbd>F</kbd></dt><dd>Yakındaki ağacı kes · her vuruşta 1 kütük</dd>
+  <dt><kbd>F</kbd></dt><dd>Baltayı seçip yakındaki ağacı kes · her vuruşta 1 kütük</dd>
   <dt><kbd>Sağ tık</kbd></dt><dd>Duvarı, kapıyı veya tareti kır/sök (yarı para iadesi)</dd>
   <dt><kbd>R</kbd><kbd>Shift</kbd></dt><dd>Şarjör yenile, koş</dd>
   <dt><kbd>P</kbd><kbd>M</kbd></dt><dd>Duraklat, sesi kapat</dd>
@@ -1924,7 +1925,13 @@ function update(dt) {
     const fire = w.auto ? want : mouse.buf > 0;
     if (fire && p.reload <= 0 && p.cd <= 0 && p.ammo[sl.id] > 0) { shoot(sl.id); mouse.buf = 0; }
   } else if (want && p.cd <= 0) {
-    if (sl.k === 'block') { if (tryPlace('block')) p.cd = 0.07; else if (mouse.buf > 0) mouse.buf = 0; }
+    if(sl.k==='axe'){
+      if(mouse.buf>0){chopTree();p.cd=.32;mouse.buf=0;}
+    } else if(sl.k==='axe'){
+    ctx.rotate(-.55);ctx.strokeStyle='#7a4d28';ctx.lineWidth=Math.max(3,s*.09);ctx.lineCap='round';ctx.beginPath();ctx.moveTo(-s*.24,s*.30);ctx.lineTo(s*.20,-s*.28);ctx.stroke();
+    ctx.fillStyle='#b9c0c2';ctx.beginPath();ctx.moveTo(s*.08,-s*.31);ctx.lineTo(s*.32,-s*.30);ctx.lineTo(s*.38,-s*.12);ctx.lineTo(s*.13,-s*.08);ctx.closePath();ctx.fill();ctx.strokeStyle='#51585b';ctx.lineWidth=1.5;ctx.stroke();
+    ctx.lineCap='butt';
+  } else if (sl.k === 'block') { if (tryPlace('block')) p.cd = 0.07; else if (mouse.buf > 0) mouse.buf = 0; }
     else if (sl.k === 'door') { if (tryPlace('door')) p.cd = 0.12; else if (mouse.buf > 0) mouse.buf = 0; }
     else if (sl.k === 'turret') {
       if (mouse.buf > 0) {
@@ -2320,7 +2327,10 @@ function nearestTree(){
  return best;
 }
 function chopTree(){
- const o=nearestTree();if(!o){toast('Kesmek için bir ağaca yaklaş');return false;}
+ const sl=slots()[player.sel];
+ if(!sl||sl.k!=='axe'){toast('Ağaç kesmek için baltayı seç');return false;}
+ const o=nearestTree();if(!o){toast('Baltayla kesmek için bir ağaca yaklaş');return false;}
+ player.axeSwing=.22;
  o.woodHits=(o.woodHits||0)+1;inv.logs++;sfx('hit');floatText(o.x+o.w/2,o.y-10,'+1 KÜTÜK','#d6a45d');
  if(o.woodHits>=3){
   const i=obs.indexOf(o);if(i>=0)obs.splice(i,1);
@@ -2438,10 +2448,16 @@ function drawZombie(z) {
 
 function drawPlayer() {
   const p = player, g = curGun(), len = g ? g.len : 14;
+  const active=slots()[p.sel], axeOn=active&&active.k==='axe';
+  p.axeSwing=Math.max(0,(p.axeSwing||0)-.016);
   ctx.save(); ctx.translate(p.x, p.y);
   ctx.fillStyle = 'rgba(0,0,0,.32)'; ctx.beginPath(); ctx.ellipse(3, 5, p.r, p.r * .9, 0, 0, TAU); ctx.fill();
   ctx.rotate(p.ang);
-  if (g) {
+  if (axeOn){
+    ctx.save();ctx.translate(p.r*.7,0);ctx.rotate(-.65-(p.axeSwing>0?1.0:0));
+    ctx.strokeStyle='#774a27';ctx.lineWidth=5;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(0,8);ctx.lineTo(22,-13);ctx.stroke();
+    ctx.fillStyle='#b9c0c2';ctx.beginPath();ctx.moveTo(16,-18);ctx.lineTo(31,-17);ctx.lineTo(33,-8);ctx.lineTo(19,-6);ctx.closePath();ctx.fill();ctx.restore();
+  } else if (g) {
     ctx.fillStyle = '#15181a'; ctx.fillRect(p.r * .4, -3, len, 6);
     if (curGunId() === 'shotgun') ctx.fillRect(p.r * .4, -5, len * .55, 3);
     if (curGunId() === 'minigun') { ctx.fillRect(p.r * .4, -6, len, 3); ctx.fillRect(p.r * .4, 3, len, 3); }
@@ -2557,7 +2573,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v31';
+const GAME_VERSION = 'v32';
 
 function drawHUD() {
   const p = player, L = spec || levelSpec(1), narrow = W < 760;
