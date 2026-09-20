@@ -179,6 +179,7 @@ div:has(> #legacyOnlineMarker){display:none!important}
 .logPileIcon>i:nth-child(1){bottom:1px;left:0;transform:rotate(-7deg)}.logPileIcon>i:nth-child(2){bottom:1px;left:8px;transform:rotate(7deg)}.logPileIcon>i:nth-child(3){bottom:10px;left:4px}
 .craftStock>b .logPileIcon{width:35px;height:27px;transform:scale(1.12)}.craftInfo strong .logPileIcon{transform:scale(.72);transform-origin:left center;margin-right:-5px}
 </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/4.2.1/phaser.min.js"></script>
 </head>
 <body id="artifacts-component-root-html">
 <canvas id="game" width="580" height="843" class=""></canvas><button id="adminBtn">ADMIN</button><div id="adminPanel"><div class="adminBox"><div class="adminHead"><div><span class="adminEyebrow">ZOMBIE CONTROL SYSTEM</span><h2>ADMIN COMMAND</h2><p>Oyuncu ve oyun akışını yönet</p></div><button id="adminClose" class="adminX">×</button></div><div id="adminLogin" class="adminLogin"><div class="adminLock">🔒</div><b>Yönetici erişimi</b><small>Devam etmek için şifreyi gir</small><input id="adminPass" type="password" placeholder="••••••••"><button id="adminLoginBtn">KİLİDİ AÇ</button><small id="adminLoginMsg"></small></div><div id="adminTools" hidden><div class="adminGrid"><section><div class="adminSectionTitle"><span>💰</span><div><b>EKONOMİ</b><small>Hesabına para ekle</small></div></div><div class="adminInline"><input id="adminMoney" type="number" value="1000"><button id="adminGiveMoney">+$ PARA</button></div></section><section><div class="adminSectionTitle"><span>🔫</span><div><b>CEPHANELİK</b><small>Silah envanterini yönet</small></div></div><select id="adminGun"><option value="shotgun">Pompalı tüfek</option><option value="smg">Hafif makineli</option><option value="rifle">Otomatik tüfek</option><option value="sniper">Keskin nişancı</option><option value="minigun">Minigun</option></select><div class="adminInline"><button id="adminGiveGun">SİLAH VER</button><button id="adminGiveAll">TÜMÜNÜ AÇ</button></div></section><section><div class="adminSectionTitle"><span>❤️</span><div><b>OYUNCU</b><small>Hayatta kalma kontrolleri</small></div></div><div class="adminInline"><button id="adminHeal">CAN DOLDUR</button><button id="adminGod" class="godBtn">GOD MODE: KAPALI</button></div></section><section><div class="adminSectionTitle"><span>☠️</span><div><b>BÖLÜM KONTROLÜ</b><small>İstediğin dalgaya atla</small></div></div><div class="adminInline"><input id="adminLevel" type="number" min="1" max="999" value="2" placeholder="Bölüm"><button id="adminGoLevel">BÖLÜME GEÇ</button></div></section></div><div class="adminWide">
@@ -4302,6 +4303,29 @@ function draw() {
   drawBackpack();
   if (!backpackOpen && (state === 'playing' || state === 'intermission')) drawCrosshair();
 }
+
+
+// Phaser 4.2.1 migration bridge.
+// Runs an off-screen WebGL renderer beside the legacy Canvas game so gameplay stays intact
+// while visual systems are migrated incrementally. It does not own input or simulation yet.
+(function initPhaserVisualBridge(){
+  if(typeof Phaser==='undefined')return;
+  try{
+    const host=document.createElement('div');
+    host.id='phaserVisualBridge';
+    host.style.cssText='position:fixed;left:-4px;top:-4px;width:2px;height:2px;overflow:hidden;pointer-events:none;opacity:.01';
+    document.body.appendChild(host);
+    window.ZM_PHASER=new Phaser.Game({
+      type:Phaser.WEBGL,
+      width:2,height:2,
+      parent:host,
+      transparent:true,
+      banner:false,
+      audio:{noAudio:true},
+      scene:{create(){window.ZM_PHASER_READY=true;}}
+    });
+  }catch(e){window.ZM_PHASER_READY=false;console.warn('Phaser visual bridge fallback',e);}
+})();
 
 /* =====================================================
    Döngü
