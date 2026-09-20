@@ -195,7 +195,7 @@ div:has(> #legacyOnlineMarker){display:none!important}
 
 <div id="menuJumpScare" aria-hidden="true"><div class="jsFace"><div class="jsCrack"></div><div class="jsMouth"></div></div></div>
 
-<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v180</b></div></div></div>
+<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v181</b></div></div></div>
 
 <div id="onlinePanel">
   <b><span id="legacyOnlineMarker">ONLINE CO-OP v8 · CLEAN LOBBY</span></b>
@@ -3823,7 +3823,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v180';
+const GAME_VERSION = 'v181';
 
 /* =====================================================
    Kafa lambası v1 — mevcut UI'dan bağımsız, canvas katmanı
@@ -3846,22 +3846,73 @@ window.addEventListener('keydown', e=>{
   }
 });
 function toggleBackpack(){backpackOpen=!backpackOpen;mouse.down=false;}
-function inventoryGridItems(){return [['Odun','🪵',inv.logs||0],['Tohum','🌱',inv.seeds||0],['İlk yardım','🩹',inv.medkit||0],['Bomba','💣',inv.bomb||0],['Taret','⚙️',inv.turret||0],['Duvar','🧱',inv.block||0],['Kapı','🚪',inv.door||0],['Kafa lambası','🔦',inv.headlamp||0]];}
+let mcInvSlots=Array(36).fill(null),mcCursor=null;
+function syncMinecraftInventory(){
+ const src=[['logs','Odun','🪵'],['seeds','Tohum','🌱'],['medkit','İlk yardım','🩹'],['bomb','Bomba','💣'],['turret','Taret','⚙️'],['block','Duvar','🧱'],['door','Kapı','🚪'],['headlamp','Kafa lambası','🔦']];
+ for(const [id,name,icon] of src){
+   const n=(id==='headlamp'&&headlampEquipped)?0:(inv[id]||0),found=mcInvSlots.findIndex(s=>s&&s.id===id);
+   if(n>0){if(found>=0)mcInvSlots[found].count=n;else{const q=mcInvSlots.findIndex(s=>!s);if(q>=0)mcInvSlots[q]={id,name,icon,count:n};}}
+   else if(found>=0)mcInvSlots[found]=null;
+ }
+}
+function mcLayout(){
+ const sz=Math.max(34,Math.min(48,Math.floor((W-90)/9))),gap=3,gridW=9*sz+8*gap,pw=gridW+150,ph=4*sz+3*gap+178,x=(W-pw)/2,y=(H-ph)/2;
+ return {sz,gap,gridW,pw,ph,x,y,gx:x+128,gy:y+91,hotY:y+91+3*(sz+gap)+28};
+}
+function toggleBackpack(){backpackOpen=!backpackOpen;mouse.down=false;if(backpackOpen)syncMinecraftInventory();}
+function mcDrawSlot(x,y,s,slot,hot=false){
+ ctx.fillStyle='#8b8b8b';ctx.fillRect(x,y,s,s);ctx.fillStyle='#373737';ctx.fillRect(x,y,s,2);ctx.fillRect(x,y,2,s);ctx.fillStyle='#fff';ctx.fillRect(x+2,y+s-2,s-2,2);ctx.fillRect(x+s-2,y+2,2,s-2);ctx.fillStyle='#555';ctx.fillRect(x+3,y+3,s-6,s-6);
+ if(hot){ctx.strokeStyle='#ddd';ctx.lineWidth=2;ctx.strokeRect(x-2,y-2,s+4,s+4);}
+ if(slot){ctx.textAlign='center';ctx.font=Math.floor(s*.52)+'px '+FONT;ctx.fillStyle='#fff';ctx.fillText(slot.icon,x+s/2,y+s*.62);if(slot.count>1){ctx.textAlign='right';ctx.font='900 '+Math.max(10,Math.floor(s*.25))+'px '+FONT;ctx.fillStyle='#fff';ctx.strokeStyle='#111';ctx.lineWidth=3;ctx.strokeText(slot.count,x+s-4,y+s-5);ctx.fillText(slot.count,x+s-4,y+s-5);}}
+}
 function drawBackpack(){
- if(!backpackOpen||!player)return;
- const cols=9,rows=3,sz=Math.min(58,Math.floor((W-100)/cols)),gap=4,gw=cols*sz+(cols-1)*gap,gh=rows*sz+(rows-1)*gap,pw=gw+150,ph=gh+92,x=(W-pw)/2,y=(H-ph)/2;
- ctx.save();ctx.shadowBlur=0;ctx.fillStyle='rgba(10,11,12,.94)';ctx.fillRect(x,y,pw,ph);ctx.strokeStyle='#777';ctx.lineWidth=3;ctx.strokeRect(x,y,pw,ph);
- ctx.fillStyle='#eee7d5';ctx.font='900 18px '+HEAD;ctx.textAlign='left';ctx.fillText('ENVANTER',x+18,y+27);ctx.font='700 11px '+FONT;ctx.fillStyle='#aaa';ctx.fillText('I · kapat  |  Kafa lambasına tıkla: tak / çıkar',x+18,y+46);
- const ex=x+18,ey=y+67;ctx.fillStyle='#181a1b';ctx.fillRect(ex,ey,70,70);ctx.strokeStyle=headlampEquipped?'#f0b429':'#555';ctx.lineWidth=3;ctx.strokeRect(ex,ey,70,70);ctx.textAlign='center';ctx.font='30px '+FONT;ctx.fillStyle='#fff';ctx.fillText(headlampEquipped?'🔦':'◯',ex+35,ey+44);ctx.font='700 10px '+FONT;ctx.fillStyle='#aaa';ctx.fillText('KAFA',ex+35,ey+88);
- const gx=x+112,gy=y+62,items=inventoryGridItems();
- for(let i=0;i<27;i++){const cx=gx+(i%cols)*(sz+gap),cy=gy+Math.floor(i/cols)*(sz+gap);ctx.fillStyle='#1b1d1e';ctx.fillRect(cx,cy,sz,sz);ctx.strokeStyle='#555';ctx.lineWidth=2;ctx.strokeRect(cx,cy,sz,sz);const it=items[i];if(!it)continue;ctx.textAlign='center';ctx.font=Math.max(19,sz*.42)+'px '+FONT;ctx.fillStyle='#fff';ctx.fillText(it[1],cx+sz/2,cy+sz*.52);ctx.font='700 9px '+FONT;ctx.fillStyle='#ccc';ctx.fillText(it[0],cx+sz/2,cy+sz-7);ctx.textAlign='right';ctx.font='900 11px '+FONT;ctx.fillStyle='#fff';ctx.fillText(String(it[2]),cx+sz-5,cy+13);}
+ if(!backpackOpen||!player)return;syncMinecraftInventory();const L=mcLayout(),{sz,gap,pw,ph,x,y,gx,gy,hotY}=L;
+ ctx.save();ctx.shadowBlur=0;ctx.fillStyle='rgba(0,0,0,.48)';ctx.fillRect(0,0,W,H);
+ ctx.fillStyle='#c6c6c6';ctx.fillRect(x,y,pw,ph);ctx.strokeStyle='#111';ctx.lineWidth=3;ctx.strokeRect(x,y,pw,ph);ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.strokeRect(x+3,y+3,pw-6,ph-6);
+ ctx.fillStyle='#3f3f3f';ctx.font='700 14px '+FONT;ctx.textAlign='left';ctx.fillText('Üretim',x+128,y+26);ctx.fillText('Envanter',gx,gy-12);
+ // Minecraft-style player/equipment pane
+ ctx.fillStyle='#111';ctx.fillRect(x+18,y+38,82,116);ctx.fillStyle='#31526b';ctx.fillRect(x+46,y+72,28,48);ctx.fillStyle='#c89a73';ctx.beginPath();ctx.arc(x+60,y+59,15,0,TAU);ctx.fill();
+ const eqx=x+106,eqy=y+42;for(let i=0;i<4;i++)mcDrawSlot(eqx,eqy+i*(sz+3),sz,i===0&&headlampEquipped?{icon:'🔦',count:1}:null);
+ ctx.fillStyle='#555';ctx.font='10px '+FONT;ctx.fillText('KAFA',eqx+4,eqy-5);
+ // 2x2 crafting grid + arrow + output, visual Minecraft structure
+ const cx=x+245,cy=y+34;for(let r=0;r<2;r++)for(let q=0;q<2;q++)mcDrawSlot(cx+q*(sz+3),cy+r*(sz+3),sz,null);
+ ctx.fillStyle='#555';ctx.font='28px '+FONT;ctx.fillText('→',cx+2*(sz+3)+7,cy+sz+7);mcDrawSlot(cx+2*(sz+3)+43,cy+Math.floor(sz/2),sz,null);
+ // 27 main slots
+ for(let i=0;i<27;i++)mcDrawSlot(gx+(i%9)*(sz+gap),gy+Math.floor(i/9)*(sz+gap),sz,mcInvSlots[i]);
+ // 9 hotbar inventory slots
+ for(let i=0;i<9;i++)mcDrawSlot(gx+i*(sz+gap),hotY,sz,mcInvSlots[27+i],false);
+ if(mcCursor){ctx.textAlign='center';ctx.font=Math.floor(sz*.52)+'px '+FONT;ctx.fillStyle='#fff';ctx.fillText(mcCursor.icon,mouse.x,mouse.y);if(mcCursor.count>1){ctx.font='900 12px '+FONT;ctx.fillText(mcCursor.count,mouse.x+14,mouse.y+14);}}
  ctx.restore();
 }
+function mcSlotAt(px,py){
+ const L=mcLayout(),{sz,gap,gx,gy,hotY}=L;
+ for(let i=0;i<27;i++){const x=gx+(i%9)*(sz+gap),y=gy+Math.floor(i/9)*(sz+gap);if(px>=x&&px<=x+sz&&py>=y&&py<=y+sz)return i;}
+ for(let i=0;i<9;i++){const x=gx+i*(sz+gap),y=hotY;if(px>=x&&px<=x+sz&&py>=y&&py<=y+sz)return 27+i;}
+ return -1;
+}
 function backpackClick(px,py){
- if(!backpackOpen)return false;
- const cols=9,sz=Math.min(58,Math.floor((W-100)/cols)),gap=4,gw=cols*sz+(cols-1)*gap,gh=3*sz+2*gap,pw=gw+150,ph=gh+92,x=(W-pw)/2,y=(H-ph)/2,gx=x+112,gy=y+62,hx=gx+7*(sz+gap),hy=gy;
- if(px>=hx&&px<=hx+sz&&py>=hy&&py<=hy+sz){if((inv.headlamp||0)<1){toast('Kafa lamban yok · sandıklardan bul');return true;}headlampEquipped=!headlampEquipped;if(!headlampEquipped)headlampOn=false;toast(headlampEquipped?'Kafa lambası kafaya takıldı · L ile aç':'Kafa lambası çıkarıldı');return true;}
- return px>=x&&px<=x+pw&&py>=y&&py<=y+ph;
+ if(!backpackOpen)return false;const L=mcLayout(),i=mcSlotAt(px,py);
+ // helmet slot
+ const eqx=L.x+106,eqy=L.y+42;
+ if(px>=eqx&&px<=eqx+L.sz&&py>=eqy&&py<=eqy+L.sz){
+   if(mcCursor&&mcCursor.id==='headlamp'&&!headlampEquipped){headlampEquipped=true;mcCursor=null;toast('Kafa lambası kafaya takıldı · L ile aç');return true;}
+   if(headlampEquipped&&!mcCursor){headlampEquipped=false;headlampOn=false;mcCursor={id:'headlamp',name:'Kafa lambası',icon:'🔦',count:1};toast('Kafa lambası çıkarıldı');}
+   return true;
+ }
+ if(i>=0){
+   const s=mcInvSlots[i];
+   if(!mcCursor&&s){mcCursor=s;mcInvSlots[i]=null;}
+   else if(mcCursor&&!s){mcInvSlots[i]=mcCursor;mcCursor=null;}
+   else if(mcCursor&&s){
+     if(mcCursor.id===s.id&&s.id!=='headlamp'){s.count+=mcCursor.count;mcCursor=null;}
+     else{const t=mcInvSlots[i];mcInvSlots[i]=mcCursor;mcCursor=t;}
+   }
+   // headlamp can be equipped by clicking it with cursor then helmet slot, Minecraft-style.
+   return true;
+ }
+ // click helmet with headlamp cursor
+ if(mcCursor&&mcCursor.id==='headlamp'&&px>=eqx&&px<=eqx+L.sz&&py>=eqy&&py<=eqy+L.sz){headlampEquipped=true;mcCursor=null;toast('Kafa lambası kafaya takıldı · L ile aç');return true;}
+ return px>=L.x&&px<=L.x+L.pw&&py>=L.y&&py<=L.y+L.ph;
 }
 function drawWornHeadlamp(){if(!headlampEquipped||!player)return;ctx.save();ctx.translate(player.x,player.y);ctx.rotate(player.ang);ctx.fillStyle='#17191a';ctx.fillRect(player.r*.12,-player.r*.47,player.r*.55,3);ctx.fillStyle='#d9b74a';ctx.fillRect(player.r*.48,-player.r*.53,7,7);ctx.fillStyle=headlampOn?'#fff2ad':'#777';ctx.beginPath();ctx.arc(player.r*.57,-player.r*.495,2.4,0,TAU);ctx.fill();ctx.restore();}
 function drawHeadlampWorldReveal(sx=0,sy=0){
