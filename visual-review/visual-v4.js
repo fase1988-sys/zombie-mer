@@ -59,7 +59,6 @@ const VISUAL_V4 = (() => {
   }
   function terrain(ctx,cam,W,H,MID,ROAD){
     const l=Math.max(0,cam.x-32),t=Math.max(0,cam.y-32),r=cam.x+W+32,b=cam.y+H+32;
-    if(r<MID-560||l>MID+560||b<MID-560||t>MID+560)return;
     makeGround(ctx);
     for(const [pattern,regions] of [
       [forestPattern,[[l,t,r-l,b-t]]],
@@ -67,7 +66,6 @@ const VISUAL_V4 = (() => {
     ]){
       if(!pattern)continue;
       for(const [x,y,w,h] of regions){ctx.save();ctx.beginPath();ctx.rect(x,y,w,h);ctx.clip();
-        ctx.beginPath();ctx.rect(MID-560,MID-560,1120,1120);ctx.clip();
         ctx.fillStyle=pattern;ctx.fillRect(x,y,w,h);
       }ctx.restore();}
   }
