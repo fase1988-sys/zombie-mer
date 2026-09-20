@@ -182,7 +182,7 @@ div:has(> #legacyOnlineMarker){display:none!important}
 <body id="artifacts-component-root-html">
 <canvas id="game" width="580" height="843" class=""></canvas><button id="adminBtn">ADMIN</button><div id="adminPanel"><div class="adminBox"><div class="adminHead"><div><span class="adminEyebrow">ZOMBIE CONTROL SYSTEM</span><h2>ADMIN COMMAND</h2><p>Oyuncu ve oyun akışını yönet</p></div><button id="adminClose" class="adminX">×</button></div><div id="adminLogin" class="adminLogin"><div class="adminLock">🔒</div><b>Yönetici erişimi</b><small>Devam etmek için şifreyi gir</small><input id="adminPass" type="password" placeholder="••••••••"><button id="adminLoginBtn">KİLİDİ AÇ</button><small id="adminLoginMsg"></small></div><div id="adminTools" hidden><div class="adminGrid"><section><div class="adminSectionTitle"><span>💰</span><div><b>EKONOMİ</b><small>Hesabına para ekle</small></div></div><div class="adminInline"><input id="adminMoney" type="number" value="1000"><button id="adminGiveMoney">+$ PARA</button></div></section><section><div class="adminSectionTitle"><span>🔫</span><div><b>CEPHANELİK</b><small>Silah envanterini yönet</small></div></div><select id="adminGun"><option value="shotgun">Pompalı tüfek</option><option value="smg">Hafif makineli</option><option value="rifle">Otomatik tüfek</option><option value="sniper">Keskin nişancı</option><option value="minigun">Minigun</option></select><div class="adminInline"><button id="adminGiveGun">SİLAH VER</button><button id="adminGiveAll">TÜMÜNÜ AÇ</button></div></section><section><div class="adminSectionTitle"><span>❤️</span><div><b>OYUNCU</b><small>Hayatta kalma kontrolleri</small></div></div><div class="adminInline"><button id="adminHeal">CAN DOLDUR</button><button id="adminGod" class="godBtn">GOD MODE: KAPALI</button></div></section><section><div class="adminSectionTitle"><span>☠️</span><div><b>BÖLÜM KONTROLÜ</b><small>İstediğin dalgaya atla</small></div></div><div class="adminInline"><input id="adminLevel" type="number" min="1" max="999" value="2" placeholder="Bölüm"><button id="adminGoLevel">BÖLÜME GEÇ</button></div></section></div><div class="adminWide">
 <section><div class="adminSectionTitle"><span>🧟</span><div><b>ZOMBİ KONTROLÜ</b><small>Spawn ve dalga testleri</small></div></div><select id="adminZombie"><option value="n">Normal zombi</option><option value="f">Hızlı zombi</option><option value="t">Tank</option><option value="a">Zırhlı</option><option value="x">Patlayan</option><option value="p">Zehirli</option><option value="s">Menzilli</option><option value="b1">Boss: Kasap</option><option value="b2">Boss: Çağırıcı</option><option value="b3">Boss: Yıkıcı</option></select><div class="adminInline"><button id="adminSpawnZombie">SPAWN</button><button id="adminKillAll">TÜM ZOMBİLERİ ÖLDÜR</button></div><div class="adminInline"><button id="adminClearZombies">ZOMBİLERİ TEMİZLE</button><button id="adminBoss">BOSS BAŞLAT</button></div></section>
-<section><div class="adminSectionTitle"><span>🎒</span><div><b>ENVANTER</b><small>Kaynak ve savunma eşyaları</small></div></div><div class="adminInline"><button id="adminLogs">+100 KÜTÜK</button><button id="adminItems">TÜM EŞYALAR +25</button></div></section>
+<section><div class="adminSectionTitle"><span>🎒</span><div><b>ENVANTER</b><small>Kaynak ve savunma eşyaları</small></div></div><div class="adminInline"><button id="adminLogs">+100 KÜTÜK</button><button id="adminItems">TÜM EŞYALAR +25</button></div><div class="adminInline" style="margin-top:7px"><button id="adminHeadlamp">🔦 KAFA LAMBASI VER</button><button id="adminThermal">🌡️ TERMAL GÖRÜŞ VER</button></div></section>
 <section><div class="adminSectionTitle"><span>⚡</span><div><b>OYUNCU MODLARI</b><small>Test güçleri</small></div></div><div class="adminInline"><button id="adminStamina">SINIRSIZ STAMINA: KAPALI</button><button id="adminSpeed">HIZ ×2: KAPALI</button></div><div class="adminInline"><button id="adminNoTarget">GÖRÜNMEZLİK: KAPALI</button><button id="adminAmmo">SONSUZ MERMİ: KAPALI</button></div><button id="adminMaxGuns">SİLAHLARI MAX LEVEL YAP</button></section>
 <section><div class="adminSectionTitle"><span>🌗</span><div><b>DÜNYA KONTROLÜ</b><small>Gün / gece, ateş ve dalga akışı</small></div></div><div class="adminTriple"><button id="adminMorning">SABAH</button><button id="adminEvening">AKŞAM</button><button id="adminNight">GECE</button></div><div class="adminInline"><button id="adminPrepReset">2 DK HAZIRLIK</button><button id="adminEndWave">DALGAYI BİTİR</button></div><button id="adminExtinguishFire">🔥 ATEŞİ SÖNDÜR · BOSS TESTİ</button></section>
 <section><div class="adminSectionTitle"><span>🏗️</span><div><b>ÜS KONTROLÜ</b><small>Yapıları yönet</small></div></div><div class="adminInline"><button id="adminRepair">TÜMÜNÜ TAMİR ET</button><button id="adminDeleteBuilds">SAVUNMALARI SİL</button></div><button id="adminMaxBase">ÜS / TARET MAX UPGRADE</button></section>
@@ -195,7 +195,7 @@ div:has(> #legacyOnlineMarker){display:none!important}
 
 <div id="menuJumpScare" aria-hidden="true"><div class="jsFace"><div class="jsCrack"></div><div class="jsMouth"></div></div></div>
 
-<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v149</b></div></div></div>
+<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v150</b></div></div></div>
 
 <div id="onlinePanel">
   <b><span id="legacyOnlineMarker">ONLINE CO-OP v8 · CLEAN LOBBY</span></b>
@@ -1201,6 +1201,8 @@ $a('adminClearZombies').onclick=()=>{if(!adminUnlocked)return;zombies=[];queue=[
 $a('adminBoss').onclick=()=>{if(!adminUnlocked)return;adminSpawn(['b1','b2','b3'][Math.floor(Math.random()*3)]);toast('Boss spawn edildi');adminWorldBroadcast()};
 $a('adminLogs').onclick=()=>{if(adminUnlocked){inv.logs+=100;toast('+100 kütük')}};
 $a('adminItems').onclick=()=>{if(!adminUnlocked)return;for(const k of ['block','door','turret','bomb','medkit'])inv[k]+=25;toast('Tüm eşyalar +25')};
+$a('adminHeadlamp').onclick=()=>{if(!adminUnlocked)return;headlampOwned=true;headlampOn=true;thermalOn=false;toast('Admin: kafa lambası verildi')};
+$a('adminThermal').onclick=()=>{if(!adminUnlocked)return;thermalOwned=true;thermalOn=true;headlampOn=false;toast('Admin: termal görüş verildi')};
 function tog(btn,on,label){btn.classList.toggle('adminOn',on);btn.textContent=label+': '+(on?'AÇIK':'KAPALI')}
 $a('adminStamina').onclick=()=>{if(adminUnlocked){adminInfStamina=!adminInfStamina;tog($a('adminStamina'),adminInfStamina,'SINIRSIZ STAMINA')}};
 $a('adminSpeed').onclick=()=>{if(adminUnlocked){adminSpeed2=!adminSpeed2;tog($a('adminSpeed'),adminSpeed2,'HIZ ×2')}};
@@ -1530,6 +1532,7 @@ let level = 1, score = 0, kills = 0, levelKills = 0, money = 0, levelMoney = 0, 
 let player = null, zombies = [], bullets = [], drops = [], decals = [], parts = [], queue = [], bombs = [], floats = [], toasts = [];
 let spawnT = 0, banner = null, shake = 0, anim = 0, last = performance.now(), nearChest = null;
 let dayPhase='night', prepLeft=0, duskFade=0, dawnFade=0;
+let headlampOwned=false,headlampOn=false,thermalOwned=false,thermalOn=false;
 const cam = { x: 0, y: 0 };
 let uiRects = { slots: [], shop: null, chest: null };
 
@@ -1649,6 +1652,8 @@ window.addEventListener('keydown', e => {
     if (e.code === 'KeyE') { if(!nearHouseStairs()){ if(nearWorkbench()) openWorkbench(); else { const cf=campfireObject();if(!(cf&&Math.hypot(player.x-(cf.x+cf.w/2),player.y-(cf.y+cf.h/2))<125)) openChest(); } } }
     if (e.code === 'KeyF') chopTree();
     if (e.code === 'KeyG') plantTreeSeed();
+    if (e.code === 'KeyL') { if(!headlampOwned)toast('Kafa lamban yok · sandıklarda bulunabilir'); else {headlampOn=!headlampOn;if(headlampOn)thermalOn=false;toast('Kafa lambası '+(headlampOn?'açıldı':'kapatıldı'));} }
+    if (e.code === 'KeyV') { if(!thermalOwned)toast('Termal görüşün yok · sandıklarda bulunabilir'); else {thermalOn=!thermalOn;if(thermalOn)headlampOn=false;toast('Termal görüş '+(thermalOn?'açıldı':'kapatıldı'));} }
     if (/^Digit\d$/.test(e.code)) { const n = parseInt(e.code.slice(5), 10); selectSlot(n === 0 ? 9 : n - 1); }
     if (e.code === 'KeyP') pauseGame();
   } else if (state === 'paused' && e.code === 'KeyP') {
@@ -2202,7 +2207,9 @@ function openChestById(id, fromNetwork=false) {
   if(net.connected && !net.host) return true;
 
   const r=Math.random(), cx=best.x+best.w/2, cy=best.y;
-  if(r<0.55){ const m=Math.round((25+Math.random()*45)*(1+0.1*level)); money+=m; levelMoney+=m; floatText(cx,cy,'+$'+m); toast('Sandıktan $'+m+' çıktı'); }
+  if(r<0.05&&!headlampOwned){headlampOwned=true;headlampOn=true;toast('Nadir buluntu: KAFA LAMBASI! · L ile aç/kapat');}
+  else if(r<0.10&&!thermalOwned){thermalOwned=true;thermalOn=true;headlampOn=false;toast('Nadir buluntu: TERMAL GÖRÜŞ! · V ile aç/kapat');}
+  else if(r<0.55){ const m=Math.round((25+Math.random()*45)*(1+0.1*level)); money+=m; levelMoney+=m; floatText(cx,cy,'+$'+m); toast('Sandıktan $'+m+' çıktı'); }
   else if(r<0.70){ inv.medkit++; toast('Sandıktan ilk yardım çantası çıktı'); }
   else if(r<0.85){ const n=1+Math.floor(Math.random()*2); inv.bomb+=n; toast('Sandıktan '+n+' bomba çıktı'); }
   else if(r<0.92){ inv.turret++; toast('Sandıktan bir taret çıktı'); }
@@ -2977,6 +2984,37 @@ function drawCampfireVisibility(){
     warm.addColorStop(.38,'rgba(255,111,34,'+(0.075*power*night)+')');
     warm.addColorStop(1,'rgba(255,80,20,0)');
     ctx.globalCompositeOperation='screen';ctx.fillStyle=warm;ctx.fillRect(0,0,W,H);
+  }
+  ctx.restore();
+}
+function drawSurvivalVision(){
+  if(!player)return;
+  const px=player.x-cam.x,py=player.y-cam.y;
+  ctx.save();
+  if(thermalOn&&thermalOwned){
+    ctx.fillStyle='rgba(3,7,16,.68)';ctx.fillRect(0,0,W,H);
+    ctx.globalCompositeOperation='screen';
+    for(const z of zombies){if(z.dead)continue;const x=z.x-cam.x,y=z.y-cam.y;if(x<-60||y<-60||x>W+60||y>H+60)continue;const rr=Math.max(16,z.r*1.45),g=ctx.createRadialGradient(x,y,2,x,y,rr);g.addColorStop(0,'rgba(255,255,220,.98)');g.addColorStop(.18,'rgba(255,232,40,.95)');g.addColorStop(.48,'rgba(255,76,0,.82)');g.addColorStop(1,'rgba(120,0,80,0)');ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,rr,0,TAU);ctx.fill();}
+    for(const q of net.peers.values()){if(q.dead)continue;const x=q.x-cam.x,y=q.y-cam.y,g=ctx.createRadialGradient(x,y,2,x,y,28);g.addColorStop(0,'rgba(255,255,235,.95)');g.addColorStop(.4,'rgba(255,170,20,.78)');g.addColorStop(1,'rgba(255,30,0,0)');ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,28,0,TAU);ctx.fill();}
+    ctx.globalCompositeOperation='source-over';ctx.fillStyle='rgba(80,130,255,.05)';ctx.fillRect(0,0,W,H);
+  }else{
+    // Night visibility: nearby space remains readable, distance falls into darkness.
+    const night=(dayPhase==='night'||state==='playing');
+    if(night){
+      ctx.fillStyle='rgba(2,5,7,.52)';ctx.fillRect(0,0,W,H);
+      ctx.globalCompositeOperation='destination-out';
+      const near=ctx.createRadialGradient(px,py,28,px,py,headlampOn&&headlampOwned?145:92);
+      near.addColorStop(0,'rgba(0,0,0,.96)');near.addColorStop(.65,'rgba(0,0,0,.55)');near.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=near;ctx.beginPath();ctx.arc(px,py,headlampOn&&headlampOwned?145:92,0,TAU);ctx.fill();
+      // Campfire reveals the world around it.
+      const cf=campfireObject();if(cf&&firePower>0&&!fireBossActive){const x=cf.x+cf.w/2-cam.x,y=cf.y+cf.h/2-cam.y,r=210*clamp(firePower/FIRE_MAX,.18,1);const g=ctx.createRadialGradient(x,y,18,x,y,r);g.addColorStop(0,'rgba(0,0,0,.98)');g.addColorStop(.55,'rgba(0,0,0,.72)');g.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,r,0,TAU);ctx.fill();}
+      if(headlampOn&&headlampOwned){
+        ctx.save();ctx.translate(px,py);ctx.rotate(player.ang);
+        const cone=ctx.createRadialGradient(0,0,20,0,0,390);cone.addColorStop(0,'rgba(0,0,0,.95)');cone.addColorStop(.6,'rgba(0,0,0,.62)');cone.addColorStop(1,'rgba(0,0,0,0)');
+        ctx.fillStyle=cone;ctx.beginPath();ctx.moveTo(0,0);ctx.arc(0,0,390,-.34,.34);ctx.closePath();ctx.fill();ctx.restore();
+      }
+      ctx.globalCompositeOperation='source-over';
+      if(headlampOn&&headlampOwned){ctx.save();ctx.translate(px,py);ctx.rotate(player.ang);const beam=ctx.createRadialGradient(30,0,8,180,0,360);beam.addColorStop(0,'rgba(255,244,190,.16)');beam.addColorStop(.55,'rgba(255,239,175,.07)');beam.addColorStop(1,'rgba(255,230,160,0)');ctx.fillStyle=beam;ctx.beginPath();ctx.moveTo(8,0);ctx.arc(0,0,370,-.31,.31);ctx.closePath();ctx.fill();ctx.restore();}
+    }
   }
   ctx.restore();
 }
@@ -3781,7 +3819,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v149';
+const GAME_VERSION = 'v150';
 
 function drawHUD() {
   if(player&&abandonedCamps.length&&player.hi<0){let cp=null,bd=1e9;for(const q of abandonedCamps){const d=Math.hypot(q.x-player.x,q.y-player.y);if(d<bd){bd=d;cp=q}}if(cp&&bd>190){ctx.save();ctx.textAlign='center';ctx.font='900 11px '+FONT;ctx.fillStyle='#e3aa45';ctx.fillText('🏕 KAMP  '+Math.round(bd)+'m',W/2,82);ctx.restore();}}
@@ -3805,7 +3843,7 @@ function drawHUD() {
   bar(20, 36, 230, 16, f, f > .5 ? '#7fbf5a' : f > .25 ? '#e0a530' : '#d64534');
   bar(20, 58, 230, 6, p.stam / 100, p.tired ? '#8a6a3a' : '#5aa0d6');
   ctx.fillStyle = '#f0b429'; ctx.font = '800 22px ' + FONT;
-  ctx.fillText('$' + money, 20, 92);
+  ctx.fillText('
 
   // Bölüm bilgisi
   ctx.textAlign = 'center';
@@ -4033,6 +4071,325 @@ function draw() {
   }
   if (player.hp > 0 && player.hp < 30) { ctx.fillStyle = 'rgba(160,20,20,' + (0.06 + Math.sin(anim * 6) * 0.04) + ')'; ctx.fillRect(0, 0, W, H); }
   drawRealismPostFX();
+  drawSurvivalVision();
+
+  drawHUD();
+  if (state === 'playing' || state === 'intermission') drawCrosshair();
+}
+
+/* =====================================================
+   Döngü
+   ===================================================== */
+function frame(now) {
+  const dt = Math.min(0.05, (now - last) / 1000); last = now;
+  if (state === 'playing' || state === 'dead_wait' || state === 'intermission' || state === 'craft') update(dt);
+  else anim += dt;
+  netTick(now);
+  smoothRemotePlayers(typeof dt==='number'?dt:1/60);
+  draw();
+  requestAnimationFrame(frame);
+}
+
+function renderMainLobby(){
+ const lobby=document.getElementById('roomLobby'),list=document.getElementById('lobbyPlayerList'),start=document.getElementById('menuStartGame'),wait=document.getElementById('lobbyWait'),code=document.getElementById('lobbyCodeText');
+ if(!lobby||!net.connected)return;
+ lobby.hidden=false;code.textContent=net.room||'------';list.innerHTML='';
+ const add=(name,host,me)=>{const r=document.createElement('div');r.className='lobbyPlayerRow';const n=document.createElement('span');n.textContent=(name||'Oyuncu')+(me?' (Sen)':'');const tag=document.createElement('i');tag.textContent=host?'LİDER':'HAZIR';r.append(n,tag);list.appendChild(r)};
+ add(net.name,net.host,true);for(const p of net.peers.values())add(p.name,p.host,false);
+ start.hidden=!net.host;wait.hidden=net.host;
+}
+function bindMainGameMenu(){
+ const menu=document.getElementById('mainGameMenu'),cards=document.querySelector('.modeCards'),setup=document.getElementById('multiSetup'),name=document.getElementById('menuPlayerName'),code=document.getElementById('menuRoomCode'),status=document.getElementById('menuNetStatus'),lobby=document.getElementById('roomLobby');
+ const single=document.getElementById('singleMode');if(!menu||!single)return;
+ const clean=v=>String(v||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,6);
+ const startSingle=async e=>{if(e){e.preventDefault();e.stopPropagation()}try{if(net.connected)await leaveRoom()}catch(_){}newGame()};
+ single.onclick=startSingle;
+ document.getElementById('multiMode').onclick=()=>{cards.style.display='none';setup.hidden=false;name.value=document.getElementById('netName').value||net.name||'Oyuncu'};
+ document.getElementById('multiBack').onclick=async()=>{if(net.connected)await leaveRoom();lobby.hidden=true;setup.hidden=true;cards.style.display='grid'};
+ document.getElementById('menuCreateRoom').onclick=async()=>{const n=(name.value||'Oyuncu').slice(0,14);document.getElementById('netName').value=n;net.name=n;const rc=roomCode();code.value=rc;status.textContent='Oda oluşturuluyor… '+rc;await connectRoom(rc,true);if(net.connected){status.textContent='Oda hazır · Arkadaşlarının katılmasını bekle.';renderMainLobby()}};
+ document.getElementById('menuJoinRoom').onclick=async()=>{const rc=clean(code.value);code.value=rc;if(rc.length!==6){status.textContent='6 karakterli oda kodunu yaz.';return}const n=(name.value||'Oyuncu').slice(0,14);document.getElementById('netName').value=n;net.name=n;status.textContent='Odaya bağlanılıyor… '+rc;await connectRoom(rc,false);if(net.connected){status.textContent='Odaya katıldın.';renderMainLobby()}};
+ document.getElementById('menuStartGame').onclick=()=>{if(!net.connected||!net.host)return;net.hostId=net.id;newGame();if(net.channel)net.channel.send({type:'broadcast',event:'game_start',payload:{level:1,hostId:net.id,worldSeed}});adminWorldBroadcast()};
+ code.addEventListener('input',()=>code.value=clean(code.value));
+}
+function bootGameUI(){
+  try{bindMainGameMenu();}catch(err){console.error('Main menu bind error',err);}
+  try{bindAdminMenu();}catch(err){console.error('Admin bind error',err);}
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bootGameUI,{once:true});
+else bootGameUI();
+
+spec = levelSpec(1);
+player = newPlayer();
+cam.x = MID - W / 2; cam.y = MID - H / 2;
+showMenu();
+requestAnimationFrame(frame);
+
+if (window.__TEST) window.__TEST.api = { newGame, update, draw, get state() { return state; }, get player() { return player; }, get zombies() { return zombies; }, get built() { return built; }, houses, chests, keys, mouse, inv, selectSlot, openChest, openShop, closeShop, buy, renderShop, SHOP, cam, get money() { return money; }, set money(v) { money = v; }, get queue() { return queue; }, get level() { return level; }, set state(v) { state = v; }, tryPlace, explode, throwBomb, levelClear, beginLevel, setLevel(n) { level = n; }, slots, houseAt };
+})();
+
+
+function ensureDoorBuildCard(){
+  // Find the existing door build button/slot by its data/type/text.
+  const candidates=[...document.querySelectorAll('button,[data-build],[data-type],.slot,.buildSlot,.build-item')];
+  let door=candidates.find(el=>{
+    const t=((el.dataset&&((el.dataset.build||'')+(el.dataset.type||'')))+' '+(el.textContent||'')).toLowerCase();
+    return t.includes('door')||t.includes('kapı')||t.includes('kapi');
+  });
+  if(!door) return;
+  door.classList.add('door-build-card');
+  // Keep the existing click behavior; only add missing visual information.
+  if(!door.querySelector('.door-v8-icon')){
+    const icon=document.createElement('div');
+    icon.className='door-v8-icon';
+    icon.innerHTML='<span class="door-panel"></span><span class="door-knob"></span>';
+    door.prepend(icon);
+  }
+  if(!/10\s*\$|\$\s*10|10\s*(coin|para|kredi)/i.test(door.textContent)){
+    const cost=document.createElement('div'); cost.className='door-v8-cost'; cost.textContent='10 $'; door.appendChild(cost);
+  }
+  if(!/160\s*HP/i.test(door.textContent)){
+    const hp=document.createElement('div'); hp.className='door-v8-hp'; hp.textContent='160 HP'; door.appendChild(hp);
+  }
+}
+ensureDoorBuildCard();
+
+</script>
+
+
+</body></html>
+<!-- door-update-deploy-verified -->
+<!-- door-update-deploy-verified -->
+ + money, 20, 92);
+  ctx.font='800 11px '+FONT;ctx.fillStyle=headlampOwned?(headlampOn?'#ffe08a':'#8d8b78'):'#555';ctx.fillText('L · KAFA LAMBASI '+(headlampOwned?(headlampOn?'AÇIK':'KAPALI'):'YOK'),20,111);
+  ctx.fillStyle=thermalOwned?(thermalOn?'#ff7a38':'#8d6a5c'):'#555';ctx.fillText('V · TERMAL '+(thermalOwned?(thermalOn?'AÇIK':'KAPALI'):'YOK'),20,127);
+
+  // Bölüm bilgisi
+  ctx.textAlign = 'center';
+  const ty = narrow ? 118 : 32;
+  ctx.fillStyle = '#ece6d6'; ctx.font = '900 22px ' + HEAD;
+  ctx.fillText('Bölüm ' + level + ' · ' + L.name, W / 2, ty);
+  const rg=mapRegion();ctx.font='800 10px '+FONT;ctx.fillStyle=rg.accent;ctx.fillText(rg.name+' · '+rg.from+'-'+(rg.to===999?'∞':rg.to),W/2,ty-25);
+  ctx.font = '600 14px ' + FONT; ctx.fillStyle = '#f0b429';
+  if(state==='intermission'||state==='craft'){
+    const sec=Math.max(0,Math.ceil(prepLeft)),mm=Math.floor(sec/60),ss=String(sec%60).padStart(2,'0');
+    ctx.fillText(dayPhase==='dawn'?'SABAH OLUYOR...':(dayPhase==='dusk'?'AKŞAM OLUYOR · Zombiler yaklaşıyor':'SABAH · Hazırlık '+mm+':'+ss),W/2,ty+22);
+    uiRects.nextWave=null;
+  }else{
+    ctx.fillText('Kalan zombi: '+(zombies.length+queue.length),W/2,ty+22);
+    uiRects.nextWave=null;
+  }
+  ctx.font='700 12px '+FONT;ctx.fillStyle=runEvent?'#ffb347':'#9fb6a4';
+  if(runEvent)ctx.fillText(runEvent.name,W/2,ty+40);
+  if(mission){ctx.fillStyle=mission.done?'#7fbf5a':'#d8d0b7';ctx.fillText('Görev: '+mission.name+' '+Math.min(mission.target,Math.floor(mission.progress))+'/'+mission.target,W/2,ty+(runEvent?56:40));}
+  ctx.textAlign='left';ctx.fillStyle='#9fb6a4';ctx.fillText('Survivor Lv.'+metaLevel+' · XP '+metaXP,20,112);
+  const cf=campfireObject();const nearFire=cf&&Math.hypot(p.x-(cf.x+cf.w/2),p.y-(cf.y+cf.h/2))<125;
+  if(nearHouseStairs()){ctx.fillStyle='#f0d28a';ctx.font='800 14px '+FONT;ctx.fillText('[E] 2 SN BASILI TUT · '+(houseFloor()===1?'2. KATA ÇIK':'1. KATA İN'),20,136);if(stairHold>0)bar(20,144,190,8,stairHold/2,'#d2a45e');}
+  else if(nearWorkbench()){ctx.fillStyle='#f0d28a';ctx.font='800 14px '+FONT;ctx.fillText('[E] ÇALIŞMA TEZGÂHI · üretim',20,136);}
+  else if(nearFire&&!fireBossActive){ctx.fillStyle='#ffb04a';ctx.font='800 14px '+FONT;ctx.fillText('[E] 5 SN BASILI TUT · ATEŞE 3 ODUN',20,136);if(fireHold>0){bar(20,144,190,8,fireHold/5,'#e88724');}}
+  const fw=Math.min(280,W-40),fx=W/2-fw/2,fy=ty+76;
+  ctx.textAlign='center';ctx.font='900 11px '+FONT;ctx.fillStyle=fireBossActive?'#ff5145':'#ffb04a';
+  ctx.fillText(fireBossActive?(fireBossHunting?'☠ ATEŞ AVCISI PEŞİNİZDE · ATEŞİ YAK!':'☠ ATEŞ AVCISI · '+Math.ceil(Math.max(0,fireBossCountdown))+' sn sonra geliyor'):'🔥 KAMP ATEŞİ · '+Math.ceil(firePower)+'%',W/2,fy-5);
+  bar(fx,fy,fw,9,fireBossActive?Math.max(0,fireBossCountdown)/15:firePower/FIRE_MAX,fireBossActive?'#d6332c':'#e88724');
+
+  // Patron çubuğu — gizli %20 Ateş Avcısı HUD'da tamamen görünmez.
+  let boss = null, bc = 0;
+  for (const z of zombies) if (z.boss && !z.hideHp) { bc++; if (!boss) boss = z; }
+  if (boss) {
+    const bw = Math.min(360, W - 40), bx = W / 2 - bw / 2, by = ty + 34;
+    bar(bx, by, bw, 12, boss.hp / boss.max, '#c8382b');
+    ctx.fillStyle = '#ece6d6'; ctx.font = '700 13px ' + FONT;
+    ctx.fillText(ZT[boss.type].name + (bc > 1 ? '  ×' + bc : ''), W / 2, by + 28);
+  }
+
+  // Puan ve mağaza düğmesi
+  ctx.textAlign = 'right'; ctx.fillStyle = '#ece6d6'; ctx.font = '700 18px ' + FONT;
+  ctx.fillText('Puan  ' + score, W - 20, 30);
+  const sb = { x: W - 138, y: 40, w: 118, h: 28 };
+  uiRects.shop = sb; ctx.shadowBlur = 0;
+  ctx.fillStyle = 'rgba(240,180,41,.92)'; ctx.fillRect(sb.x, sb.y, sb.w, sb.h);
+  ctx.fillStyle = '#1a1405'; ctx.font = '700 13px ' + FONT; ctx.textAlign = 'center';
+  ctx.fillText('Mağaza (Tab)', sb.x + sb.w / 2, sb.y + 19);
+  ctx.shadowBlur = 4;
+
+  // Envanter çubuğu
+  const sls = slots(), n = sls.length;
+  const ss = Math.max(38, Math.min(62, Math.floor((W - 24) / n) - 6)), gap = 6;
+  const total = n * (ss + gap) - gap, x0 = Math.round((W - total) / 2), y0 = H - ss - 14;
+  ctx.shadowBlur = 0;
+  for (let i = 0; i < n; i++) {
+    const s = sls[i], x = x0 + i * (ss + gap), cur = i === p.sel;
+    uiRects.slots.push({ x, y: y0, w: ss, h: ss });
+    let count = null, dim = false;
+    if (s.k === 'turret') { count = inv.turret; dim = count <= 0; }
+    else if (s.k === 'bomb') { count = inv.bomb; dim = count <= 0; }
+    else if (s.k === 'medkit') { count = inv.medkit; dim = count <= 0; }
+    else if (s.k === 'seed') { count = Number(inv.seeds||0); dim = count <= 0; }
+    else if (s.k === 'block') dim = money < BLOCK_COST;
+    else if (s.k === 'door') dim = money < DOOR_COST;
+    ctx.fillStyle = cur ? 'rgba(240,180,41,.28)' : 'rgba(10,15,12,.72)'; ctx.fillRect(x, y0, ss, ss);
+    ctx.strokeStyle = cur ? '#f0b429' : 'rgba(236,230,214,.28)'; ctx.lineWidth = cur ? 3 : 1; ctx.strokeRect(x + .5, y0 + .5, ss - 1, ss - 1);
+    ctx.globalAlpha = dim ? .38 : 1; drawItemIcon(s, x + ss / 2, y0 + ss / 2 + 2, ss * .9); ctx.globalAlpha = 1;
+    ctx.fillStyle = '#a3ad9f'; ctx.font = '700 11px ' + FONT; ctx.textAlign = 'left';
+    ctx.fillText(String(i + 1 === 10 ? 0 : i + 1), x + 5, y0 + 13);
+    ctx.textAlign = 'right'; ctx.fillStyle = '#ece6d6'; ctx.font = '800 12px ' + FONT;
+    if (count !== null) ctx.fillText('×' + count, x + ss - 5, y0 + ss - 6);
+    else if (s.k === 'door') { ctx.fillStyle = '#f0b429'; ctx.fillText('$' + DOOR_COST, x + ss - 5, y0 + ss - 6); }
+    else if (s.k === 'gun') { ctx.fillStyle = p.ammo[s.id] <= Math.ceil(gunStats(s.id).mag * .25) ? '#e0483a' : '#ece6d6'; ctx.fillText(p.ammo[s.id], x + ss - 5, y0 + ss - 6); }
+  }
+  // Seçili eşya açıklaması
+  const cs = sls[p.sel] || sls[0] || {k:'axe'}; let info = '';
+  if (cs.k === 'gun') { const w=gunStats(cs.id); info=w.name+' · Upgrade '+gunLevel(cs.id)+'/3   '+p.ammo[cs.id]+' / '+w.mag; }
+  else if (cs.k === 'block') info = 'Odun blok · Sol tık: yerleştir · Sağ tık: yık';
+  else if (cs.k === 'door') info = 'Kapı · $' + DOOR_COST + ' · 160 HP · Sol tık: yerleştir · Sağ tık: yık';
+  else if (cs.k === 'turret') info = 'Taret (' + inv.turret + ') · Sol tık: yerleştir';
+  else if (cs.k === 'bomb') info = 'Bomba (' + inv.bomb + ') · Sol tık: fırlat';
+  else info = 'İlk yardım çantası (' + inv.medkit + ') · Sol tık: kullan';
+  ctx.textAlign = 'center'; ctx.font = '700 14px ' + FONT; ctx.fillStyle = '#ece6d6';
+  ctx.shadowBlur = 4; ctx.fillText(info, W / 2, y0 - 10);
+
+  // Toplam odun miktarı envanter çubuğunun altında sürekli görünür.
+  ctx.save();
+  ctx.textAlign='center';ctx.font='900 13px '+FONT;
+  ctx.fillStyle='#d6a45d';ctx.shadowColor='rgba(0,0,0,.9)';ctx.shadowBlur=4;
+  ctx.fillText('🪵 ODUN: '+Number(inv.logs||0),W/2,Math.min(H-2,y0+ss+13));
+  ctx.restore();
+
+  if (p.reload > 0) {
+    ctx.fillStyle = '#f0b429'; ctx.font = '600 13px ' + FONT; ctx.fillText('Şarjör yenileniyor…', W / 2, y0 - 44);
+    bar(W / 2 - 60, y0 - 38, 120, 5, 1 - p.reload / p.reloadMax, '#f0b429');
+  }
+  // Bildirimler
+  ctx.font = '700 15px ' + FONT;
+  for (let i = 0; i < toasts.length; i++) {
+    const t = toasts[toasts.length - 1 - i];
+    ctx.globalAlpha = clamp(t.t / 0.5, 0, 1); ctx.fillStyle = '#f0b429'; ctx.fillText(t.text, W / 2, y0 - 66 - i * 22);
+  }
+  ctx.globalAlpha = 1;
+
+  // Sandık istemi
+  if (nearChest) {
+    ctx.fillStyle = '#ece6d6'; ctx.font = '700 16px ' + FONT; ctx.shadowBlur = 4;
+    ctx.fillText('E  ·  Sandığı aç', W / 2, H * 0.62);
+    if (touch.on) { uiRects.chest = { x: W / 2 - 70, y: H * 0.62 + 10, w: 140, h: 40 }; ctx.shadowBlur = 0; ctx.fillStyle = 'rgba(240,180,41,.9)'; ctx.fillRect(W / 2 - 70, H * 0.62 + 10, 140, 40); ctx.fillStyle = '#1a1405'; ctx.fillText('Sandığı aç', W / 2, H * 0.62 + 36); }
+  }
+  ctx.shadowBlur = 0;
+
+  // Mini harita
+  const mms = narrow ? 112 : MM, mmx = W - mms - 16, mmy = narrow ? 82 : H - mms - 16, s = mms / WORLD;
+  ctx.globalAlpha = .9; ctx.drawImage(mmBase, mmx, mmy, mms, mms); ctx.globalAlpha = 1;
+  ctx.strokeStyle = 'rgba(236,230,214,.5)'; ctx.lineWidth = 1; ctx.strokeRect(mmx + .5, mmy + .5, mms - 1, mms - 1);
+  ctx.strokeStyle = 'rgba(255,255,255,.35)'; ctx.strokeRect(mmx + cam.x * s, mmy + cam.y * s, W * s, H * s);
+  for (const o of built) { ctx.fillStyle = o.t === 'turret' ? '#7fb0d0' : '#c99a5a'; ctx.fillRect(mmx + o.x * s, mmy + o.y * s, 2, 2); }
+  for(const c of abandonedCamps){ctx.fillStyle='#f0a928';ctx.beginPath();ctx.arc(mmx+c.x*s,mmy+c.y*s,3.2,0,TAU);ctx.fill();}
+  for (const z of zombies) { ctx.fillStyle = z.boss ? '#ff7a3a' : z.sleep ? '#a86a2a' : '#e0483a'; const zs = z.boss ? 5 : 3; ctx.fillRect(mmx + z.x * s - zs / 2, mmy + z.y * s - zs / 2, zs, zs); }
+  ctx.fillStyle = '#7fd0ff'; ctx.beginPath(); ctx.arc(mmx + player.x * s, mmy + player.y * s, 3.5, 0, TAU); ctx.fill();
+
+  // Bölüm başlığı
+  if (banner) {
+    const a = clamp(banner.t / 0.7, 0, 1) * clamp((banner.max - banner.t) / 0.3, 0, 1);
+    ctx.globalAlpha = a; ctx.textAlign = 'center'; ctx.shadowBlur = 10;
+    ctx.fillStyle = '#ece6d6'; ctx.font = '900 ' + Math.min(84, Math.max(44, W * 0.09)) + 'px ' + HEAD;
+    ctx.fillText(banner.title, W / 2, H * 0.28);
+    ctx.font = '600 ' + (W < 600 ? 15 : 20) + 'px ' + FONT; ctx.fillStyle = '#f0b429';
+    ctx.fillText(banner.sub, W / 2, H * 0.28 + 34);
+    ctx.globalAlpha = 1; ctx.shadowBlur = 0;
+  }
+
+  // Dokunmatik çubuk
+  if (touch.on && touch.stick) {
+    const s0 = touch.stick, dx = s0.x - s0.ox, dy = s0.y - s0.oy, l = Math.hypot(dx, dy) || 1, k = Math.min(l, 60) / l;
+    ctx.strokeStyle = 'rgba(236,230,214,.45)'; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.arc(s0.ox, s0.oy, 60, 0, TAU); ctx.stroke();
+    ctx.fillStyle = 'rgba(236,230,214,.4)'; ctx.beginPath(); ctx.arc(s0.ox + dx * k, s0.oy + dy * k, 26, 0, TAU); ctx.fill();
+  }
+}
+
+function drawCrosshair() {
+  if (touch.on && !touch.aim) return;
+  const x = mouse.x, y = mouse.y, reloading = player.reload > 0;
+  ctx.strokeStyle = reloading ? '#f0b429' : '#ece6d6'; ctx.lineWidth = 2; ctx.shadowColor = 'rgba(0,0,0,.8)'; ctx.shadowBlur = 3;
+  ctx.beginPath(); ctx.arc(x, y, 12, 0, TAU); ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(x - 20, y); ctx.lineTo(x - 7, y); ctx.moveTo(x + 7, y); ctx.lineTo(x + 20, y);
+  ctx.moveTo(x, y - 20); ctx.lineTo(x, y - 7); ctx.moveTo(x, y + 7); ctx.lineTo(x, y + 20);
+  ctx.stroke(); ctx.shadowBlur = 0;
+}
+
+function draw() {
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#0b100d'; ctx.fillRect(0, 0, W, H);
+  if (!player) return;
+
+  const sx = (Math.random() - .5) * shake, sy = (Math.random() - .5) * shake;
+  const inside = player.hi >= 0 ? houses[player.hi] : null;
+  const tentInterior=currentTent();
+
+  if(tentInterior){
+    ctx.fillStyle='#050604';ctx.fillRect(0,0,W,H);
+    ctx.save();ctx.translate(-cam.x+sx,-cam.y+sy);
+    ctx.fillStyle='#24261f';ctx.beginPath();ctx.ellipse(tentInterior.tent.x,tentInterior.tent.y,72,58,0,0,TAU);ctx.fill();
+    ctx.strokeStyle='#77715c';ctx.lineWidth=7;ctx.beginPath();ctx.ellipse(tentInterior.tent.x,tentInterior.tent.y,70,56,0,0,TAU);ctx.stroke();
+    drawTentInterior(tentInterior.tent);drawPlayer();drawBulletsParts();ctx.restore();
+    ctx.fillStyle='rgba(0,0,0,.22)';ctx.fillRect(0,0,W,H);
+  } else if (inside) {
+    // Evin içindeyken yalnızca evin içi görünür
+    ctx.fillStyle = '#040505'; ctx.fillRect(0, 0, W, H);
+    ctx.save();
+    ctx.translate(-cam.x + sx, -cam.y + sy);
+    ctx.beginPath(); ctx.rect(inside.x, inside.y, inside.w, inside.h); ctx.clip();
+    drawInteriorScene(inside);
+    drawDecals(); drawDrops();
+    for (const z of zombies) if(houseFloor()===1) drawZombie(z);
+    drawBombs(); drawPlayer(); drawPeers(); drawBulletsParts();
+    ctx.restore();
+    const g = ctx.createRadialGradient(W / 2, H / 2, Math.min(W, H) * .25, W / 2, H / 2, Math.hypot(W, H) * .55);
+    g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,.5)');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  } else {
+    ctx.save();
+    ctx.translate(-cam.x + sx, -cam.y + sy);
+    drawGround(); drawUltraEnvironment(); drawRealismGroundDetails(); drawAbandonedCamps(); drawUltraCampDetails(); drawDecals(); drawDrops(); drawCrates(); drawBaseDangerCircle(); drawBuilt(); drawPlantedSeeds(); drawTrees(); drawTreeFalls();
+    for (const h of houses) drawRoof(h);
+    for (const z of zombies) if (z.hi < 0) drawZombie(z);
+    drawBombs(); drawPlayer(); drawPeers(); drawBulletsParts(); drawGhost(); drawRealismObjectLighting();
+    ctx.strokeStyle = '#0a0f0c'; ctx.lineWidth = 60; ctx.strokeRect(-10, -10, WORLD + 20, WORLD + 20);
+    ctx.strokeStyle = '#6b5a3c'; ctx.lineWidth = 6; ctx.setLineDash([18, 10]); ctx.strokeRect(24, 24, WORLD - 48, WORLD - 48); ctx.setLineDash([]);
+    ctx.restore();
+    const g = ctx.createRadialGradient(W / 2, H / 2, Math.min(W, H) * .3, W / 2, H / 2, Math.hypot(W, H) * .62);
+    g.addColorStop(0,'rgba(4,8,14,0)');
+    const dayCycleState=(state==='intermission'||state==='craft');
+    const darkAlpha=dayCycleState?(dayPhase==='dawn'?(.68-.38*dawnFade):(dayPhase==='dusk'?(.30+.38*duskFade):.30)):.68;
+    g.addColorStop(1,'rgba(4,8,14,'+darkAlpha+')');
+    ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+    if(dayCycleState){
+      const dayMix=dayPhase==='dawn'?dawnFade:(dayPhase==='dusk'?(1-duskFade):1);
+      const nightMix=1-dayMix;
+      ctx.fillStyle='rgba(150,170,145,'+(0.055*dayMix)+')';ctx.fillRect(0,0,W,H);
+      ctx.fillStyle='rgba(8,16,28,'+(0.14*nightMix)+')';ctx.fillRect(0,0,W,H);
+    }else{
+      ctx.fillStyle='rgba(10,20,40,.16)';ctx.fillRect(0,0,W,H);
+    }
+    // v93: daha sinematik derinlik; merkez okunaklı, kenarlar yumuşak gölgeli.
+    const vg=ctx.createRadialGradient(W/2,H/2,Math.min(W,H)*.22,W/2,H/2,Math.max(W,H)*.72);
+    vg.addColorStop(0,'rgba(0,0,0,0)');vg.addColorStop(1,'rgba(0,0,0,.16)');
+    ctx.fillStyle=vg;ctx.fillRect(0,0,W,H);
+    drawCampfireVisibility();
+    drawEdgeArrows();
+    // v98: v93 ile aynı scope'ta ikinci "const vg" SyntaxError oluşturuyordu.
+    // Ayrı isim kullan; böylece script tamamen yüklenir ve tüm UI click handler'ları bağlanır.
+    const vgDetail=ctx.createRadialGradient(W/2,H/2,Math.min(W,H)*.28,W/2,H/2,Math.max(W,H)*.72);
+    vgDetail.addColorStop(0,'rgba(0,0,0,0)');vgDetail.addColorStop(1,'rgba(0,0,0,.16)');
+    ctx.fillStyle=vgDetail;ctx.fillRect(0,0,W,H);
+  }
+  if (player.hurt > 0) {
+    const h = ctx.createRadialGradient(W / 2, H / 2, Math.min(W, H) * .25, W / 2, H / 2, Math.hypot(W, H) * .6);
+    h.addColorStop(0, 'rgba(200,30,30,0)'); h.addColorStop(1, 'rgba(200,30,30,' + clamp(player.hurt * 1.6, 0, .55) + ')');
+    ctx.fillStyle = h; ctx.fillRect(0, 0, W, H);
+  }
+  if (player.hp > 0 && player.hp < 30) { ctx.fillStyle = 'rgba(160,20,20,' + (0.06 + Math.sin(anim * 6) * 0.04) + ')'; ctx.fillRect(0, 0, W, H); }
+  drawRealismPostFX();
+  drawSurvivalVision();
 
   drawHUD();
   if (state === 'playing' || state === 'intermission') drawCrosshair();
