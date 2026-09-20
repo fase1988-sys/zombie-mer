@@ -195,7 +195,7 @@ div:has(> #legacyOnlineMarker){display:none!important}
 
 <div id="menuJumpScare" aria-hidden="true"><div class="jsFace"><div class="jsCrack"></div><div class="jsMouth"></div></div></div>
 
-<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v159</b></div></div></div>
+<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v160</b></div></div></div>
 
 <div id="onlinePanel">
   <b><span id="legacyOnlineMarker">ONLINE CO-OP v8 · CLEAN LOBBY</span></b>
@@ -3781,7 +3781,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v159';
+const GAME_VERSION = 'v160';
 
 /* =====================================================
    Kafa lambası v1 — mevcut UI'dan bağımsız, canvas katmanı
@@ -3806,75 +3806,55 @@ function drawHeadlamp(){
   if(!headlampOn || !player) return;
   const px=player.x-cam.x, py=player.y-cam.y;
   const a=Number.isFinite(player.ang)?player.ang:0;
+  const ux=Math.cos(a),uy=Math.sin(a),nx=-uy,ny=ux;
 
-  // V158: gerçek kafa lambası optiği — oval hotspot + yumuşak spill + uzun menzil.
-  // Basit pasta dilimi görünümünden kaçınmak için koni birkaç üst üste binen
-  // eliptik ışık katmanından oluşur.
-  const ux=Math.cos(a), uy=Math.sin(a);
-  const reach=Math.max(470,Math.min(720,Math.max(W,H)*.64));
+  // V160 — kısa menzilli gerçek kafa lambası.
+  // Işık yalnızca oyuncunun baktığı yaklaşık 330px alanı açar.
+  const reach=Math.max(285,Math.min(355,Math.min(W,H)*.47));
+  const half=.31;
+
   ctx.save();
-
-  // Önce ışığın düştüğü alanı gerçekten aydınlat: karanlık post-FX'in üstünde
-  // sadece beyaz şekil çizmek yerine zeminin/nesnelerin görünürlüğünü yükseltir.
   ctx.globalCompositeOperation='screen';
-  const floorX=px+ux*reach*.48, floorY=py+uy*reach*.48;
-  ctx.save();ctx.translate(floorX,floorY);ctx.rotate(a);
-  const lit=ctx.createRadialGradient(0,0,0,0,0,1);
-  lit.addColorStop(0,'rgba(255,250,224,.30)');
-  lit.addColorStop(.38,'rgba(255,246,214,.20)');
-  lit.addColorStop(.76,'rgba(255,239,198,.075)');
-  lit.addColorStop(1,'rgba(255,232,185,0)');
-  ctx.scale(reach*.58,reach*.145);
-  ctx.fillStyle=lit;ctx.beginPath();ctx.arc(0,0,1,0,TAU);ctx.fill();ctx.restore();
 
-  // Yakın-orta mesafede ikinci bir aydınlık alan; oyuncunun baktığı yüzey okunur.
-  const midX=px+ux*reach*.28, midY=py+uy*reach*.28;
-  ctx.save();ctx.translate(midX,midY);ctx.rotate(a);
-  const mid=ctx.createRadialGradient(0,0,0,0,0,1);
-  mid.addColorStop(0,'rgba(255,249,221,.22)');
-  mid.addColorStop(.62,'rgba(255,241,204,.08)');
-  mid.addColorStop(1,'rgba(255,235,190,0)');
-  ctx.scale(reach*.34,reach*.105);ctx.fillStyle=mid;ctx.beginPath();ctx.arc(0,0,1,0,TAU);ctx.fill();ctx.restore();
+  // Tek parça kısa koni: merkez aydınlık, kenarlar yumuşak.
+  // Uzak görüşü engellemek için gradient 330px civarında tamamen sıfırlanır.
+  const cone=ctx.createRadialGradient(px+ux*22,py+uy*22,4,px+ux*22,py+uy*22,reach);
+  cone.addColorStop(0,'rgba(255,249,220,.38)');
+  cone.addColorStop(.18,'rgba(255,247,214,.34)');
+  cone.addColorStop(.48,'rgba(255,244,205,.25)');
+  cone.addColorStop(.74,'rgba(255,238,193,.13)');
+  cone.addColorStop(.92,'rgba(255,231,178,.035)');
+  cone.addColorStop(1,'rgba(255,225,165,0)');
+  ctx.fillStyle=cone;
+  ctx.beginPath();ctx.moveTo(px,py);
+  ctx.arc(px,py,reach,a-half,a+half);
+  ctx.closePath();ctx.fill();
 
-  function ellipseGlow(dist,rx,ry,alpha,warm){
-    const cx=px+ux*dist, cy=py+uy*dist;
-    ctx.save();
-    ctx.translate(cx,cy);ctx.rotate(a);
-    const g=ctx.createRadialGradient(0,0,0,0,0,1);
-    g.addColorStop(0,'rgba(255,252,'+(warm?225:238)+','+alpha+')');
-    g.addColorStop(.32,'rgba(255,248,'+(warm?211:230)+','+(alpha*.72)+')');
-    g.addColorStop(.72,'rgba(255,241,200,'+(alpha*.22)+')');
-    g.addColorStop(1,'rgba(255,235,190,0)');
-    ctx.scale(rx,ry);ctx.fillStyle=g;ctx.beginPath();ctx.arc(0,0,1,0,TAU);ctx.fill();ctx.restore();
-  }
+  // Gerçek lambadaki yoğun merkez — kısa ve dar hotspot.
+  const hotReach=reach*.72,hotHalf=.145;
+  const hot=ctx.createRadialGradient(px+ux*18,py+uy*18,0,px+ux*18,py+uy*18,hotReach);
+  hot.addColorStop(0,'rgba(255,255,238,.46)');
+  hot.addColorStop(.30,'rgba(255,252,226,.39)');
+  hot.addColorStop(.68,'rgba(255,247,211,.19)');
+  hot.addColorStop(1,'rgba(255,239,195,0)');
+  ctx.fillStyle=hot;ctx.beginPath();ctx.moveTo(px,py);
+  ctx.arc(px,py,hotReach,a-hotHalf,a+hotHalf);ctx.closePath();ctx.fill();
 
-  // Çok hafif yakın spill — oyuncunun etrafını gündüz gibi yapmaz.
-  const spill=ctx.createRadialGradient(px,py,8,px,py,58);
-  spill.addColorStop(0,'rgba(255,244,211,.08)');
-  spill.addColorStop(1,'rgba(255,244,211,0)');
-  ctx.fillStyle=spill;ctx.beginPath();ctx.arc(px,py,58,0,TAU);ctx.fill();
+  // Işığın yere vurduğu belirgin oval alan.
+  const impactX=px+ux*reach*.55,impactY=py+uy*reach*.55;
+  ctx.save();ctx.translate(impactX,impactY);ctx.rotate(a);
+  const impact=ctx.createRadialGradient(0,0,0,0,0,1);
+  impact.addColorStop(0,'rgba(255,253,230,.32)');
+  impact.addColorStop(.45,'rgba(255,247,211,.19)');
+  impact.addColorStop(1,'rgba(255,238,192,0)');
+  ctx.scale(reach*.30,reach*.105);ctx.fillStyle=impact;
+  ctx.beginPath();ctx.arc(0,0,1,0,TAU);ctx.fill();ctx.restore();
 
-  // Işık yolunu doğal biçimde dolduran üst üste yumuşak elipsler.
-  ellipseGlow(reach*.18,reach*.20,48,.10,true);
-  ellipseGlow(reach*.38,reach*.29,66,.115,true);
-  ellipseGlow(reach*.61,reach*.34,82,.105,false);
-  ellipseGlow(reach*.82,reach*.28,72,.072,false);
-
-  // Gerçek kafa lambasındaki yoğun merkez hotspot.
-  ellipseGlow(reach*.50,reach*.22,42,.24,true);
-  ellipseGlow(reach*.63,reach*.18,31,.17,false);
-
-  // Merkez ekseninde ince parlak çekirdek; uzaklaştıkça tamamen erir.
-  const tipX=px+ux*reach*.78, tipY=py+uy*reach*.78;
-  const core=ctx.createLinearGradient(px,py,tipX,tipY);
-  core.addColorStop(0,'rgba(255,252,230,.13)');
-  core.addColorStop(.18,'rgba(255,250,224,.18)');
-  core.addColorStop(.58,'rgba(255,247,216,.105)');
-  core.addColorStop(1,'rgba(255,240,200,0)');
-  const nx=-uy,ny=ux,w0=15,w1=43;
-  ctx.fillStyle=core;ctx.beginPath();
-  ctx.moveTo(px+nx*w0,py+ny*w0);ctx.lineTo(tipX+nx*w1,tipY+ny*w1);
-  ctx.lineTo(tipX-nx*w1,tipY-ny*w1);ctx.lineTo(px-nx*w0,py-ny*w0);ctx.closePath();ctx.fill();
+  // Çok küçük yakın spill; oyuncunun arkası/yanları aydınlanmaz.
+  const spill=ctx.createRadialGradient(px,py,0,px,py,42);
+  spill.addColorStop(0,'rgba(255,246,215,.10)');
+  spill.addColorStop(1,'rgba(255,246,215,0)');
+  ctx.fillStyle=spill;ctx.beginPath();ctx.arc(px,py,42,0,TAU);ctx.fill();
 
   ctx.restore();
 }
@@ -4128,8 +4108,8 @@ function draw() {
     ctx.fillStyle = h; ctx.fillRect(0, 0, W, H);
   }
   if (player.hp > 0 && player.hp < 30) { ctx.fillStyle = 'rgba(160,20,20,' + (0.06 + Math.sin(anim * 6) * 0.04) + ')'; ctx.fillRect(0, 0, W, H); }
-  drawHeadlamp();
   drawRealismPostFX();
+  drawHeadlamp();
 
   drawHUD();
   if (state === 'playing' || state === 'intermission') drawCrosshair();
