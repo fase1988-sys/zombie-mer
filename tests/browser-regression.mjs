@@ -22,6 +22,7 @@ try {
   await check('menu and canvas load', async () => {
     assert(await page.locator('#mainGameMenu').isVisible());
     assert(await page.locator('#game').isVisible());
+    assert.equal(await page.evaluate(() => document.characterSet),'UTF-8');
   });
   await page.locator('#singleMode').click();
   await check('new game starts and draws', async () => {
@@ -51,16 +52,30 @@ try {
   await check('inventory toggles without losing items', async () => {
     const amount=await page.evaluate(() => window.__TEST.api.inv.logs);
     await page.keyboard.press('i');await page.waitForTimeout(100);
+    assert.equal(await page.evaluate(() => window.__TEST.api.backpackOpen),true);
     await page.keyboard.press('i');
     assert.equal(await page.evaluate(() => window.__TEST.api.inv.logs),amount);
+    assert.equal(await page.evaluate(() => window.__TEST.api.backpackOpen),false);
     assert.equal(await page.evaluate(() => window.__TEST.api.state),'playing');
   });
   await check('zombie simulation and weapon selection', async () => {
-    const before=await page.evaluate(() => window.__TEST.api.zombies.map(z=>({x:z.x,y:z.y})));
+    await page.waitForFunction(() => window.__TEST.api.zombies.length>0,{timeout:10000});
+    const before=await page.evaluate(() => ({x:window.__TEST.api.zombies[0].x,y:window.__TEST.api.zombies[0].y}));
     await page.keyboard.press('2');await page.waitForTimeout(200);
     const after=await page.evaluate(() => ({count:window.__TEST.api.zombies.length,slot:window.__TEST.api.player.sel}));
     assert.equal(after.slot,1);
-    assert(after.count>=0 && before.length>=0);
+    assert(after.count>0);
+    await page.waitForTimeout(400);
+    const moved=await page.evaluate(({x,y}) => {
+      const z=window.__TEST.api.zombies[0];return z&&Math.hypot(z.x-x,z.y-y)>0.1;
+    },before);
+    assert(moved,'first zombie did not move during simulation');
+  });
+  await check('day/night switches keep world drawable', async () => {
+    await page.evaluate(() => {window.__TEST.api.adminDay('morning');window.__TEST.api.draw();});
+    assert.equal(await page.evaluate(() => window.__TEST.api.state),'intermission');
+    await page.evaluate(() => {window.__TEST.api.adminDay('night');window.__TEST.api.draw();});
+    assert.equal(await page.evaluate(() => window.__TEST.api.state),'playing');
   });
   await check('house, camp and depth painter render', async () => {
     const info=await page.evaluate(() => {
