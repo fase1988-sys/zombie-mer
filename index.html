@@ -3855,7 +3855,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v197';
+const GAME_VERSION = 'v205';
 
 /* =====================================================
    Kafa lambası v1 — mevcut UI'dan bağımsız, canvas katmanı
@@ -4005,9 +4005,34 @@ function drawVisionMode(){
   if(!player||(!nightVisionOn&&!thermalVisionOn))return;
   ctx.save();
   if(nightVisionOn){
-    ctx.globalCompositeOperation='screen';ctx.fillStyle='rgba(35,150,48,.25)';ctx.fillRect(0,0,W,H);
-    const g=ctx.createRadialGradient(W/2,H/2,20,W/2,H/2,Math.max(W,H)*.7);g.addColorStop(0,'rgba(95,255,110,.15)');g.addColorStop(.65,'rgba(20,95,28,.10)');g.addColorStop(1,'rgba(0,12,0,.42)');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
-    ctx.globalCompositeOperation='source-over';ctx.globalAlpha=.10;for(let y=0;y<H;y+=4){ctx.fillStyle=(y%8===0)?'#b9ffc1':'#123a18';ctx.fillRect(0,y,W,1);}
+    // Cinematic NVG: deep blacks, bright phosphor detail, soft center gain and dark vignette.
+    ctx.globalCompositeOperation='multiply';
+    ctx.fillStyle='rgba(0,42,3,.58)';ctx.fillRect(0,0,W,H);
+    ctx.globalCompositeOperation='screen';
+    ctx.fillStyle='rgba(18,255,32,.16)';ctx.fillRect(0,0,W,H);
+    const gain=ctx.createRadialGradient(W*.5,H*.48,10,W*.5,H*.48,Math.hypot(W,H)*.58);
+    gain.addColorStop(0,'rgba(105,255,112,.25)');
+    gain.addColorStop(.34,'rgba(42,230,55,.14)');
+    gain.addColorStop(.68,'rgba(5,90,12,.035)');
+    gain.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=gain;ctx.fillRect(0,0,W,H);
+    ctx.globalCompositeOperation='source-over';
+    const vig=ctx.createRadialGradient(W*.5,H*.48,Math.min(W,H)*.22,W*.5,H*.48,Math.max(W,H)*.72);
+    vig.addColorStop(0,'rgba(0,0,0,0)');
+    vig.addColorStop(.58,'rgba(0,4,0,.08)');
+    vig.addColorStop(.82,'rgba(0,5,0,.38)');
+    vig.addColorStop(1,'rgba(0,0,0,.76)');
+    ctx.fillStyle=vig;ctx.fillRect(0,0,W,H);
+    // Fine analog sensor texture instead of heavy horizontal stripes.
+    ctx.globalAlpha=.055;
+    for(let y=1;y<H;y+=3){ctx.fillStyle=(y%6===1)?'#8dff95':'#001c03';ctx.fillRect(0,y,W,1);}
+    ctx.globalAlpha=.075;
+    for(let n=0;n<90;n++){const x=(n*137.3+performance.now()*.011)%W,y=(n*71.7)%H;ctx.fillStyle=n%4?'#2cff3d':'#baffbf';ctx.fillRect(x,y,1,1);}
+    // Slight phosphor bloom around player keeps the center readable without washing the map out.
+    const px=player.x-cam.x,py=player.y-cam.y;
+    const pg=ctx.createRadialGradient(px,py,0,px,py,210);
+    pg.addColorStop(0,'rgba(90,255,100,.10)');pg.addColorStop(.45,'rgba(25,190,38,.045)');pg.addColorStop(1,'rgba(0,60,0,0)');
+    ctx.globalCompositeOperation='screen';ctx.fillStyle=pg;ctx.beginPath();ctx.arc(px,py,210,0,TAU);ctx.fill();
   }else if(thermalVisionOn){
     ctx.fillStyle='rgba(4,8,30,.52)';ctx.fillRect(0,0,W,H);
     ctx.globalCompositeOperation='screen';
@@ -4015,7 +4040,7 @@ function drawVisionMode(){
     const px=player.x-cam.x,py=player.y-cam.y,pg=ctx.createRadialGradient(px,py,0,px,py,42);pg.addColorStop(0,'rgba(255,245,150,.75)');pg.addColorStop(.45,'rgba(255,80,0,.5)');pg.addColorStop(1,'rgba(100,0,150,0)');ctx.fillStyle=pg;ctx.beginPath();ctx.arc(px,py,42,0,TAU);ctx.fill();
   }
   ctx.restore();
-  ctx.save();ctx.font='900 12px '+FONT;ctx.textAlign='left';ctx.fillStyle=nightVisionOn?'#9cff9c':'#ffb64c';ctx.fillText(nightVisionOn?'● NIGHT VISION [N]':'● THERMAL [V]',18,H-18);ctx.restore();
+  ctx.save();ctx.font='900 12px '+FONT;ctx.textAlign='left';ctx.shadowColor=nightVisionOn?'#22ff38':'#ff7b24';ctx.shadowBlur=8;ctx.fillStyle=nightVisionOn?'#9cff9c':'#ffb64c';ctx.fillText(nightVisionOn?'● NIGHT VISION [N]':'● THERMAL [V]',18,H-18);ctx.restore();
 }
 function drawHeadlamp(){
   if(!headlampOn||!player)return;
