@@ -196,7 +196,7 @@ div:has(> #legacyOnlineMarker){display:none!important}
 
 <div id="menuJumpScare" aria-hidden="true"><div class="jsFace"><div class="jsCrack"></div><div class="jsMouth"></div></div></div>
 
-<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v197</b></div></div></div>
+<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v198</b></div></div></div>
 
 <div id="onlinePanel">
   <b><span id="legacyOnlineMarker">ONLINE CO-OP v8 · CLEAN LOBBY</span></b>
@@ -3855,7 +3855,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v197';
+const GAME_VERSION = 'v198';
 
 /* =====================================================
    Kafa lambası v1 — mevcut UI'dan bağımsız, canvas katmanı
@@ -3890,6 +3890,7 @@ window.addEventListener('keydown', e=>{
     toggleHeadlamp();
   }
 });
+const headlampIconImg=new Image();headlampIconImg.src='data:image/webp;base64,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';
 let mcCursor=null,mcDragFrom=-1,mcOrder=Array(36).fill(null);
 function mcItemDef(k,id){
  if(k==='gun'){const g=GUNS[id];return {key:'gun:'+id,k,id,name:g.name,icon:id==='pistol'?'🔫':id==='shotgun'?'▰':id==='rifle'?'⌁':id==='sniper'?'⌖':id==='smg'?'▱':'▥',count:1,ammo:(player.ammo[id]||0)+'/'+gunStats(id).mag};}
@@ -3920,7 +3921,10 @@ function toggleBackpack(){backpackOpen=!backpackOpen;mouse.down=false;cv.style.c
 function mcDrawSlot(x,y,s,it,selected=false){
  ctx.fillStyle='#8b8b8b';ctx.fillRect(x,y,s,s);ctx.fillStyle='#373737';ctx.fillRect(x,y,s,2);ctx.fillRect(x,y,2,s);ctx.fillStyle='#eee';ctx.fillRect(x+2,y+s-2,s-2,2);ctx.fillRect(x+s-2,y+2,2,s-2);ctx.fillStyle=selected?'#777':'#555';ctx.fillRect(x+3,y+3,s-6,s-6);
  if(selected){ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.strokeRect(x-2,y-2,s+4,s+4);}
- if(!it)return;ctx.textAlign='center';ctx.font=Math.floor(s*.46)+'px '+FONT;ctx.fillStyle='#fff';ctx.fillText(it.icon,x+s/2,y+s*.56);
+ if(!it)return;
+ if(it.k==='headlamp'&&headlampIconImg.complete&&headlampIconImg.naturalWidth){
+   const pad=Math.max(3,s*.08);ctx.drawImage(headlampIconImg,x+pad,y+pad,s-pad*2,s-pad*2);
+ }else{ctx.textAlign='center';ctx.font=Math.floor(s*.46)+'px '+FONT;ctx.fillStyle='#fff';ctx.fillText(it.icon,x+s/2,y+s*.56);}
  if(it.count>1){ctx.textAlign='right';ctx.font='900 11px '+FONT;ctx.strokeStyle='#111';ctx.lineWidth=3;ctx.strokeText(it.count,x+s-4,y+s-5);ctx.fillStyle='#fff';ctx.fillText(it.count,x+s-4,y+s-5);}
  if(it.ammo){ctx.textAlign='center';ctx.font='700 8px '+FONT;ctx.fillStyle='#ddd';ctx.fillText(it.ammo,x+s/2,y+s-5);}
 }
@@ -3931,14 +3935,14 @@ function drawBackpack(){
  // player preview
  const pvx=x+20,pvy=y+34;ctx.fillStyle='#292929';ctx.fillRect(pvx,pvy,78,82);ctx.fillStyle='#31526b';ctx.fillRect(pvx+28,pvy+37,22,34);ctx.fillStyle='#c89a73';ctx.beginPath();ctx.arc(pvx+39,pvy+25,12,0,TAU);ctx.fill();
  // equipment slots at left of crafting
- const eqs=Math.min(30,sz),eqx=pvx+90,eqy=pvy;for(let q=0;q<4;q++)mcDrawSlot(eqx,eqy+q*(eqs+2),eqs,q===0&&headlampEquipped?{icon:'🔦',count:1}:null);
+ const eqs=Math.min(30,sz),eqx=pvx+90,eqy=pvy;for(let q=0;q<4;q++)mcDrawSlot(eqx,eqy+q*(eqs+2),eqs,q===0&&headlampEquipped?{k:'headlamp',icon:'🔦',count:1}:null);
  ctx.fillStyle='#555';ctx.font='9px '+FONT;ctx.fillText('KAFA',eqx,eqy-3);
  // crafting display, spaced from equipment
  const cs=Math.min(32,sz),cx=x+pw-3*cs-70,cy=pvy+4;for(let r=0;r<2;r++)for(let q=0;q<2;q++)mcDrawSlot(cx+q*(cs+3),cy+r*(cs+3),cs,null);ctx.fillStyle='#555';ctx.font='22px '+FONT;ctx.fillText('→',cx+2*(cs+3)+5,cy+cs+4);mcDrawSlot(cx+2*(cs+3)+30,cy+cs/2,cs,null);
  // 27 storage + 9 functional hotbar
  for(let i=0;i<27;i++){const it=items[i+9]||null;mcDrawSlot(gx+(i%9)*(sz+gap),gy+Math.floor(i/9)*(sz+gap),sz,it);}
  const gameSlots=slots(),selected=gameSlots[player.sel]||null;for(let i=0;i<9;i++){const it=items[i]||null;const active=!!(it&&selected&&((it.k==='gun'&&selected.k==='gun'&&it.id===selected.id)||it.k===selected.k));mcDrawSlot(gx+i*(sz+gap),hotY,sz,it,active);}
- if(mcCursor){ctx.textAlign='center';ctx.font=Math.floor(sz*.46)+'px '+FONT;ctx.fillStyle='#fff';ctx.fillText(mcCursor.icon,mouse.x,mouse.y+8);}
+ if(mcCursor){if(mcCursor.k==='headlamp'&&headlampIconImg.complete&&headlampIconImg.naturalWidth){const q=sz*.72;ctx.drawImage(headlampIconImg,mouse.x-q/2,mouse.y-q/2,q,q);}else{ctx.textAlign='center';ctx.font=Math.floor(sz*.46)+'px '+FONT;ctx.fillStyle='#fff';ctx.fillText(mcCursor.icon,mouse.x,mouse.y+8);}}
  ctx.restore();
 }
 function mcIndexAt(px,py){const L=mcLayout(),{sz,gap,gx,gy,hotY}=L;for(let i=0;i<27;i++){const x=gx+(i%9)*(sz+gap),y=gy+Math.floor(i/9)*(sz+gap);if(px>=x&&px<=x+sz&&py>=y&&py<=y+sz)return i+9;}for(let i=0;i<9;i++){const x=gx+i*(sz+gap);if(px>=x&&px<=x+sz&&py>=hotY&&py<=hotY+sz)return i;}return -1;}
