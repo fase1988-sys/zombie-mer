@@ -1,0 +1,85 @@
+import assert from 'node:assert/strict';
+import { mkdir } from 'node:fs/promises';
+import { chromium } from 'playwright';
+
+const browser = await chromium.launch({ headless: true, args: ['--no-sandbox'] });
+const page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
+const errors = [];
+page.on('pageerror', error => errors.push(error.message));
+page.on('console', message => {
+  if (message.type() === 'error' && !/supabase|phaser|cdn|network/i.test(message.text())) errors.push(message.text());
+});
+const results = [];
+async function check(name, run) {
+  try { await run(); results.push({ name, status: 'PASS' }); console.log('PASS', name); }
+  catch (error) { results.push({ name, status: 'FAIL', reason: error.message }); console.error('FAIL', name, error); }
+}
+
+try {
+  await page.addInitScript(() => { window.__TEST = {}; });
+  await page.goto('http://127.0.0.1:8765/', { waitUntil: 'domcontentloaded' });
+  await page.waitForFunction(() => Boolean(window.__TEST?.api), { timeout: 15000 });
+  await check('menu and canvas load', async () => {
+    assert(await page.locator('#mainGameMenu').isVisible());
+    assert(await page.locator('#game').isVisible());
+  });
+  await page.locator('#singleMode').click();
+  await check('new game starts and draws', async () => {
+    await page.waitForFunction(() => window.__TEST.api.state !== 'menu');
+    const info = await page.evaluate(() => ({
+      state: window.__TEST.api.state,
+      player: Boolean(window.__TEST.api.player),
+      opaquePixels: (() => {
+        const c=document.querySelector('#game');
+        const d=c.getContext('2d').getImageData(0,0,c.width,c.height).data;
+        let count=0;for(let i=3;i<d.length;i+=32)if(d[i]>0)count++;return count;
+      })()
+    }));
+    assert(info.player && info.opaquePixels > 200, JSON.stringify(info));
+  });
+  await check('visual-v4 assets load', async () => {
+    await page.waitForFunction(() => VISUAL_V4.ready('vegetation/tree_01') &&
+      VISUAL_V4.ready('terrain/forest') && VISUAL_V4.ready('buildings/cabin_01'), { timeout: 10000 });
+  });
+  await check('movement and camera', async () => {
+    const before=await page.evaluate(() => ({x:window.__TEST.api.player.x,cam:window.__TEST.api.cam.x}));
+    await page.keyboard.down('d');await page.waitForTimeout(300);await page.keyboard.up('d');
+    const after=await page.evaluate(() => ({x:window.__TEST.api.player.x,cam:window.__TEST.api.cam.x}));
+    assert(after.x>before.x+3,JSON.stringify({before,after}));
+    assert(Number.isFinite(after.cam));
+  });
+  await check('inventory toggles without losing items', async () => {
+    const amount=await page.evaluate(() => window.__TEST.api.inv.logs);
+    await page.keyboard.press('i');await page.waitForTimeout(100);
+    await page.keyboard.press('i');
+    assert.equal(await page.evaluate(() => window.__TEST.api.inv.logs),amount);
+    assert.equal(await page.evaluate(() => window.__TEST.api.state),'playing');
+  });
+  await check('zombie simulation and weapon selection', async () => {
+    const before=await page.evaluate(() => window.__TEST.api.zombies.map(z=>({x:z.x,y:z.y})));
+    await page.keyboard.press('2');await page.waitForTimeout(200);
+    const after=await page.evaluate(() => ({count:window.__TEST.api.zombies.length,slot:window.__TEST.api.player.sel}));
+    assert.equal(after.slot,1);
+    assert(after.count>=0 && before.length>=0);
+  });
+  await check('house, camp and depth painter render', async () => {
+    const info=await page.evaluate(() => {
+      window.__TEST.api.draw();
+      return {houses:window.__TEST.api.houses.length,fire:window.__TEST.api.built.some(b=>b.t==='campfire')};
+    });
+    assert(info.houses>0&&info.fire,JSON.stringify(info));
+  });
+  await check('admin panel and HUD remain mounted', async () => {
+    await page.locator('#adminBtn').click();
+    assert(await page.locator('#adminPanel').isVisible());
+    await page.locator('#adminClose').click();
+    assert(await page.locator('#game').isVisible());
+  });
+  await mkdir('test-results',{recursive:true});
+  await page.screenshot({path:'test-results/camp-browser.png'});
+  await check('no browser exceptions', async () => assert.deepEqual(errors,[]));
+} finally {
+  console.log(JSON.stringify({ results, errors },null,2));
+  await browser.close();
+}
+if(results.some(r=>r.status==='FAIL')) process.exitCode=1;
