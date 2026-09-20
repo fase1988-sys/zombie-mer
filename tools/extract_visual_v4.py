@@ -33,6 +33,17 @@ sprites = {
  'props/rock_02': (1137,590,1214,674),
  'buildings/cabin_01': (1,443,374,733),
  'vehicles/car_wreck_01': (374,585,704,748),
+ # Captions begin below y=166. Crops retain the artwork's original side view.
+ 'characters/player/player_idle': (7,3,108,167),
+ 'characters/player/player_walk_01': (113,8,208,165),
+ 'characters/player/player_walk_02': (214,7,309,166),
+ 'characters/player/player_melee': (518,8,610,166),
+ 'characters/player/player_shoot': (611,8,710,166),
+ 'characters/player/player_flashlight': (815,7,927,165),
+ 'characters/zombies/zombie_idle': (986,7,1076,166),
+ 'characters/zombies/zombie_walk': (1080,7,1179,166),
+ 'characters/zombies/zombie_attack': (1181,9,1280,166),
+ 'characters/zombies/zombie_death': (1370,96,1523,165),
 }
 for name, box in sprites.items():
     im = source.crop(box)

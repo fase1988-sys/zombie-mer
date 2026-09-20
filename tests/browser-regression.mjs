@@ -40,7 +40,24 @@ try {
   });
   await check('visual-v4 assets load', async () => {
     await page.waitForFunction(() => VISUAL_V4.ready('vegetation/tree_01') &&
-      VISUAL_V4.ready('terrain/forest') && VISUAL_V4.ready('buildings/cabin_01'), { timeout: 10000 });
+      VISUAL_V4.ready('terrain/forest') && VISUAL_V4.ready('buildings/cabin_01') &&
+      VISUAL_V4.ready('characters/player/player_idle') &&
+      VISUAL_V4.ready('characters/player/player_walk_01') &&
+      VISUAL_V4.ready('characters/player/player_shoot') &&
+      VISUAL_V4.ready('characters/zombies/zombie_idle') &&
+      VISUAL_V4.ready('characters/zombies/zombie_attack'), { timeout: 10000 });
+  });
+  await check('extracted characters draw and preserve gameplay positions', async () => {
+    const info=await page.evaluate(() => {
+      const api=window.__TEST.api,p=api.player,before={x:p.x,y:p.y,hp:p.hp};
+      const c=document.createElement('canvas');c.width=c.height=128;
+      const rendered=VISUAL_V4.character(c.getContext('2d'),'characters/player/player_idle',64,110,42,71);
+      const pixels=c.getContext('2d').getImageData(40,38,48,72).data;
+      let visible=0;for(let i=3;i<pixels.length;i+=4)if(pixels[i]>32)visible++;
+      return {rendered,visible,before,after:{x:p.x,y:p.y,hp:p.hp}};
+    });
+    assert(info.rendered && info.visible>200,JSON.stringify(info));
+    assert.deepEqual(info.before,info.after);
   });
   await check('movement and camera', async () => {
     const before=await page.evaluate(() => ({x:window.__TEST.api.player.x,cam:window.__TEST.api.cam.x}));

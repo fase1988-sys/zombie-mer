@@ -11,6 +11,10 @@ removed using the largest connected alpha region. No painted repairs are made.
 - Buildings: cabin_01 (integrated only for matching single-floor, south-facing
   houses near camp; the remaining house variants require matching artwork).
 - Vehicles: car_wreck_01.
+- Characters: player idle, two walk frames, shoot, melee, flashlight; zombie
+  idle, walk, attack, death. These source images are clean but viewed from the
+  side/front. Active sprites are limited to the camp test zone, where their
+  perspective and scale can be evaluated without changing gameplay hitboxes.
 - Props: campfire, woodpile, bench, crate, barrel, military_box, shelf,
   sign_river, sign_stop, street_lamp, logs, rock_01–02.
 - Terrain samples: forest, grass, mud, asphalt, rocky. These are **samples**,
@@ -20,10 +24,9 @@ removed using the largest connected alpha region. No painted repairs are made.
 
 - fern_02, stick_pile, fence, sign variants and an independent road edge:
   overlapping artwork or no distinct, clean sprite in the source.
-- player_idle, player_walk, player_shoot, player_melee, player_flashlight;
-  zombie_idle, zombie_walk, zombie_attack, zombie_death: the source is side view,
-  has no consistent top-down directional animation frames, and flashlight effects
-  overlap neighboring sprites. The current gameplay actors stay intact.
+- True top-down directional frames for player and zombies. The provided side
+  and front views cannot represent all aiming angles accurately; the extracted
+  death frame remains unused until corpse rendering has a compatible lifecycle.
 - leaves: the lower row image is fog/effect artwork, not a clean leaf terrain tile.
 - grass, mud, rocky terrain require edge blending before they can replace the
   corresponding ground types outside the test zone.

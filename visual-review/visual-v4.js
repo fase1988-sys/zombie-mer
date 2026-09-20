@@ -7,11 +7,24 @@ const VISUAL_V4 = (() => {
     'props/rock_02','props/woodpile','props/bench','props/crate','props/barrel',
     'props/military_box','props/logs','props/campfire','vehicles/car_wreck_01',
     'props/sign_river','props/street_lamp','buildings/cabin_01','terrain/forest','terrain/grass',
-    'terrain/mud','terrain/asphalt','terrain/rocky'];
+    'terrain/mud','terrain/asphalt','terrain/rocky',
+    'characters/player/player_idle','characters/player/player_walk_01',
+    'characters/player/player_walk_02','characters/player/player_melee',
+    'characters/player/player_shoot','characters/player/player_flashlight',
+    'characters/zombies/zombie_idle','characters/zombies/zombie_walk',
+    'characters/zombies/zombie_attack','characters/zombies/zombie_death'];
   const images={};
   for(const name of names){const img=new Image();img.src=root+name+'.png';images[name]=img;}
   const ready=name=>images[name]?.complete && images[name].naturalWidth>0;
   function sprite(ctx,name,x,y,w,h){if(!ready(name))return false;ctx.drawImage(images[name],x,y,w,h);return true;}
+  function character(ctx,name,x,feetY,w,h,faceLeft=false){
+    if(!ready(name))return false;
+    ctx.save();ctx.translate(x,feetY);
+    if(faceLeft)ctx.scale(-1,1);
+    ctx.fillStyle='rgba(0,0,0,.30)';ctx.beginPath();ctx.ellipse(2,1,w*.30,5,0,0,Math.PI*2);ctx.fill();
+    ctx.drawImage(images[name],-w/2,-h+2,w,h);
+    ctx.restore();return true;
+  }
   let forestPattern,roadPattern;
   function makeGround(ctx){
     if(forestPattern||!ready('terrain/forest')||!ready('terrain/grass')||!ready('terrain/mud')||!ready('terrain/rocky'))return;
@@ -72,5 +85,5 @@ const VISUAL_V4 = (() => {
       sprite(ctx,(name==='car_wreck_01'?'vehicles/':name.startsWith('bush')||name.startsWith('fern')?'vegetation/':'props/')+name,x,y,w,h);
     }
   }
-  return {sprite,terrain,camp,ready};
+  return {sprite,character,terrain,camp,ready};
 })();
