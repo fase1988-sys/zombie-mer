@@ -195,7 +195,7 @@ div:has(> #legacyOnlineMarker){display:none!important}
 
 <div id="menuJumpScare" aria-hidden="true"><div class="jsFace"><div class="jsCrack"></div><div class="jsMouth"></div></div></div>
 
-<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v148</b></div></div></div>
+<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v149</b></div></div></div>
 
 <div id="onlinePanel">
   <b><span id="legacyOnlineMarker">ONLINE CO-OP v8 · CLEAN LOBBY</span></b>
@@ -2949,6 +2949,37 @@ function drawRealismObjectLighting(){
   }
   ctx.restore();
 }
+function drawCampfireVisibility(){
+  // Night visibility is physically centered on the campfire, not on the camera/player.
+  // Near the fire the scene stays warm and readable; distance falls smoothly into darkness.
+  if(!player||player.hi>=0||currentTent())return;
+  const cf=campfireObject();if(!cf)return;
+  const wx=cf.x+cf.w/2,wy=cf.y+cf.h/2;
+  const sx=wx-cam.x,sy=wy-cam.y;
+  const power=fireBossActive?0:clamp(firePower/FIRE_MAX,0,1);
+  const cycle=(state==='intermission'||state==='craft');
+  const night=cycle?(dayPhase==='night'?1:dayPhase==='dusk'?duskFade:dayPhase==='dawn'?1-dawnFade:0):1;
+  if(night<=.02)return;
+  const flicker=.98+Math.sin(anim*11)*.018+Math.sin(anim*19)*.012;
+  const inner=(150+power*95)*flicker, outer=(430+power*300)*flicker;
+  ctx.save();
+  // Darkness everywhere, punched out by a radial gradient around the actual fire.
+  const dark=ctx.createRadialGradient(sx,sy,inner,sx,sy,outer);
+  dark.addColorStop(0,'rgba(2,5,8,'+(0.02*night)+')');
+  dark.addColorStop(.34,'rgba(2,5,8,'+(0.10*night)+')');
+  dark.addColorStop(.68,'rgba(2,5,8,'+(0.48*night)+')');
+  dark.addColorStop(1,'rgba(1,3,6,'+(0.82*night)+')');
+  ctx.fillStyle=dark;ctx.fillRect(0,0,W,H);
+  // Warm fire color in the visible zone.
+  if(power>0){
+    const warm=ctx.createRadialGradient(sx,sy,8,sx,sy,outer*.58);
+    warm.addColorStop(0,'rgba(255,177,74,'+(0.18*power*night)+')');
+    warm.addColorStop(.38,'rgba(255,111,34,'+(0.075*power*night)+')');
+    warm.addColorStop(1,'rgba(255,80,20,0)');
+    ctx.globalCompositeOperation='screen';ctx.fillStyle=warm;ctx.fillRect(0,0,W,H);
+  }
+  ctx.restore();
+}
 function drawRealismPostFX(){
   ctx.save();
   // Directional moon/sky wash and cinematic contrast; intentionally subtle so HUD stays readable.
@@ -3750,7 +3781,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v148';
+const GAME_VERSION = 'v149';
 
 function drawHUD() {
   if(player&&abandonedCamps.length&&player.hi<0){let cp=null,bd=1e9;for(const q of abandonedCamps){const d=Math.hypot(q.x-player.x,q.y-player.y);if(d<bd){bd=d;cp=q}}if(cp&&bd>190){ctx.save();ctx.textAlign='center';ctx.font='900 11px '+FONT;ctx.fillStyle='#e3aa45';ctx.fillText('🏕 KAMP  '+Math.round(bd)+'m',W/2,82);ctx.restore();}}
@@ -3987,6 +4018,7 @@ function draw() {
     const vg=ctx.createRadialGradient(W/2,H/2,Math.min(W,H)*.22,W/2,H/2,Math.max(W,H)*.72);
     vg.addColorStop(0,'rgba(0,0,0,0)');vg.addColorStop(1,'rgba(0,0,0,.16)');
     ctx.fillStyle=vg;ctx.fillRect(0,0,W,H);
+    drawCampfireVisibility();
     drawEdgeArrows();
     // v98: v93 ile aynı scope'ta ikinci "const vg" SyntaxError oluşturuyordu.
     // Ayrı isim kullan; böylece script tamamen yüklenir ve tüm UI click handler'ları bağlanır.
