@@ -196,7 +196,7 @@ div:has(> #legacyOnlineMarker){display:none!important}
 
 <div id="menuJumpScare" aria-hidden="true"><div class="jsFace"><div class="jsCrack"></div><div class="jsMouth"></div></div></div>
 
-<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v194</b></div></div></div>
+<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v195</b></div></div></div>
 
 <div id="onlinePanel">
   <b><span id="legacyOnlineMarker">ONLINE CO-OP v8 · CLEAN LOBBY</span></b>
@@ -3689,20 +3689,21 @@ function drawPlayer() {
   ctx.fillStyle='#c89a73';ctx.beginPath();ctx.arc(p.r*.67,-6,4.4,0,TAU);ctx.arc(p.r*.79,6,4.4,0,TAU);ctx.fill();
   if(axeOn){
     const st=clamp((p.axeSwing||0)/.34,0,1),phase=1-st;
-    let swingRot=-.48;
-    if(st>0){if(phase<.28)swingRot=-.48-(phase/.28)*1.05;else if(phase<.66)swingRot=-1.53+((phase-.28)/.38)*2.12;else swingRot=.59-((phase-.66)/.34)*1.07;}
+    let swingRot=-.58;
+    if(st>0){if(phase<.28)swingRot=-.58-(phase/.28)*1.05;else if(phase<.66)swingRot=-1.63+((phase-.28)/.38)*2.12;else swingRot=.49-((phase-.66)/.34)*1.07;}
     ctx.save();ctx.translate(p.r*.66,0);ctx.rotate(swingRot);
-    // two-handed grip moves with the axe instead of a static floating tool
-    ctx.strokeStyle='#26343c';ctx.lineWidth=5;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(-7,-7);ctx.lineTo(4,1);ctx.moveTo(-6,7);ctx.lineTo(10,6);ctx.stroke();
-    ctx.fillStyle='#c89a73';ctx.beginPath();ctx.arc(4,1,4,0,TAU);ctx.arc(10,6,4,0,TAU);ctx.fill();
-    const hg=ctx.createLinearGradient(-5,12,29,-20);hg.addColorStop(0,'#382012');hg.addColorStop(.28,'#68401f');hg.addColorStop(.58,'#a26934');hg.addColorStop(.82,'#7d4d28');hg.addColorStop(1,'#4a2a17');
-    ctx.strokeStyle='#23150d';ctx.lineWidth=7;ctx.beginPath();ctx.moveTo(-3,12);ctx.lineTo(27,-18);ctx.stroke();
-    ctx.strokeStyle=hg;ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(-3,12);ctx.lineTo(27,-18);ctx.stroke();
-    ctx.strokeStyle='rgba(235,190,120,.42)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(0,9);ctx.lineTo(24,-15);ctx.stroke();
-    const mg=ctx.createLinearGradient(17,-25,40,-8);mg.addColorStop(0,'#eef1ef');mg.addColorStop(.22,'#b6bec0');mg.addColorStop(.56,'#626a6d');mg.addColorStop(1,'#282d2f');
-    ctx.fillStyle=mg;ctx.strokeStyle='#202426';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(17,-24);ctx.quadraticCurveTo(31,-28,40,-21);ctx.lineTo(42,-10);ctx.quadraticCurveTo(33,-5,21,-7);ctx.lineTo(15,-14);ctx.closePath();ctx.fill();ctx.stroke();
-    ctx.strokeStyle='rgba(255,255,255,.58)';ctx.beginPath();ctx.moveTo(38,-20);ctx.lineTo(40,-11);ctx.stroke();
-    if(st>0&&phase>.28&&phase<.72){ctx.globalAlpha=.12*(1-Math.abs(phase-.50)/.22);ctx.strokeStyle='#d9dde0';ctx.lineWidth=3;ctx.beginPath();ctx.arc(0,0,34,-1.45,.45);ctx.stroke();}
+    // Same reference-style axe used by the inventory icon, scaled for the player's hands.
+    const z=42;
+    ctx.strokeStyle='#1b1714';ctx.lineWidth=9;ctx.lineCap='round';ctx.lineJoin='round';ctx.beginPath();ctx.moveTo(-z*.30,z*.39);ctx.lineTo(z*.12,-z*.18);ctx.stroke();
+    const wood=ctx.createLinearGradient(-z*.30,z*.38,z*.14,-z*.20);wood.addColorStop(0,'#71330e');wood.addColorStop(.45,'#a84f0d');wood.addColorStop(1,'#71330e');
+    ctx.strokeStyle=wood;ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(-z*.30,z*.39);ctx.lineTo(z*.12,-z*.18);ctx.stroke();
+    const steel=ctx.createLinearGradient(z*.01,-z*.34,z*.39,-z*.04);steel.addColorStop(0,'#d8d8d8');steel.addColorStop(.55,'#a7a9aa');steel.addColorStop(1,'#d0d1d1');
+    ctx.fillStyle=steel;ctx.strokeStyle='#171717';ctx.lineWidth=2.4;
+    ctx.beginPath();ctx.moveTo(z*.02,-z*.31);ctx.quadraticCurveTo(z*.12,-z*.39,z*.20,-z*.31);ctx.quadraticCurveTo(z*.29,-z*.23,z*.45,-z*.20);ctx.quadraticCurveTo(z*.47,-z*.05,z*.34,z*.10);ctx.quadraticCurveTo(z*.26,z*.18,z*.18,z*.20);ctx.lineTo(z*.03,-z*.04);ctx.lineTo(-z*.06,-z*.12);ctx.closePath();ctx.fill();ctx.stroke();
+    // Hands sit on top of the handle.
+    ctx.fillStyle='#c89a73';ctx.strokeStyle='rgba(55,30,18,.55)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.arc(-3,7,4.2,0,TAU);ctx.arc(5,0,4.2,0,TAU);ctx.fill();ctx.stroke();
+    if(st>0&&phase>.28&&phase<.72){ctx.globalAlpha=.12*(1-Math.abs(phase-.50)/.22);ctx.strokeStyle='#d9dde0';ctx.lineWidth=3;ctx.beginPath();ctx.arc(0,0,38,-1.55,.45);ctx.stroke();}
     ctx.restore();
   }else if(g){
     const id=curGunId(),gx=p.r*.48;
@@ -3846,7 +3847,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v194';
+const GAME_VERSION = 'v195';
 
 /* =====================================================
    Kafa lambası v1 — mevcut UI'dan bağımsız, canvas katmanı
