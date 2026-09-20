@@ -2717,10 +2717,10 @@ function update(dt) {
   }
 
   // Doğuş
-  if (!net.connected || net.host) spawnT -= dt;
+  if (!net.connected || net.host || net.tempAuthority) spawnT -= dt;
   const alive = zombies.filter(z => !z.sleep).length;
   const maxAlive = Math.min(44, 8 + level * 3);
-  if ((!net.connected || net.host) && queue.length && alive < maxAlive && spawnT <= 0) {
+  if ((!net.connected || net.host || net.tempAuthority) && queue.length && alive < maxAlive && spawnT <= 0) {
     spawnZombie(queue.shift());
     spawnT = spec.interval * (0.7 + Math.random() * 0.6);
   }
@@ -2743,7 +2743,7 @@ function update(dt) {
   shake = Math.max(0, shake - dt * 30);
   if (banner) { banner.t -= dt; if (banner.t <= 0) banner = null; }
 
-  if ((state === 'playing' || state === 'dead_wait') && (!net.connected || net.host) && !queue.length && !zombies.length) levelClear();
+  if ((state === 'playing' || state === 'dead_wait') && (!net.connected || net.host || net.tempAuthority) && !queue.length && !zombies.length) levelClear();
 }
 
 /* =====================================================
