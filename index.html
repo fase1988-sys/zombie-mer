@@ -196,7 +196,7 @@ div:has(> #legacyOnlineMarker){display:none!important}
 
 <div id="menuJumpScare" aria-hidden="true"><div class="jsFace"><div class="jsCrack"></div><div class="jsMouth"></div></div></div>
 
-<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v187</b></div></div></div>
+<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v188</b></div></div></div>
 
 <div id="onlinePanel">
   <b><span id="legacyOnlineMarker">ONLINE CO-OP v8 · CLEAN LOBBY</span></b>
@@ -1651,7 +1651,7 @@ window.addEventListener('keydown', e => {
   }
   if (state === 'playing' || state === 'intermission') {
     if(e.code==='KeyI'){toggleBackpack();return;}
-    if(backpackOpen){if(e.code==='Escape')backpackOpen=false;return;}
+    if(backpackOpen){if(e.code==='Escape')toggleBackpack();return;}
     if (e.code === 'Escape') { openEscapeMenu(); return; }
     if (e.code === 'KeyR') startReload();
     if (e.code === 'KeyE') { if(!nearHouseStairs()){ if(nearWorkbench()) openWorkbench(); else { const cf=campfireObject();if(!(cf&&Math.hypot(player.x-(cf.x+cf.w/2),player.y-(cf.y+cf.h/2))<125)) openChest(); } } }
@@ -3820,7 +3820,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v187';
+const GAME_VERSION = 'v188';
 
 /* =====================================================
    Kafa lambası v1 — mevcut UI'dan bağımsız, canvas katmanı
@@ -3889,7 +3889,7 @@ function drawBackpack(){
  const cs=Math.min(32,sz),cx=x+pw-3*cs-70,cy=pvy+4;for(let r=0;r<2;r++)for(let q=0;q<2;q++)mcDrawSlot(cx+q*(cs+3),cy+r*(cs+3),cs,null);ctx.fillStyle='#555';ctx.font='22px '+FONT;ctx.fillText('→',cx+2*(cs+3)+5,cy+cs+4);mcDrawSlot(cx+2*(cs+3)+30,cy+cs/2,cs,null);
  // 27 storage + 9 functional hotbar
  for(let i=0;i<27;i++){const it=items[i+9]||null;mcDrawSlot(gx+(i%9)*(sz+gap),gy+Math.floor(i/9)*(sz+gap),sz,it);}
- for(let i=0;i<9;i++){const it=items[i]||null;const active=it&&slots()[player.sel]&&((it.k==='gun'&&slots()[player.sel].k==='gun'&&it.id===slots()[player.sel].id)||it.k===slots()[player.sel].k);mcDrawSlot(gx+i*(sz+gap),hotY,sz,it,active);}
+ const gameSlots=slots(),selected=gameSlots[player.sel]||null;for(let i=0;i<9;i++){const it=items[i]||null;const active=!!(it&&selected&&((it.k==='gun'&&selected.k==='gun'&&it.id===selected.id)||it.k===selected.k));mcDrawSlot(gx+i*(sz+gap),hotY,sz,it,active);}
  if(mcCursor){ctx.textAlign='center';ctx.font=Math.floor(sz*.46)+'px '+FONT;ctx.fillStyle='#fff';ctx.fillText(mcCursor.icon,mouse.x,mouse.y+8);}
  ctx.restore();
 }
@@ -4054,13 +4054,18 @@ function drawHUD() {
   ctx.shadowBlur = 4;
 
   // Envanter çubuğu
-  const sls = slots(), n = sls.length;
-  const ss = Math.max(38, Math.min(62, Math.floor((W - 24) / n) - 6)), gap = 6;
+  const sls = slots(), n = 9;
+  const ss = Math.max(34, Math.min(58, Math.floor((W - 24) / n) - 6)), gap = 6;
   const total = n * (ss + gap) - gap, x0 = Math.round((W - total) / 2), y0 = H - ss - 14;
   ctx.shadowBlur = 0;
   for (let i = 0; i < n; i++) {
-    const s = sls[i], x = x0 + i * (ss + gap), cur = i === p.sel;
+    const s = sls[i]||null, x = x0 + i * (ss + gap), cur = i === p.sel;
     uiRects.slots.push({ x, y: y0, w: ss, h: ss });
+    ctx.fillStyle = cur ? 'rgba(240,180,41,.28)' : 'rgba(10,15,12,.72)'; ctx.fillRect(x, y0, ss, ss);
+    ctx.strokeStyle = cur ? '#f0b429' : 'rgba(236,230,214,.28)'; ctx.lineWidth = cur ? 3 : 1; ctx.strokeRect(x + .5, y0 + .5, ss - 1, ss - 1);
+    ctx.fillStyle = '#a3ad9f'; ctx.font = '700 11px ' + FONT; ctx.textAlign = 'left';
+    ctx.fillText(String(i + 1), x + 5, y0 + 13);
+    if(!s) continue;
     let count = null, dim = false;
     if (s.k === 'turret') { count = inv.turret; dim = count <= 0; }
     else if (s.k === 'bomb') { count = inv.bomb; dim = count <= 0; }
@@ -4068,11 +4073,7 @@ function drawHUD() {
     else if (s.k === 'seed') { count = Number(inv.seeds||0); dim = count <= 0; }
     else if (s.k === 'block') dim = money < BLOCK_COST;
     else if (s.k === 'door') dim = money < DOOR_COST;
-    ctx.fillStyle = cur ? 'rgba(240,180,41,.28)' : 'rgba(10,15,12,.72)'; ctx.fillRect(x, y0, ss, ss);
-    ctx.strokeStyle = cur ? '#f0b429' : 'rgba(236,230,214,.28)'; ctx.lineWidth = cur ? 3 : 1; ctx.strokeRect(x + .5, y0 + .5, ss - 1, ss - 1);
     ctx.globalAlpha = dim ? .38 : 1; drawItemIcon(s, x + ss / 2, y0 + ss / 2 + 2, ss * .9); ctx.globalAlpha = 1;
-    ctx.fillStyle = '#a3ad9f'; ctx.font = '700 11px ' + FONT; ctx.textAlign = 'left';
-    ctx.fillText(String(i + 1 === 10 ? 0 : i + 1), x + 5, y0 + 13);
     ctx.textAlign = 'right'; ctx.fillStyle = '#ece6d6'; ctx.font = '800 12px ' + FONT;
     if (count !== null) ctx.fillText('×' + count, x + ss - 5, y0 + ss - 6);
     else if (s.k === 'door') { ctx.fillStyle = '#f0b429'; ctx.fillText('$' + DOOR_COST, x + ss - 5, y0 + ss - 6); }
