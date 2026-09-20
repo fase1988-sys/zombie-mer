@@ -195,7 +195,7 @@ div:has(> #legacyOnlineMarker){display:none!important}
 
 <div id="menuJumpScare" aria-hidden="true"><div class="jsFace"><div class="jsCrack"></div><div class="jsMouth"></div></div></div>
 
-<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v145</b></div></div></div>
+<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v146</b></div></div></div>
 
 <div id="onlinePanel">
   <b><span id="legacyOnlineMarker">ONLINE CO-OP v8 · CLEAN LOBBY</span></b>
@@ -2876,10 +2876,101 @@ function drawGround() {
   ctx.restore();
 }
 
+// v146: High-detail 2D realism pass. Pure rendering only; no gameplay/network state is changed.
+function drawRealismGroundDetails(){
+  const minX=Math.max(0,Math.floor((cam.x-80)/96)*96), maxX=Math.min(WORLD,cam.x+W+80);
+  const minY=Math.max(0,Math.floor((cam.y-80)/96)*96), maxY=Math.min(WORLD,cam.y+H+80);
+  ctx.save();
+  for(let x=minX;x<maxX;x+=96)for(let y=minY;y<maxY;y+=96){
+    if(Math.abs(x-MID)<ROAD*.58||Math.abs(y-MID)<ROAD*.58)continue;
+    const seed=((x*73856093)^(y*19349663))>>>0;
+    const ox=(seed%71)-35,oy=((seed>>>7)%67)-33;
+    const px=x+48+ox,py=y+48+oy;
+    const a=((seed>>>13)%628)/100;
+    ctx.strokeStyle=(seed&1)?'rgba(112,132,83,.18)':'rgba(28,54,31,.22)';
+    ctx.lineWidth=1;
+    ctx.beginPath();
+    for(let k=0;k<3;k++){
+      const dx=(k-1)*3;
+      ctx.moveTo(px+dx,py+3);
+      ctx.quadraticCurveTo(px+dx+Math.cos(a+k)*4,py-4,px+dx+Math.sin(a+k)*3,py-9-(seed%5));
+    }
+    ctx.stroke();
+    if((seed%5)===0){
+      ctx.fillStyle='rgba(125,112,87,.18)';
+      ctx.beginPath();ctx.ellipse(px+11,py+7,2+(seed%4),1.2,seed*.001,0,TAU);ctx.fill();
+    }
+  }
+  // Asphalt aggregate, patched tar and worn road shoulders.
+  ctx.globalAlpha=.22;
+  for(let q=Math.max(80,Math.floor((cam.y-100)/170)*170);q<Math.min(WORLD,cam.y+H+100);q+=170){
+    if(q<0)continue;
+    const xx=MID-ROAD*.42+((q*17)%Math.floor(ROAD*.72));
+    ctx.fillStyle='#171b1c';ctx.beginPath();ctx.ellipse(xx,q,3,1.4,.4,0,TAU);ctx.fill();
+  }
+  for(let q=Math.max(80,Math.floor((cam.x-100)/170)*170);q<Math.min(WORLD,cam.x+W+100);q+=170){
+    if(q<0)continue;
+    const yy=MID-ROAD*.42+((q*19)%Math.floor(ROAD*.72));
+    ctx.fillStyle='#171b1c';ctx.beginPath();ctx.ellipse(q,yy,3,1.4,-.3,0,TAU);ctx.fill();
+  }
+  ctx.globalAlpha=1;ctx.restore();
+}
+function drawRealismObjectLighting(){
+  ctx.save();
+  // Warm campfire bounce light on nearby ground/objects.
+  const cf=campfireObject();
+  if(cf&&!fireBossActive){
+    const x=cf.x+cf.w/2,y=cf.y+cf.h/2,p=clamp(firePower/FIRE_MAX,.08,1);
+    const flick=.92+Math.sin(anim*13)*.04+Math.sin(anim*21)*.025;
+    const g=ctx.createRadialGradient(x,y,18,x,y,235*p*flick);
+    g.addColorStop(0,'rgba(255,177,76,.20)');g.addColorStop(.35,'rgba(255,112,35,.10)');g.addColorStop(1,'rgba(255,70,15,0)');
+    ctx.globalCompositeOperation='screen';ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,240*p,0,TAU);ctx.fill();
+  }
+  // Character contact/AO rings add depth without altering hitboxes.
+  ctx.globalCompositeOperation='source-over';
+  for(const z of zombies){
+    if(z.dead||z.hi>=0||!vis(z.x-45,z.y-45,90,90))continue;
+    const g=ctx.createRadialGradient(z.x+4,z.y+8,2,z.x+4,z.y+8,z.r*1.45);
+    g.addColorStop(0,'rgba(0,0,0,.18)');g.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=g;ctx.beginPath();ctx.ellipse(z.x+5,z.y+9,z.r*1.35,z.r*.72,0,0,TAU);ctx.fill();
+  }
+  ctx.restore();
+}
+function drawRealismPostFX(){
+  ctx.save();
+  // Directional moon/sky wash and cinematic contrast; intentionally subtle so HUD stays readable.
+  const daylight=(state==='intermission'||state==='craft')?(dayPhase==='day'?1:dayPhase==='dawn'?dawnFade:dayPhase==='dusk'?1-duskFade:0):0;
+  const sky=ctx.createLinearGradient(0,0,W,H);
+  sky.addColorStop(0,daylight>.5?'rgba(255,224,172,.035)':'rgba(112,148,190,.055)');
+  sky.addColorStop(.52,'rgba(0,0,0,0)');
+  sky.addColorStop(1,daylight>.5?'rgba(85,55,28,.025)':'rgba(8,14,26,.075)');
+  ctx.fillStyle=sky;ctx.fillRect(0,0,W,H);
+  // Fine deterministic grain avoids the flat digital-canvas look.
+  ctx.globalAlpha=.055;
+  ctx.fillStyle='#d8d3c5';
+  const t=Math.floor(anim*8);
+  for(let i=0;i<70;i++){
+    const x=((i*173+t*47)%Math.max(1,W)),y=((i*97+t*29)%Math.max(1,H));
+    ctx.fillRect(x,y,1,1);
+  }
+  ctx.globalAlpha=1;
+  // Lens vignette.
+  const vg=ctx.createRadialGradient(W*.5,H*.46,Math.min(W,H)*.18,W*.5,H*.5,Math.max(W,H)*.74);
+  vg.addColorStop(0,'rgba(0,0,0,0)');vg.addColorStop(.72,'rgba(0,0,0,.025)');vg.addColorStop(1,'rgba(0,0,0,.22)');
+  ctx.fillStyle=vg;ctx.fillRect(0,0,W,H);
+  ctx.restore();
+}
+
 function drawDecals() {
   for (const d of decals) {
     if (!vis(d.x - 80, d.y - 80, 160, 160)) continue;
-    if (d.blood) { ctx.fillStyle = 'rgba(110,14,18,' + (0.5 * clamp(d.life / 4, 0, 1)) + ')'; ctx.beginPath(); ctx.arc(d.x, d.y, d.r, 0, TAU); ctx.fill(); }
+    if (d.blood) {
+      const al=clamp(d.life/4,0,1);ctx.save();ctx.translate(d.x,d.y);
+      ctx.fillStyle='rgba(72,8,12,'+(.58*al)+')';ctx.beginPath();ctx.ellipse(0,0,d.r*1.15,d.r*.72,.18,0,TAU);ctx.fill();
+      ctx.fillStyle='rgba(126,14,18,'+(.42*al)+')';
+      for(let i=0;i<4;i++){const a=i*1.71+d.r*.07,rr=d.r*(.45+(i%2)*.18);ctx.beginPath();ctx.arc(Math.cos(a)*d.r*.55,Math.sin(a)*d.r*.34,rr*.42,0,TAU);ctx.fill();}
+      ctx.fillStyle='rgba(225,70,65,'+(.10*al)+')';ctx.beginPath();ctx.ellipse(-d.r*.18,-d.r*.16,d.r*.28,d.r*.10,-.25,0,TAU);ctx.fill();ctx.restore();
+    }
     else if (d.scorch) { ctx.fillStyle = 'rgba(10,10,10,' + (0.55 * clamp(d.life / 3, 0, 1)) + ')'; ctx.beginPath(); ctx.arc(d.x, d.y, d.r, 0, TAU); ctx.fill(); }
     else if (d.corpse) {
       const T = ZT[d.type], al = clamp(d.life / 2, 0, 1) * 0.8;
@@ -3252,6 +3343,13 @@ function drawRoof(h) {
   ctx.fillStyle = 'rgba(255,255,255,.06)'; ctx.fillRect(h.x, h.y, h.w, 7);
   ctx.strokeStyle = 'rgba(0,0,0,.55)'; ctx.lineWidth = 4; ctx.strokeRect(h.x + 2, h.y + 2, h.w - 4, h.h - 4);
   ctx.strokeStyle = 'rgba(255,255,255,.09)'; ctx.lineWidth = 2; ctx.strokeRect(h.x + 18, h.y + 18, h.w - 36, h.h - 36);
+  // v146 roof material: seams, weathering and directional highlights.
+  ctx.save();ctx.beginPath();ctx.rect(h.x+3,h.y+3,h.w-6,h.h-6);ctx.clip();
+  ctx.strokeStyle='rgba(20,16,14,.18)';ctx.lineWidth=1;
+  for(let yy=h.y+14;yy<h.y+h.h;yy+=14){ctx.beginPath();ctx.moveTo(h.x+4,yy);ctx.lineTo(h.x+h.w-4,yy);ctx.stroke();}
+  ctx.fillStyle='rgba(255,220,175,.035)';ctx.fillRect(h.x+5,h.y+5,h.w-10,10);
+  ctx.fillStyle='rgba(0,0,0,.07)';ctx.fillRect(h.x+5,h.y+h.h-15,h.w-10,10);
+  ctx.restore();
   for (const v of h.vents) {
     ctx.fillStyle = 'rgba(0,0,0,.35)'; ctx.fillRect(h.x + v.x, h.y + v.y, v.s, v.s);
     ctx.strokeStyle = 'rgba(255,255,255,.14)'; ctx.lineWidth = 2; ctx.strokeRect(h.x + v.x, h.y + v.y, v.s, v.s);
@@ -3491,11 +3589,12 @@ function drawBombs() {
   }
 }
 function drawBulletsParts() {
-  ctx.strokeStyle = '#ffe08a'; ctx.lineWidth = 2.5; ctx.lineCap = 'round';
+  ctx.strokeStyle = '#ffe08a'; ctx.lineWidth = 2.5; ctx.lineCap = 'round'; ctx.shadowColor='rgba(255,190,85,.75)'; ctx.shadowBlur=5;
   for (const b of bullets) {
     if (!vis(b.x - 40, b.y - 40, 80, 80)) continue;
     ctx.beginPath(); ctx.moveTo(b.x - b.vx * 0.02, b.y - b.vy * 0.02); ctx.lineTo(b.x, b.y); ctx.stroke();
   }
+  ctx.shadowBlur=0;
   for (const q of parts) { ctx.globalAlpha = clamp(q.life / q.max, 0, 1); ctx.fillStyle = q.col; ctx.fillRect(q.x - q.s / 2, q.y - q.s / 2, q.s, q.s); }
   ctx.globalAlpha = 1;
   ctx.font = '800 16px ' + FONT; ctx.textAlign = 'center';
@@ -3593,7 +3692,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v145';
+const GAME_VERSION = 'v146';
 
 function drawHUD() {
   if(player&&abandonedCamps.length&&player.hi<0){let cp=null,bd=1e9;for(const q of abandonedCamps){const d=Math.hypot(q.x-player.x,q.y-player.y);if(d<bd){bd=d;cp=q}}if(cp&&bd>190){ctx.save();ctx.textAlign='center';ctx.font='900 11px '+FONT;ctx.fillStyle='#e3aa45';ctx.fillText('🏕 KAMP  '+Math.round(bd)+'m',W/2,82);ctx.restore();}}
@@ -3805,10 +3904,10 @@ function draw() {
   } else {
     ctx.save();
     ctx.translate(-cam.x + sx, -cam.y + sy);
-    drawGround(); drawAbandonedCamps(); drawDecals(); drawDrops(); drawCrates(); drawBaseDangerCircle(); drawBuilt(); drawPlantedSeeds(); drawTrees(); drawTreeFalls();
+    drawGround(); drawRealismGroundDetails(); drawAbandonedCamps(); drawDecals(); drawDrops(); drawCrates(); drawBaseDangerCircle(); drawBuilt(); drawPlantedSeeds(); drawTrees(); drawTreeFalls();
     for (const h of houses) drawRoof(h);
     for (const z of zombies) if (z.hi < 0) drawZombie(z);
-    drawBombs(); drawPlayer(); drawPeers(); drawBulletsParts(); drawGhost();
+    drawBombs(); drawPlayer(); drawPeers(); drawBulletsParts(); drawGhost(); drawRealismObjectLighting();
     ctx.strokeStyle = '#0a0f0c'; ctx.lineWidth = 60; ctx.strokeRect(-10, -10, WORLD + 20, WORLD + 20);
     ctx.strokeStyle = '#6b5a3c'; ctx.lineWidth = 6; ctx.setLineDash([18, 10]); ctx.strokeRect(24, 24, WORLD - 48, WORLD - 48); ctx.setLineDash([]);
     ctx.restore();
@@ -3843,6 +3942,7 @@ function draw() {
     ctx.fillStyle = h; ctx.fillRect(0, 0, W, H);
   }
   if (player.hp > 0 && player.hp < 30) { ctx.fillStyle = 'rgba(160,20,20,' + (0.06 + Math.sin(anim * 6) * 0.04) + ')'; ctx.fillRect(0, 0, W, H); }
+  drawRealismPostFX();
 
   drawHUD();
   if (state === 'playing' || state === 'intermission') drawCrosshair();
