@@ -196,7 +196,7 @@ div:has(> #legacyOnlineMarker){display:none!important}
 
 <div id="menuJumpScare" aria-hidden="true"><div class="jsFace"><div class="jsCrack"></div><div class="jsMouth"></div></div></div>
 
-<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v195</b></div></div></div>
+<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v196</b></div></div></div>
 
 <div id="onlinePanel">
   <b><span id="legacyOnlineMarker">ONLINE CO-OP v8 · CLEAN LOBBY</span></b>
@@ -1505,6 +1505,7 @@ function sfx(n) {
     case 'shot_sniper': gunReport('sniper'); break;
     case 'tur': noise(.04, 2800, .8, .08); break;
     case 'hit': noise(.05, 500, 1, .2); break;
+    case 'axeSwing': noise(.11,1250,.75,.16); tone(240,115,.12,.07,'sawtooth'); setTimeout(()=>{if(AC&&!muted)noise(.045,650,.9,.09);},70); break;
     case 'die': tone(130, 45, .28, .16, 'sawtooth'); break;
     case 'hurt': tone(190, 80, .16, .28, 'square'); break;
     case 'reload': noise(.025,2400,2,.10); tone(620,410,.035,.09,'square'); setTimeout(()=>{noise(.03,1900,2,.12);tone(420,720,.04,.08,'square');},135); break;
@@ -3366,7 +3367,7 @@ function chopTree(){
  const now=performance.now();
  if(now-lastTreeChopAt<TREE_CHOP_COOLDOWN_MS)return false;
  lastTreeChopAt=now;
- player.axeSwing=.34;sfx('hit');floatText(o.x+o.w/2,o.y-10,((o.woodHits||0)+1)+'/5','#d6a45d');
+ player.axeSwing=.34;sfx('axeSwing');setTimeout(()=>sfx('hit'),145);floatText(o.x+o.w/2,o.y-10,((o.woodHits||0)+1)+'/5','#d6a45d');
  if(net.connected){
    if(net.host){
      applySharedTreeChop(o.treeId,net.id,true);
@@ -3684,14 +3685,16 @@ function drawPlayer() {
   ctx.fillStyle=skin;ctx.beginPath();ctx.ellipse(p.r*.38,0,p.r*.48,p.r*.43,0,0,TAU);ctx.fill();
   ctx.fillStyle='#151719';ctx.beginPath();ctx.arc(p.r*.31,0,p.r*.45,Math.PI*.55,Math.PI*1.45);ctx.fill();
   ctx.fillStyle='#c28e69';ctx.beginPath();ctx.arc(p.r*.47,p.r*.39,p.r*.09,0,TAU);ctx.fill();
-  // arms and hands grip weapon naturally
-  ctx.strokeStyle='#26343c';ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(3,-8);ctx.lineTo(p.r*.62,-6);ctx.moveTo(2,8);ctx.lineTo(p.r*.74,6);ctx.stroke();
-  ctx.fillStyle='#c89a73';ctx.beginPath();ctx.arc(p.r*.67,-6,4.4,0,TAU);ctx.arc(p.r*.79,6,4.4,0,TAU);ctx.fill();
+  if(!axeOn){
+    // Firearm hands
+    ctx.strokeStyle='#26343c';ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(3,-8);ctx.lineTo(p.r*.62,-6);ctx.moveTo(2,8);ctx.lineTo(p.r*.74,6);ctx.stroke();
+    ctx.fillStyle='#c89a73';ctx.beginPath();ctx.arc(p.r*.67,-6,4.4,0,TAU);ctx.arc(p.r*.79,6,4.4,0,TAU);ctx.fill();
+  }
   if(axeOn){
     const st=clamp((p.axeSwing||0)/.34,0,1),phase=1-st;
     let swingRot=-.58;
     if(st>0){if(phase<.28)swingRot=-.58-(phase/.28)*1.05;else if(phase<.66)swingRot=-1.63+((phase-.28)/.38)*2.12;else swingRot=.49-((phase-.66)/.34)*1.07;}
-    ctx.save();ctx.translate(p.r*.66,0);ctx.rotate(swingRot);
+    ctx.save();ctx.translate(p.r*.92,0);ctx.rotate(swingRot);
     // Same reference-style axe used by the inventory icon, scaled for the player's hands.
     const z=42;
     ctx.strokeStyle='#1b1714';ctx.lineWidth=9;ctx.lineCap='round';ctx.lineJoin='round';ctx.beginPath();ctx.moveTo(-z*.30,z*.39);ctx.lineTo(z*.12,-z*.18);ctx.stroke();
@@ -3700,9 +3703,11 @@ function drawPlayer() {
     const steel=ctx.createLinearGradient(z*.01,-z*.34,z*.39,-z*.04);steel.addColorStop(0,'#d8d8d8');steel.addColorStop(.55,'#a7a9aa');steel.addColorStop(1,'#d0d1d1');
     ctx.fillStyle=steel;ctx.strokeStyle='#171717';ctx.lineWidth=2.4;
     ctx.beginPath();ctx.moveTo(z*.02,-z*.31);ctx.quadraticCurveTo(z*.12,-z*.39,z*.20,-z*.31);ctx.quadraticCurveTo(z*.29,-z*.23,z*.45,-z*.20);ctx.quadraticCurveTo(z*.47,-z*.05,z*.34,z*.10);ctx.quadraticCurveTo(z*.26,z*.18,z*.18,z*.20);ctx.lineTo(z*.03,-z*.04);ctx.lineTo(-z*.06,-z*.12);ctx.closePath();ctx.fill();ctx.stroke();
-    // Hands sit on top of the handle.
-    ctx.fillStyle='#c89a73';ctx.strokeStyle='rgba(55,30,18,.55)';ctx.lineWidth=1;
-    ctx.beginPath();ctx.arc(-3,7,4.2,0,TAU);ctx.arc(5,0,4.2,0,TAU);ctx.fill();ctx.stroke();
+    // Arms reach to the wooden shaft; both hands grip the lower handle.
+    ctx.strokeStyle='#26343c';ctx.lineWidth=5.5;ctx.lineCap='round';
+    ctx.beginPath();ctx.moveTo(-p.r*.88,-7);ctx.lineTo(-z*.22,z*.28);ctx.moveTo(-p.r*.82,8);ctx.lineTo(-z*.08,z*.10);ctx.stroke();
+    ctx.fillStyle='#c89a73';ctx.strokeStyle='rgba(55,30,18,.65)';ctx.lineWidth=1.2;
+    ctx.beginPath();ctx.arc(-z*.22,z*.28,4.6,0,TAU);ctx.arc(-z*.08,z*.10,4.6,0,TAU);ctx.fill();ctx.stroke();
     if(st>0&&phase>.28&&phase<.72){ctx.globalAlpha=.12*(1-Math.abs(phase-.50)/.22);ctx.strokeStyle='#d9dde0';ctx.lineWidth=3;ctx.beginPath();ctx.arc(0,0,38,-1.55,.45);ctx.stroke();}
     ctx.restore();
   }else if(g){
@@ -3847,7 +3852,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v195';
+const GAME_VERSION = 'v196';
 
 /* =====================================================
    Kafa lambası v1 — mevcut UI'dan bağımsız, canvas katmanı
