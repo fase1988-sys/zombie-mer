@@ -195,7 +195,7 @@ div:has(> #legacyOnlineMarker){display:none!important}
 
 <div id="menuJumpScare" aria-hidden="true"><div class="jsFace"><div class="jsCrack"></div><div class="jsMouth"></div></div></div>
 
-<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v143</b></div></div></div>
+<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v144</b></div></div></div>
 
 <div id="onlinePanel">
   <b><span id="legacyOnlineMarker">ONLINE CO-OP v8 · CLEAN LOBBY</span></b>
@@ -464,6 +464,11 @@ async function connectRoom(code, asHost){
     if(q){ q.hp=0; q.dead=true; }
     if(net.host) checkOnlineTeamAlive();
   });
+  ch.on('broadcast',{event:'player_revive'},({payload})=>{
+    if(!payload)return;
+    const q=net.peers.get(payload.id);
+    if(q){q.hp=Number(payload.hp)||100;q.dead=false;}
+  });
   ch.on('broadcast',{event:'player_damage'},({payload})=>{
     if(!payload || payload.target!==net.id || player.hp<=0) return;
     hurtPlayer(Number(payload.damage)||0);
@@ -472,7 +477,14 @@ async function connectRoom(code, asHost){
     if(!payload||net.host)return;
     if(payload.hostId)net.hostId=payload.hostId;
     const mm=document.getElementById('mainGameMenu');if(mm)mm.classList.add('hidden');
-    if(state==='menu'){newGame(payload.worldSeed);zombies=[];queue=[];state='playing';hideOverlay();if(net.channel)net.channel.send({type:'broadcast',event:'world_request',payload:{from:net.id}});}
+    // Yeni koşu sinyali her durumda misafiri yeniden doğurur; dead_wait/over durumunda takılı kalmaz.
+    newGame(payload.worldSeed);
+    player.hp=player.max; state='playing'; hideOverlay();
+    const me=net.peers.get(net.id);if(me){me.hp=player.hp;me.dead=false;}
+    if(net.channel){
+      net.channel.send({type:'broadcast',event:'player_revive',payload:{id:net.id,hp:player.hp}});
+      net.channel.send({type:'broadcast',event:'world_request',payload:{from:net.id}});
+    }
   });
   ch.on('broadcast',{event:'level_start'},({payload})=>{
     if(!payload || net.host) return;
@@ -1876,7 +1888,15 @@ function gameOver() {
     title: 'Zombilere yenildin',
     text: 'Tüm takım öldü. Bu koşu sona erdi; yeniden başlamak için oyuna sıfırdan başlamalısın.',
     extra: `<div class="stats"><div><b>${kills}</b>Toplam öldürülen</div><div><b>${score}</b>Puan</div><div><b>${level}</b>Ulaşılan bölüm</div></div>`,
-    btn: 'Baştan başla', onClick: newGame
+    btn: 'Baştan başla', onClick: () => {
+      newGame();
+      if(net.connected&&net.host&&net.channel){
+        net.hostId=net.id;
+        for(const q of net.peers.values()){if(q){q.dead=false;q.hp=100;}}
+        net.channel.send({type:'broadcast',event:'game_start',payload:{level:1,hostId:net.id,worldSeed,restart:true}});
+        adminWorldBroadcast();
+      }
+    }
   });
 }
 
@@ -3550,7 +3570,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v143';
+const GAME_VERSION = 'v144';
 
 function drawHUD() {
   if(player&&abandonedCamps.length&&player.hi<0){let cp=null,bd=1e9;for(const q of abandonedCamps){const d=Math.hypot(q.x-player.x,q.y-player.y);if(d<bd){bd=d;cp=q}}if(cp&&bd>190){ctx.save();ctx.textAlign='center';ctx.font='900 11px '+FONT;ctx.fillStyle='#e3aa45';ctx.fillText('🏕 KAMP  '+Math.round(bd)+'m',W/2,82);ctx.restore();}}
