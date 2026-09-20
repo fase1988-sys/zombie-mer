@@ -22,7 +22,8 @@ html, body, #artifacts-component-root-html {
 .gunPhoto{height:112px;margin:8px 0 9px;border:1px solid #314238;border-radius:7px;background:radial-gradient(circle at 50% 45%,#25332c 0,#0c1712 58%,#06100b 100%);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;box-shadow:inset 0 0 28px rgba(0,0,0,.48)}
 .gunPhoto:after{content:"";position:absolute;left:8%;right:8%;bottom:11px;height:8px;border-radius:50%;background:rgba(0,0,0,.36);filter:blur(5px)}
 .gunPhoto img{position:relative;z-index:1;display:block;max-width:92%;max-height:94px;width:auto;height:auto;object-fit:contain;filter:drop-shadow(0 8px 5px rgba(0,0,0,.72)) contrast(1.12) saturate(.92)}
-#adminBtn{position:fixed;right:12px;top:12px;z-index:2147483000;pointer-events:auto;background:#172019;border:1px solid #56685a;color:#ddd;padding:7px 10px;border-radius:5px;font-weight:800}#adminPanel{display:none;position:fixed;inset:0;z-index:90;background:#000b;place-items:center}#adminPanel.show{display:grid}.adminBox{width:min(440px,90vw);background:#111a14;border:1px solid #536658;padding:18px;color:#eee}.adminBox input,.adminBox select,.adminBox button{box-sizing:border-box;width:100%;padding:9px;margin:4px 0;background:#1d2a20;color:#fff;border:1px solid #607765}</style>
+#adminBtn{position:fixed;right:12px;top:12px;z-index:2147483000;pointer-events:auto;background:#172019;border:1px solid #56685a;color:#ddd;padding:7px 10px;border-radius:5px;font-weight:800}#adminPanel{display:none;position:fixed;inset:0;z-index:90;background:#000b;place-items:center}#adminPanel.show{display:grid}.adminBox{width:min(440px,90vw);background:#111a14;border:1px solid #536658;padding:18px;color:#eee}.adminBox input,.adminBox select,.adminBox button{box-sizing:border-box;width:100%;padding:9px;margin:4px 0;background:#1d2a20;color:#fff;border:1px solid #607765}@media (pointer:coarse){html,body{overscroll-behavior:none;touch-action:none}canvas{touch-action:none;-webkit-user-select:none;user-select:none}}
+</style>
 
 <title>Zombi İstilası</title>
 <meta name="description" content="Tarayıcıda oynanan zombi hayatta kalma oyunu: büyük harita, evler, üs kurma, mağaza, taret, bomba ve patronlar.">
@@ -195,7 +196,7 @@ div:has(> #legacyOnlineMarker){display:none!important}
 
 <div id="menuJumpScare" aria-hidden="true"><div class="jsFace"><div class="jsCrack"></div><div class="jsMouth"></div></div></div>
 
-<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v182</b></div></div></div>
+<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v183</b></div></div></div>
 
 <div id="onlinePanel">
   <b><span id="legacyOnlineMarker">ONLINE CO-OP v8 · CLEAN LOBBY</span></b>
@@ -1622,7 +1623,9 @@ function craftItem(id){
    ===================================================== */
 const keys = {};
 const mouse = { x: W / 2, y: H / 2, down: false, buf: 0 };
-const touch = { stick: null, aim: null, on: false };
+const touch = { stick: null, aim: null, on: false, mobile: ('ontouchstart' in window)||navigator.maxTouchPoints>0 };
+function mobileControlsActive(){return touch.mobile&&W<1100&&!backpackOpen&&(state==='playing'||state==='intermission');}
+function mobileJoy(){const r=Math.max(42,Math.min(62,Math.min(W,H)*.105));return {r,lx:Math.max(r+18,W*.13),ly:H-r-26,rx:W-Math.max(r+18,W*.13),ry:H-r-26};}
 
 function uiHit(px, py) {
   const inR = r => r && px >= r.x && px <= r.x + r.w && py >= r.y && py <= r.y + r.h;
@@ -1681,34 +1684,26 @@ cv.addEventListener('wheel', e => {
 }, { passive: false });
 
 cv.addEventListener('touchstart', e => {
-  e.preventDefault(); audio(); touch.on = true;
-  if (state !== 'playing' && state !== 'intermission') return;
-  for (const t of e.changedTouches) {
-    if (backpackClick(t.clientX,t.clientY)) continue;
-    if (uiHit(t.clientX, t.clientY)) continue;
-    if (t.clientX < W / 2 && !touch.stick) touch.stick = { id: t.identifier, ox: t.clientX, oy: t.clientY, x: t.clientX, y: t.clientY };
-    else if (!touch.aim) {
-      touch.aim = { id: t.identifier };
-      mouse.x = t.clientX; mouse.y = t.clientY; mouse.down = true; mouse.buf = 0.15;
-    }
-  }
-}, { passive: false });
-cv.addEventListener('touchmove', e => {
-  e.preventDefault();
-  for (const t of e.changedTouches) {
-    if (touch.stick && t.identifier === touch.stick.id) { touch.stick.x = t.clientX; touch.stick.y = t.clientY; }
-    if (touch.aim && t.identifier === touch.aim.id) { mouse.x = t.clientX; mouse.y = t.clientY; }
-  }
-}, { passive: false });
-function touchEnd(e) {
-  for (const t of e.changedTouches) {
-    if (touch.stick && t.identifier === touch.stick.id) touch.stick = null;
-    if (touch.aim && t.identifier === touch.aim.id) { touch.aim = null; mouse.down = false; }
-  }
-}
-cv.addEventListener('touchend', touchEnd);
-cv.addEventListener('touchcancel', touchEnd);
-
+ e.preventDefault();audio();touch.on=true;if(state!=='playing'&&state!=='intermission')return;
+ const J=mobileJoy(),bs=Math.max(38,J.r*.68);
+ for(const t of e.changedTouches){
+   const bx=W-bs-12;if(t.clientX>=bx&&t.clientX<=bx+bs){if(t.clientY>=18&&t.clientY<=18+bs){toggleBackpack();continue;}if(t.clientY>=26+bs&&t.clientY<=26+2*bs){if(nearWorkbench())openWorkbench();else openChest();continue;}if(t.clientY>=34+2*bs&&t.clientY<=34+3*bs){startReload();continue;}if(t.clientY>=42+3*bs&&t.clientY<=42+4*bs){toggleHeadlamp();continue;}}
+   if(backpackOpen){backpackClick(t.clientX,t.clientY);continue;}
+   if(uiHit(t.clientX,t.clientY))continue;
+   const dl=Math.hypot(t.clientX-J.lx,t.clientY-J.ly),dr=Math.hypot(t.clientX-J.rx,t.clientY-J.ry);
+   if(!touch.stick&&(dl<=J.r*1.65||t.clientX<W*.46)){touch.stick={id:t.identifier,ox:J.lx,oy:J.ly,x:t.clientX,y:t.clientY};continue;}
+   if(!touch.aim&&(dr<=J.r*1.8||t.clientX>W*.54)){touch.aim={id:t.identifier,ox:J.rx,oy:J.ry,x:t.clientX,y:t.clientY};mouse.x=t.clientX;mouse.y=t.clientY;continue;}
+ }
+},{passive:false});
+cv.addEventListener('touchmove',e=>{
+ e.preventDefault();const J=mobileJoy();
+ for(const t of e.changedTouches){
+   if(touch.stick&&t.identifier===touch.stick.id){let dx=t.clientX-J.lx,dy=t.clientY-J.ly,l=Math.hypot(dx,dy)||1,k=Math.min(l,J.r)/l;touch.stick.x=J.lx+dx*k;touch.stick.y=J.ly+dy*k;}
+   if(touch.aim&&t.identifier===touch.aim.id){let dx=t.clientX-J.rx,dy=t.clientY-J.ry,l=Math.hypot(dx,dy)||1,k=Math.min(l,J.r)/l;touch.aim.x=J.rx+dx*k;touch.aim.y=J.ry+dy*k;if(l>10&&player){player.ang=Math.atan2(dy,dx);mouse.x=player.x-cam.x+Math.cos(player.ang)*180;mouse.y=player.y-cam.y+Math.sin(player.ang)*180;}mouse.down=l>J.r*.28;}
+ }
+},{passive:false});
+function touchEnd(e){for(const t of e.changedTouches){if(touch.stick&&t.identifier===touch.stick.id)touch.stick=null;if(touch.aim&&t.identifier===touch.aim.id){touch.aim=null;mouse.down=false;}}}
+cv.addEventListener('touchend',touchEnd);cv.addEventListener('touchcancel',touchEnd);
 /* =====================================================
    Oyun akışı ve ekranlar
    ===================================================== */
@@ -2435,8 +2430,8 @@ function update(dt) {
   let mx = spectating ? 0 : (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0);
   let my = spectating ? 0 : (keys.KeyS || keys.ArrowDown ? 1 : 0) - (keys.KeyW || keys.ArrowUp ? 1 : 0);
   if (!spectating && touch.stick) {
-    const dx = touch.stick.x - touch.stick.ox, dy = touch.stick.y - touch.stick.oy, l = Math.hypot(dx, dy);
-    if (l > 8) { mx = dx / Math.max(l, 60); my = dy / Math.max(l, 60); }
+    const J=mobileJoy(), dx = touch.stick.x - J.lx, dy = touch.stick.y - J.ly, l = Math.hypot(dx, dy);
+    if (l > 6) { mx = dx / Math.max(l, J.r); my = dy / Math.max(l, J.r); }
   }
   const ml = Math.hypot(mx, my);
   if (ml > 1) { mx /= ml; my /= ml; }
@@ -3823,7 +3818,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v182';
+const GAME_VERSION = 'v183';
 
 /* =====================================================
    Kafa lambası v1 — mevcut UI'dan bağımsız, canvas katmanı
@@ -4142,12 +4137,11 @@ function drawHUD() {
     ctx.globalAlpha = 1; ctx.shadowBlur = 0;
   }
 
-  // Dokunmatik çubuk
-  if (touch.on && touch.stick) {
-    const s0 = touch.stick, dx = s0.x - s0.ox, dy = s0.y - s0.oy, l = Math.hypot(dx, dy) || 1, k = Math.min(l, 60) / l;
-    ctx.strokeStyle = 'rgba(236,230,214,.45)'; ctx.lineWidth = 3;
-    ctx.beginPath(); ctx.arc(s0.ox, s0.oy, 60, 0, TAU); ctx.stroke();
-    ctx.fillStyle = 'rgba(236,230,214,.4)'; ctx.beginPath(); ctx.arc(s0.ox + dx * k, s0.oy + dy * k, 26, 0, TAU); ctx.fill();
+  // Mobil çift joystick: sol hareket, sağ nişan/ateş
+  if(mobileControlsActive()){
+    const J=mobileJoy(),drawJoy=(x,y,s,active,label)=>{ctx.save();ctx.globalAlpha=.88;ctx.fillStyle='rgba(8,12,14,.38)';ctx.beginPath();ctx.arc(x,y,J.r,0,TAU);ctx.fill();ctx.strokeStyle='rgba(236,230,214,.48)';ctx.lineWidth=2;ctx.stroke();const kx=active?active.x:x,ky=active?active.y:y;ctx.fillStyle='rgba(236,230,214,.48)';ctx.beginPath();ctx.arc(kx,ky,J.r*.42,0,TAU);ctx.fill();ctx.fillStyle='rgba(255,255,255,.7)';ctx.font='800 10px '+FONT;ctx.textAlign='center';ctx.fillText(label,x,y-J.r-8);ctx.restore();};drawJoy(J.lx,J.ly,J.r,touch.stick,'HAREKET');drawJoy(J.rx,J.ry,J.r,touch.aim,'NİŞAN / ATEŞ');
+    const bs=Math.max(38,J.r*.68),buttons=[['I',W-bs-12,18,'🎒'],['E',W-bs-12,18+bs+8,'E'],['R',W-bs-12,18+(bs+8)*2,'R'],['L',W-bs-12,18+(bs+8)*3,'🔦']];
+    ctx.save();for(const b of buttons){ctx.fillStyle='rgba(12,15,16,.66)';ctx.beginPath();ctx.arc(b[1]+bs/2,b[2]+bs/2,bs/2,0,TAU);ctx.fill();ctx.strokeStyle='rgba(255,255,255,.35)';ctx.stroke();ctx.fillStyle='#eee';ctx.font='800 '+Math.floor(bs*.34)+'px '+FONT;ctx.textAlign='center';ctx.fillText(b[3],b[1]+bs/2,b[2]+bs*.62);}ctx.restore();
   }
 }
 
