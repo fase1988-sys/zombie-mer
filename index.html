@@ -3781,7 +3781,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v157';
+const GAME_VERSION = 'v158';
 
 /* =====================================================
    Kafa lambası v1 — mevcut UI'dan bağımsız, canvas katmanı
@@ -3807,40 +3807,54 @@ function drawHeadlamp(){
   const px=player.x-cam.x, py=player.y-cam.y;
   const a=Number.isFinite(player.ang)?player.ang:0;
 
-  // Daha gerçekçi kafa lambası: daha dar, ileri odaklı ve yumuşak kenarlı.
-  const reach=Math.max(430,Math.min(680,Math.max(W,H)*.60));
-  const outer=.30, inner=.17, near=18;
+  // V158: gerçek kafa lambası optiği — oval hotspot + yumuşak spill + uzun menzil.
+  // Basit pasta dilimi görünümünden kaçınmak için koni birkaç üst üste binen
+  // eliptik ışık katmanından oluşur.
+  const ux=Math.cos(a), uy=Math.sin(a);
+  const reach=Math.max(470,Math.min(720,Math.max(W,H)*.64));
   ctx.save();
   ctx.globalCompositeOperation='screen';
 
-  // Dış huzme: sert üçgen yerine yumuşak ışık konisi.
-  const outerGrad=ctx.createRadialGradient(px,py,near,px,py,reach);
-  outerGrad.addColorStop(0,'rgba(255,246,215,.20)');
-  outerGrad.addColorStop(.28,'rgba(255,244,211,.16)');
-  outerGrad.addColorStop(.68,'rgba(255,238,198,.075)');
-  outerGrad.addColorStop(1,'rgba(255,232,185,0)');
-  ctx.fillStyle=outerGrad;
-  ctx.beginPath();ctx.moveTo(px,py);
-  ctx.arc(px,py,reach,a-outer,a+outer);
-  ctx.closePath();ctx.fill();
+  function ellipseGlow(dist,rx,ry,alpha,warm){
+    const cx=px+ux*dist, cy=py+uy*dist;
+    ctx.save();
+    ctx.translate(cx,cy);ctx.rotate(a);
+    const g=ctx.createRadialGradient(0,0,0,0,0,1);
+    g.addColorStop(0,'rgba(255,252,'+(warm?225:238)+','+alpha+')');
+    g.addColorStop(.32,'rgba(255,248,'+(warm?211:230)+','+(alpha*.72)+')');
+    g.addColorStop(.72,'rgba(255,241,200,'+(alpha*.22)+')');
+    g.addColorStop(1,'rgba(255,235,190,0)');
+    ctx.scale(rx,ry);ctx.fillStyle=g;ctx.beginPath();ctx.arc(0,0,1,0,TAU);ctx.fill();ctx.restore();
+  }
 
-  // Merkez hotspot: gerçek lambalardaki daha parlak dar merkez.
-  const hotReach=reach*.84;
-  const hotGrad=ctx.createRadialGradient(px,py,55,px,py,hotReach);
-  hotGrad.addColorStop(0,'rgba(255,252,232,.32)');
-  hotGrad.addColorStop(.34,'rgba(255,249,222,.23)');
-  hotGrad.addColorStop(.72,'rgba(255,242,205,.085)');
-  hotGrad.addColorStop(1,'rgba(255,236,194,0)');
-  ctx.fillStyle=hotGrad;
-  ctx.beginPath();ctx.moveTo(px,py);
-  ctx.arc(px,py,hotReach,a-inner,a+inner);
-  ctx.closePath();ctx.fill();
+  // Çok hafif yakın spill — oyuncunun etrafını gündüz gibi yapmaz.
+  const spill=ctx.createRadialGradient(px,py,8,px,py,58);
+  spill.addColorStop(0,'rgba(255,244,211,.08)');
+  spill.addColorStop(1,'rgba(255,244,211,0)');
+  ctx.fillStyle=spill;ctx.beginPath();ctx.arc(px,py,58,0,TAU);ctx.fill();
 
-  // Oyuncunun hemen çevresindeki çok hafif ışık sızıntısı.
-  const spill=ctx.createRadialGradient(px,py,0,px,py,70);
-  spill.addColorStop(0,'rgba(255,247,218,.12)');
-  spill.addColorStop(1,'rgba(255,247,218,0)');
-  ctx.fillStyle=spill;ctx.beginPath();ctx.arc(px,py,70,0,TAU);ctx.fill();
+  // Işık yolunu doğal biçimde dolduran üst üste yumuşak elipsler.
+  ellipseGlow(reach*.18,reach*.20,48,.10,true);
+  ellipseGlow(reach*.38,reach*.29,66,.115,true);
+  ellipseGlow(reach*.61,reach*.34,82,.105,false);
+  ellipseGlow(reach*.82,reach*.28,72,.072,false);
+
+  // Gerçek kafa lambasındaki yoğun merkez hotspot.
+  ellipseGlow(reach*.50,reach*.22,42,.24,true);
+  ellipseGlow(reach*.63,reach*.18,31,.17,false);
+
+  // Merkez ekseninde ince parlak çekirdek; uzaklaştıkça tamamen erir.
+  const tipX=px+ux*reach*.78, tipY=py+uy*reach*.78;
+  const core=ctx.createLinearGradient(px,py,tipX,tipY);
+  core.addColorStop(0,'rgba(255,252,230,.13)');
+  core.addColorStop(.18,'rgba(255,250,224,.18)');
+  core.addColorStop(.58,'rgba(255,247,216,.105)');
+  core.addColorStop(1,'rgba(255,240,200,0)');
+  const nx=-uy,ny=ux,w0=15,w1=43;
+  ctx.fillStyle=core;ctx.beginPath();
+  ctx.moveTo(px+nx*w0,py+ny*w0);ctx.lineTo(tipX+nx*w1,tipY+ny*w1);
+  ctx.lineTo(tipX-nx*w1,tipY-ny*w1);ctx.lineTo(px-nx*w0,py-ny*w0);ctx.closePath();ctx.fill();
+
   ctx.restore();
 }
 
