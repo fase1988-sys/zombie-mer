@@ -196,7 +196,7 @@ div:has(> #legacyOnlineMarker){display:none!important}
 
 <div id="menuJumpScare" aria-hidden="true"><div class="jsFace"><div class="jsCrack"></div><div class="jsMouth"></div></div></div>
 
-<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v185</b></div></div></div>
+<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v186</b></div></div></div>
 
 <div id="onlinePanel">
   <b><span id="legacyOnlineMarker">ONLINE CO-OP v8 · CLEAN LOBBY</span></b>
@@ -1541,20 +1541,18 @@ function toast(text) {
 }
 function floatText(x, y, text, col) { floats.push({ x, y, text, t: 0.9, col: col || '#f0b429' }); }
 
-function slots() {
-  const s = [];
-  for (const id of GUN_ORDER) if (player.guns.includes(id)) s.push({ k: 'gun', id });
-  s.push({k:'axe'});
-  if(inv.block>0)s.push({ k:'block' });
-  if(inv.door>0)s.push({ k:'door' });
-  if(inv.turret>0)s.push({ k:'turret' });
-  if(inv.bomb>0)s.push({ k:'bomb' });
-  if(inv.medkit>0)s.push({ k:'medkit' });
-  s.push({ k:'seed' });
+function defaultGameplaySlots(){
+  const s=[];for(const id of GUN_ORDER)if(player.guns.includes(id))s.push({k:'gun',id});
+  s.push({k:'axe'});if(inv.block>0)s.push({k:'block'});if(inv.door>0)s.push({k:'door'});if(inv.turret>0)s.push({k:'turret'});if(inv.bomb>0)s.push({k:'bomb'});if(inv.medkit>0)s.push({k:'medkit'});s.push({k:'seed'});return s;
+}
+function slots(){
+  if(typeof mcOrder==='undefined'||!mcOrder.length)return defaultGameplaySlots();
+  const real=realInventoryItems(),map=new Map(real.map(x=>[x.key,x])),s=Array(10).fill(null);
+  for(let i=0;i<Math.min(9,mcOrder.length);i++){const it=map.get(mcOrder[i]);if(it)s[i]=it.k==='gun'?{k:'gun',id:it.id}:{k:it.k};}
   return s;
 }
 function selectSlot(i) {
-  const s = slots(); if (i < 0 || i >= s.length) return;
+  const s = slots(); if (i < 0 || i >= s.length || !s[i]) return;
   player.sel = i; player.reload = 0; player.cd = 0.12;
 }
 function newPlayer() {
@@ -1683,8 +1681,7 @@ cv.addEventListener('wheel', e => {
   if(backpackOpen){e.preventDefault();return;}
   if (state !== 'playing' && state !== 'intermission') return;
   e.preventDefault();
-  const n = slots().length;
-  selectSlot((player.sel + (e.deltaY > 0 ? 1 : -1) + n) % n);
+  const ss=slots(),dir=e.deltaY>0?1:-1;let q=player.sel;for(let tries=0;tries<9;tries++){q=(q+dir+9)%9;if(ss[q]){selectSlot(q);break;}}
 }, { passive: false });
 
 cv.addEventListener('touchstart', e => {
@@ -1964,7 +1961,7 @@ function buy(it) {
   money -= it.price;
   if(net.connected && !net.host && net.channel) net.channel.send({type:'broadcast',event:'money_delta',payload:{delta:-it.price,from:net.id}});
   sfx('buy');
-  if (it.gun) { player.guns.push(it.gun); player.ammo[it.gun] = gunStats(it.gun).mag; const s = slots(); selectSlot(s.findIndex(x => x.id === it.gun)); toast(GUNS[it.gun].name + ' envantere eklendi'); }
+  if (it.gun) { player.guns.push(it.gun); player.ammo[it.gun] = gunStats(it.gun).mag; syncMinecraftInventory();const hi=mcOrder.indexOf('gun:'+it.gun);if(hi>=0&&hi<9)selectSlot(hi);toast(GUNS[it.gun].name + ' envantere eklendi'); }
   else if (it.id === 'turret') inv.turret++;
   else if (it.id === 'bomb') inv.bomb++;
   else if (it.id === 'bomb5') inv.bomb += 5;
@@ -3822,7 +3819,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v185';
+const GAME_VERSION = 'v186';
 
 /* =====================================================
    Kafa lambası v1 — mevcut UI'dan bağımsız, canvas katmanı
@@ -3844,7 +3841,7 @@ window.addEventListener('keydown', e=>{
     toggleHeadlamp();
   }
 });
-let mcCursor=null,mcOrder=[];
+let mcCursor=null,mcOrder=Array(36).fill(null);
 function mcItemDef(k,id){
  if(k==='gun'){const g=GUNS[id];return {key:'gun:'+id,k,id,name:g.name,icon:id==='pistol'?'🔫':id==='shotgun'?'▰':id==='rifle'?'⌁':id==='sniper'?'⌖':id==='smg'?'▱':'▥',count:1,ammo:(player.ammo[id]||0)+'/'+gunStats(id).mag};}
  const m={axe:['Balta','🪓'],block:['Duvar','🧱'],door:['Kapı','🚪'],turret:['Taret','⚙️'],bomb:['Bomba','💣'],medkit:['İlk yardım','🩹'],seed:['Tohum','🌱'],logs:['Odun','🪵'],headlamp:['Kafa lambası','🔦']},d=m[k]||[k,'◆'];
@@ -3859,8 +3856,10 @@ function realInventoryItems(){
 }
 function syncMinecraftInventory(){
  const real=realInventoryItems(),map=new Map(real.map(x=>[x.key,x]));
- mcOrder=mcOrder.filter(k=>map.has(k));for(const it of real)if(!mcOrder.includes(it.key))mcOrder.push(it.key);
- return mcOrder.map(k=>map.get(k)).filter(Boolean);
+ if(!Array.isArray(mcOrder)||mcOrder.length!==36)mcOrder=Array(36).fill(null);
+ for(let i=0;i<36;i++)if(mcOrder[i]&&!map.has(mcOrder[i]))mcOrder[i]=null;
+ for(const it of real)if(!mcOrder.includes(it.key)){const q=mcOrder.findIndex(k=>!k);if(q>=0)mcOrder[q]=it.key;}
+ return mcOrder.map(k=>k?map.get(k)||null:null);
 }
 function mcLayout(){
  const sz=Math.max(28,Math.min(48,Math.floor((W-70)/9))),gap=3,gridW=9*sz+8*gap,pw=Math.min(W-24,gridW+48);
@@ -3901,8 +3900,8 @@ function backpackClick(px,py){
  }
  if(idx>=0){
    const it=items[idx]||null;
-   if(!mcCursor&&it){mcCursor=it;mcOrder=mcOrder.filter(k=>k!==it.key);}
-   else if(mcCursor){const target=it?it.key:null;mcOrder=mcOrder.filter(k=>k!==mcCursor.key);let pos=target?mcOrder.indexOf(target):Math.min(idx,mcOrder.length);if(pos<0)pos=Math.min(idx,mcOrder.length);mcOrder.splice(pos,0,mcCursor.key);mcCursor=null;}
+   if(!mcCursor&&it){mcCursor=it;mcOrder[idx]=null;}
+   else if(mcCursor){const held=mcCursor.key,target=mcOrder[idx];mcOrder[idx]=held;mcCursor=target?items.find(x=>x&&x.key===target)||null:null;}
    return true;
  }
  return px>=L.x&&px<=L.x+L.pw&&py>=L.y&&py<=L.y+L.ph;
