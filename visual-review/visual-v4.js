@@ -12,24 +12,50 @@ const VISUAL_V4 = (() => {
   for(const name of names){const img=new Image();img.src=root+name+'.png';images[name]=img;}
   const ready=name=>images[name]?.complete && images[name].naturalWidth>0;
   function sprite(ctx,name,x,y,w,h){if(!ready(name))return false;ctx.drawImage(images[name],x,y,w,h);return true;}
+  let forestPattern,roadPattern;
+  function makeGround(ctx){
+    if(forestPattern||!ready('terrain/forest')||!ready('terrain/grass')||!ready('terrain/mud')||!ready('terrain/rocky'))return;
+    const size=768,canvas=document.createElement('canvas');canvas.width=canvas.height=size;
+    const g=canvas.getContext('2d');g.fillStyle='#253023';g.fillRect(0,0,size,size);
+    let seed=714225;const random=()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/4294967296);
+    // Build a large irregular cached ground tile from feathered image fragments.
+    // Copy fragments across both edges so the final texture joins seamlessly.
+    const stamps=[];
+    for(const name of ['forest','grass','mud']){
+      const stamp=document.createElement('canvas');stamp.width=stamp.height=158;
+      const s=stamp.getContext('2d');s.drawImage(images['terrain/'+name],0,0,158,158);
+      s.globalCompositeOperation='destination-in';
+      const fade=s.createRadialGradient(79,79,25,79,79,79);
+      fade.addColorStop(0,'#fff');fade.addColorStop(1,'#0000');
+      s.fillStyle=fade;s.fillRect(0,0,158,158);stamps.push(stamp);
+    }
+    for(let i=0;i<410;i++){
+      const x=random()*size,y=random()*size,z=84+random()*130;
+      const stamp=stamps[random()<.67?0:random()<.62?1:2];
+      g.globalAlpha=.47+random()*.36;
+      for(const dx of [-size,0,size])for(const dy of [-size,0,size])
+        if(x+dx+z>0&&y+dy+z>0&&x+dx<size&&y+dy<size)g.drawImage(stamp,x+dx,y+dy,z,z);
+    }
+    g.globalAlpha=1;
+    forestPattern=ctx.createPattern(canvas,'repeat');
+    const road=document.createElement('canvas');road.width=road.height=384;
+    const r=road.getContext('2d');r.fillStyle='#292c2a';r.fillRect(0,0,384,384);
+    r.globalAlpha=.45;r.drawImage(images['terrain/rocky'],0,0,384,384);
+    r.fillStyle='rgba(12,15,15,.56)';r.fillRect(0,0,384,384);
+    roadPattern=ctx.createPattern(road,'repeat');
+  }
   function terrain(ctx,cam,W,H,MID,ROAD){
     const l=Math.max(0,cam.x-32),t=Math.max(0,cam.y-32),r=cam.x+W+32,b=cam.y+H+32;
     if(r<MID-560||l>MID+560||b<MID-560||t>MID+560)return;
-    // Mirrored tiles have no straight outer seam; repeat only over visible area.
-    for(const [name,regions] of [
-      ['forest',[[l,t,r-l,b-t]]],
-      ['asphalt',[[MID-ROAD/2,t,ROAD,b-t],[l,MID-ROAD/2,r-l,ROAD]]]
+    makeGround(ctx);
+    for(const [pattern,regions] of [
+      [forestPattern,[[l,t,r-l,b-t]]],
+      [roadPattern,[[MID-ROAD/2,t,ROAD,b-t],[l,MID-ROAD/2,r-l,ROAD]]]
     ]){
-      if(!ready('terrain/'+name))continue;
-      const img=images['terrain/'+name],size=192;
+      if(!pattern)continue;
       for(const [x,y,w,h] of regions){ctx.save();ctx.beginPath();ctx.rect(x,y,w,h);ctx.clip();
         ctx.beginPath();ctx.rect(MID-560,MID-560,1120,1120);ctx.clip();
-        for(let tx=Math.floor(x/size)*size;tx<x+w;tx+=size)
-          for(let ty=Math.floor(y/size)*size;ty<y+h;ty+=size){
-            ctx.save();ctx.translate(tx+(Math.floor(tx/size)&1?size:0),ty+(Math.floor(ty/size)&1?size:0));
-            ctx.scale(Math.floor(tx/size)&1?-1:1,Math.floor(ty/size)&1?-1:1);
-            ctx.drawImage(img,0,0,size,size);ctx.restore();
-          }
+        ctx.fillStyle=pattern;ctx.fillRect(x,y,w,h);
       }ctx.restore();}
   }
   function camp(ctx,cam,W,H,MID,ROAD){
