@@ -84,6 +84,42 @@ try {
     });
     assert(info.houses>0&&info.fire,JSON.stringify(info));
   });
+  await check('house interior can render', async () => {
+    const info=await page.evaluate(() => {
+      const api=window.__TEST.api,h=api.houses[0];
+      api.player.x=h.inner.x+h.inner.w/2;api.player.y=h.inner.y+h.inner.h/2;
+      api.player.hi=api.houseAt(api.player.x,api.player.y);api.draw();
+      return {index:api.player.hi,inside:api.houseAt(api.player.x,api.player.y)};
+    });
+    assert(info.index>=0&&info.index===info.inside,JSON.stringify(info));
+  });
+  await check('woodcutting and campfire consume existing inventory', async () => {
+    await page.evaluate(() => window.__TEST.api.adminDay('morning'));
+    const start=await page.evaluate(() => {
+      const api=window.__TEST.api,tree=api.obs.find(o=>o.t==='t');
+      api.player.x=tree.x+tree.w/2+35;api.player.y=tree.y+tree.h/2;
+      api.player.hi=-1;api.player.sel=api.slots().findIndex(s=>s?.k==='axe');
+      return {treeId:tree.treeId,logs:api.inv.logs};
+    });
+    assert(start.treeId>=0);
+    for(let i=0;i<5;i++){
+      const hit=await page.evaluate(() => window.__TEST.api.chopTree());
+      assert(hit,'tree hit '+(i+1)+' was rejected');
+      if(i<4)await page.waitForTimeout(1050);
+    }
+    const cut=await page.evaluate(({treeId}) => {
+      const api=window.__TEST.api;
+      return {exists:api.obs.some(o=>o.treeId===treeId),logs:api.inv.logs};
+    },start);
+    assert(!cut.exists&&cut.logs>=start.logs+3,JSON.stringify(cut));
+    const fire=await page.evaluate(() => {
+      const api=window.__TEST.api,f=api.built.find(o=>o.t==='campfire');
+      api.player.x=f.x+f.w/2;api.player.y=f.y+f.h/2;api.player.hi=-1;
+      const before=api.inv.logs,success=api.feedCampfire();
+      return {before,after:api.inv.logs,success};
+    });
+    assert(fire.success&&fire.after===fire.before-3,JSON.stringify(fire));
+  });
   await check('admin panel and HUD remain mounted', async () => {
     await page.locator('#adminBtn').click();
     assert(await page.locator('#adminPanel').isVisible());
