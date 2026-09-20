@@ -195,7 +195,7 @@ div:has(> #legacyOnlineMarker){display:none!important}
 
 <div id="menuJumpScare" aria-hidden="true"><div class="jsFace"><div class="jsCrack"></div><div class="jsMouth"></div></div></div>
 
-<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v172</b></div></div></div>
+<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v173</b></div></div></div>
 
 <div id="onlinePanel">
   <b><span id="legacyOnlineMarker">ONLINE CO-OP v8 · CLEAN LOBBY</span></b>
@@ -3817,7 +3817,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v172';
+const GAME_VERSION = 'v173';
 
 /* =====================================================
    Kafa lambası v1 — mevcut UI'dan bağımsız, canvas katmanı
@@ -3841,12 +3841,17 @@ window.addEventListener('keydown', e=>{
 function drawHeadlampWorldReveal(sx=0,sy=0){
   if(!headlampOn||!player||player.hi>=0||currentTent())return;
   const px=player.x-cam.x+sx,py=player.y-cam.y+sy;
-  const flicker=.98+Math.sin(anim*11)*.018+Math.sin(anim*19)*.012;
-  const inner=95*flicker,outer=330*flicker;
-
-  // Redraw the REAL scene in a circular portable-light area, exactly like standing near the campfire.
+  const a=Number.isFinite(player.ang)?player.ang:0,ux=Math.cos(a),uy=Math.sin(a);
+  const reach=520,half=.34,near=55;
+  // Re-render the actual world only inside a forward flashlight beam.
+  // The mask uses several overlapping soft zones so there is no visible circular boundary.
   ctx.save();
-  ctx.beginPath();ctx.arc(px,py,outer,0,TAU);ctx.clip();
+  ctx.beginPath();
+  ctx.moveTo(px+Math.cos(a-half)*near,py+Math.sin(a-half)*near);
+  ctx.quadraticCurveTo(px+ux*reach*.48+Math.cos(a-half-Math.PI/2)*150,py+uy*reach*.48+Math.sin(a-half-Math.PI/2)*150,px+Math.cos(a-half*.72)*reach,py+Math.sin(a-half*.72)*reach);
+  ctx.arc(px,py,reach,a-half*.72,a+half*.72);
+  ctx.quadraticCurveTo(px+ux*reach*.48+Math.cos(a+half+Math.PI/2)*150,py+uy*reach*.48+Math.sin(a+half+Math.PI/2)*150,px+Math.cos(a+half)*near,py+Math.sin(a+half)*near);
+  ctx.closePath();ctx.clip();
   ctx.translate(-cam.x+sx,-cam.y+sy);
   drawGround();drawUltraEnvironment();drawRealismGroundDetails();drawAbandonedCamps();drawUltraCampDetails();
   drawDecals();drawDrops();drawCrates();drawBaseDangerCircle();drawBuilt();drawPlantedSeeds();drawTrees();drawTreeFalls();
@@ -3855,27 +3860,50 @@ function drawHeadlampWorldReveal(sx=0,sy=0){
   drawBombs();drawPlayer();drawPeers();drawBulletsParts();drawGhost();drawRealismObjectLighting();
   ctx.restore();
 
-  // Campfire-style darkness falloff: clear/readable close to player, smoothly darker outward.
+  // Feather the revealed world back into darkness toward the beam sides and end.
   ctx.save();
-  const shade=ctx.createRadialGradient(px,py,inner,px,py,outer);
-  shade.addColorStop(0,'rgba(2,5,8,.01)');
-  shade.addColorStop(.34,'rgba(2,5,8,.08)');
-  shade.addColorStop(.68,'rgba(2,5,8,.40)');
-  shade.addColorStop(1,'rgba(1,3,6,.78)');
-  ctx.fillStyle=shade;
-  ctx.beginPath();ctx.arc(px,py,outer,0,TAU);ctx.fill();
+  const fx=px+ux*reach*.43,fy=py+uy*reach*.43;
+  const edge=ctx.createRadialGradient(fx,fy,reach*.18,fx,fy,reach*.66);
+  edge.addColorStop(0,'rgba(2,5,8,0)');
+  edge.addColorStop(.48,'rgba(2,5,8,.06)');
+  edge.addColorStop(.76,'rgba(2,5,8,.28)');
+  edge.addColorStop(1,'rgba(1,3,6,.78)');
+  ctx.fillStyle=edge;
+  ctx.beginPath();ctx.moveTo(px,py);ctx.arc(px,py,reach,a-half,a+half);ctx.closePath();ctx.fill();
   ctx.restore();
 }
 function drawHeadlamp(){
   if(!headlampOn||!player)return;
-  const px=player.x-cam.x,py=player.y-cam.y;
-  const flicker=.98+Math.sin(anim*11)*.018+Math.sin(anim*19)*.012,outer=330*flicker;
+  const px=player.x-cam.x,py=player.y-cam.y,a=Number.isFinite(player.ang)?player.ang:0;
+  const ux=Math.cos(a),uy=Math.sin(a),reach=520;
   ctx.save();ctx.globalCompositeOperation='screen';
-  const warm=ctx.createRadialGradient(px,py,8,px,py,outer*.58);
-  warm.addColorStop(0,'rgba(255,177,74,.13)');
-  warm.addColorStop(.38,'rgba(255,111,34,.055)');
-  warm.addColorStop(1,'rgba(255,80,20,0)');
-  ctx.fillStyle=warm;ctx.fillRect(px-outer,py-outer,outer*2,outer*2);
+  // Very small local spill at the character; most light goes forward.
+  const local=ctx.createRadialGradient(px,py,4,px,py,72);
+  local.addColorStop(0,'rgba(255,236,185,.15)');local.addColorStop(1,'rgba(255,205,115,0)');
+  ctx.fillStyle=local;ctx.beginPath();ctx.arc(px,py,72,0,TAU);ctx.fill();
+
+  // Natural flashlight hotspot projected ahead with a long, soft falloff.
+  const hx=px+ux*reach*.38,hy=py+uy*reach*.38;
+  const hot=ctx.createRadialGradient(hx,hy,0,hx,hy,reach*.40);
+  hot.addColorStop(0,'rgba(255,252,224,.30)');
+  hot.addColorStop(.24,'rgba(255,239,190,.20)');
+  hot.addColorStop(.55,'rgba(255,215,145,.095)');
+  hot.addColorStop(.82,'rgba(255,190,105,.035)');
+  hot.addColorStop(1,'rgba(255,175,80,0)');
+  ctx.fillStyle=hot;ctx.beginPath();ctx.arc(hx,hy,reach*.40,0,TAU);ctx.fill();
+
+  // Wide forward glow; edges are intentionally almost invisible.
+  ctx.save();ctx.translate(px,py);ctx.rotate(a);
+  const beam=ctx.createLinearGradient(0,0,reach,0);
+  beam.addColorStop(0,'rgba(255,238,190,.06)');
+  beam.addColorStop(.20,'rgba(255,236,184,.11)');
+  beam.addColorStop(.52,'rgba(255,225,165,.085)');
+  beam.addColorStop(.82,'rgba(255,205,130,.035)');
+  beam.addColorStop(1,'rgba(255,190,105,0)');
+  ctx.fillStyle=beam;ctx.beginPath();ctx.moveTo(12,-15);
+  ctx.bezierCurveTo(reach*.25,-48,reach*.62,-135,reach,-185);
+  ctx.lineTo(reach,185);
+  ctx.bezierCurveTo(reach*.62,135,reach*.25,48,12,15);ctx.closePath();ctx.fill();ctx.restore();
   ctx.restore();
 }
 function drawHUD() {
