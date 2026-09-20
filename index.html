@@ -3025,6 +3025,55 @@ function drawReferenceQualityPass(){
   ctx.restore();
 }
 
+// Visual Upgrade V2 — cinematic survival atmosphere inspired by the approved concept.
+function drawCinematicEnvironmentV2(){
+  if(!player||player.hi>=0||currentTent())return;
+  const l=Math.max(0,cam.x-100),t=Math.max(0,cam.y-100),r=Math.min(WORLD,cam.x+W+100),b=Math.min(WORLD,cam.y+H+100);
+  ctx.save();
+  // Damp soil, leaf litter, stones and low undergrowth.
+  for(let x=Math.floor(l/72)*72;x<r;x+=72)for(let y=Math.floor(t/72)*72;y<b;y+=72){
+    if(Math.abs(x-MID)<ROAD*.57||Math.abs(y-MID)<ROAD*.57)continue;
+    const n=((x*1103515245)^(y*2654435761))>>>0,px=x+10+n%51,py=y+8+(n>>>8)%53;
+    if(n%3===0){ctx.fillStyle='rgba(42,32,22,.24)';ctx.beginPath();ctx.ellipse(px,py,12+(n%13),5+(n%7),n*.0003,0,TAU);ctx.fill();}
+    if(n%4===0){ctx.fillStyle='rgba(100,102,88,.42)';ctx.beginPath();ctx.ellipse(px+13,py-5,4+(n%5),2.5+(n%3),-.35,0,TAU);ctx.fill();ctx.strokeStyle='rgba(18,20,18,.35)';ctx.lineWidth=1;ctx.stroke();}
+    if(n%5===0){ctx.strokeStyle='rgba(102,125,72,.55)';ctx.lineWidth=1.2;ctx.beginPath();for(let k=0;k<7;k++){const a=-1.9+k*.28,h=8+((n>>k)&7);ctx.moveTo(px,py);ctx.lineTo(px+Math.cos(a)*h*.7,py+Math.sin(a)*h);}ctx.stroke();}
+    if(n%11===0){ctx.fillStyle='rgba(186,166,105,.42)';for(let k=0;k<4;k++){ctx.beginPath();ctx.ellipse(px-8+k*4,py+9+(k&1)*2,3,1.1,k*.6,0,TAU);ctx.fill();}}
+  }
+  // Road shoulders: mud, weeds and broken edge instead of a clean rectangle.
+  const L=MID-ROAD/2,R=MID+ROAD/2;
+  ctx.fillStyle='rgba(43,34,24,.28)';ctx.fillRect(L-13,t,20,b-t);ctx.fillRect(R-7,t,20,b-t);ctx.fillRect(l,L-13,r-l,20);ctx.fillRect(l,R-7,r-l,20);
+  ctx.strokeStyle='rgba(122,131,90,.42)';ctx.lineWidth=1;
+  for(let q=Math.floor(t/34)*34;q<b;q+=34){let j=(q*17)%13;ctx.beginPath();ctx.moveTo(L-5+j,q);ctx.lineTo(L-10+j,q-10);ctx.moveTo(R+5-j,q);ctx.lineTo(R+10-j,q-9);ctx.stroke();}
+  for(let q=Math.floor(l/34)*34;q<r;q+=34){let j=(q*19)%13;ctx.beginPath();ctx.moveTo(q,L-5+j);ctx.lineTo(q-8,L-11+j);ctx.moveTo(q,R+5-j);ctx.lineTo(q-8,R+11-j);ctx.stroke();}
+  ctx.restore();
+}
+function drawAtmosphereV2(){
+  if(!player)return;
+  ctx.save();
+  // Cool forest haze with slow drifting fog banks.
+  const night=(state==='intermission'||state==='craft')?(dayPhase==='night'?1:dayPhase==='dusk'?duskFade:dayPhase==='dawn'?1-dawnFade:0):1;
+  if(night>.08){
+    ctx.globalCompositeOperation='screen';
+    for(let i=0;i<5;i++){
+      const x=((i*337+anim*(7+i*1.7))%(W+520))-260;
+      const y=H*(.20+i*.16)+Math.sin(anim*.09+i*1.7)*55;
+      const g=ctx.createRadialGradient(x,y,10,x,y,220+i*24);
+      g.addColorStop(0,'rgba(115,137,135,'+(0.026*night)+')');g.addColorStop(.55,'rgba(92,112,112,'+(0.015*night)+')');g.addColorStop(1,'rgba(70,90,96,0)');
+      ctx.fillStyle=g;ctx.fillRect(Math.max(0,x-280),Math.max(0,y-180),560,360);
+    }
+  }
+  ctx.globalCompositeOperation='source-over';
+  // Cinematic cool shadows / warm highlights grade.
+  const grade=ctx.createLinearGradient(0,0,W,H);
+  grade.addColorStop(0,'rgba(8,22,28,.075)');grade.addColorStop(.5,'rgba(0,0,0,0)');grade.addColorStop(1,'rgba(30,18,8,.045)');
+  ctx.fillStyle=grade;ctx.fillRect(0,0,W,H);
+  // Subtle contrast vignette.
+  const v=ctx.createRadialGradient(W*.5,H*.48,Math.min(W,H)*.22,W*.5,H*.5,Math.max(W,H)*.72);
+  v.addColorStop(0,'rgba(0,0,0,0)');v.addColorStop(.70,'rgba(0,0,0,.035)');v.addColorStop(1,'rgba(0,0,0,.30)');
+  ctx.fillStyle=v;ctx.fillRect(0,0,W,H);
+  ctx.restore();
+}
+
 function drawRealismPostFX(){
   ctx.save();
   // Directional moon/sky wash and cinematic contrast; intentionally subtle so HUD stays readable.
@@ -4205,7 +4254,7 @@ function draw() {
   } else {
     ctx.save();
     ctx.translate(-cam.x + sx, -cam.y + sy);
-    drawGround(); drawUltraEnvironment(); drawRealismGroundDetails(); drawDecals(); drawDrops(); drawCrates(); drawBaseDangerCircle(); drawBuilt(); drawPlantedSeeds(); drawTrees(); drawTreeFalls();
+    drawGround(); drawUltraEnvironment(); drawRealismGroundDetails(); drawCinematicEnvironmentV2(); drawDecals(); drawDrops(); drawCrates(); drawBaseDangerCircle(); drawBuilt(); drawPlantedSeeds(); drawTrees(); drawTreeFalls();
     for (const h of houses) drawRoof(h);
     for (const z of zombies) if (z.hi < 0) drawZombie(z);
     drawBombs(); drawPlayer(); drawPeers(); drawBulletsParts(); drawGhost(); drawRealismObjectLighting();
@@ -4245,6 +4294,7 @@ function draw() {
   }
   if (player.hp > 0 && player.hp < 30) { ctx.fillStyle = 'rgba(160,20,20,' + (0.06 + Math.sin(anim * 6) * 0.04) + ')'; ctx.fillRect(0, 0, W, H); }
   drawRealismPostFX();
+  drawAtmosphereV2();
   drawHeadlampWorldReveal(sx,sy);
   drawHeadlamp();
 
