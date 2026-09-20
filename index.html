@@ -3751,7 +3751,7 @@ function drawZombie(z) {
   const T=ZT[z.type];
   if(!vis(z.x-z.r*2,z.y-z.r*2,z.r*4,z.r*4))return;
   if(z.tele>0){ctx.strokeStyle='rgba(230,70,50,'+(0.4+0.3*Math.sin(anim*20))+')';ctx.lineWidth=4;ctx.beginPath();ctx.arc(z.x,z.y,175,0,TAU);ctx.stroke();ctx.fillStyle='rgba(230,70,50,.12)';ctx.fill();}
-  if(!z.boss&&!z.fireBoss&&z.r<=28&&Math.abs(z.x-MID)<560&&Math.abs(z.y-MID)<560){
+  if(!z.boss&&!z.fireBoss&&z.r<=28){
     const motion=z.sleep?'idle':z.atk>0?'attack':Math.sin(anim*5.2+z.ph)>.12?'walk':'idle';
     const size=z.r*2.6;
     if(VISUAL_V4.character(ctx,'characters/zombies/zombie_'+motion,z.x,z.y,size,size*1.85,Math.cos(z.a)<-.18)){
@@ -3805,7 +3805,7 @@ function drawPlayer() {
   p.axeSwing=Math.max(0,(p.axeSwing||0)-.016);
   const moving=!!(keys.KeyW||keys.KeyA||keys.KeyS||keys.KeyD||keys.ArrowUp||keys.ArrowDown||keys.ArrowLeft||keys.ArrowRight||touch.stick);
   const stride=moving?Math.sin(anim*10)*3.2:0,bob=moving?Math.abs(Math.sin(anim*10))*.8:0;
-  if(p.hi<0&&Math.abs(p.x-MID)<560&&Math.abs(p.y-MID)<560){
+  if(p.hi<0){
     const pose=headlampOn?'flashlight':p.flash>0&&g?'shoot':axeOn&&p.axeSwing>0?'melee':moving?'walk_0'+(1+Math.floor(anim*7)%2):'idle';
     if(VISUAL_V4.character(ctx,'characters/player/player_'+pose,p.x,p.y-bob,42,71,Math.cos(p.ang)<-.18))return;
   }
