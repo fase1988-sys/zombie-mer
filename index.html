@@ -21,10 +21,10 @@ small{opacity:.7}
 <script>
 const c=document.getElementById('game'),x=c.getContext('2d');let W,H,D=devicePixelRatio||1;
 function resize(){W=innerWidth;H=innerHeight;c.width=W*D;c.height=H*D;x.setTransform(D,0,0,D,0,0)}addEventListener('resize',resize);resize();
-const world={w:2400,h:1800};const p={x:1200,y:900,r:18,s:250,hp:100,ang:0};let keys={},mouse={x:W/2,y:H/2},bullets=[],zombies=[],trees=[],houses=[],particles=[],corpses=[],kills=0,money=0,ammo=12,reloading=false,running=false,last=performance.now(),shake=0,muzzle=0;
+const world={w:2400,h:1800};const p={x:1200,y:900,r:18,s:250,hp:100,ang:0,anim:0};let keys={},mouse={x:W/2,y:H/2},bullets=[],zombies=[],trees=[],houses=[],particles=[],corpses=[],kills=0,money=0,ammo=12,reloading=false,running=false,last=performance.now(),shake=0,muzzle=0;
 for(let i=0;i<85;i++)trees.push({x:60+Math.random()*(world.w-120),y:60+Math.random()*(world.h-120),r:18+Math.random()*14,v:Math.random()});
 for(let i=0;i<18;i++){let xx=130+Math.random()*(world.w-360),yy=130+Math.random()*(world.h-300);houses.push({x:xx,y:yy,w:110+Math.random()*70,h:80+Math.random()*55})}
-function spawn(){let a=Math.random()*Math.PI*2,d=500+Math.random()*350;zombies.push({x:Math.max(30,Math.min(world.w-30,p.x+Math.cos(a)*d)),y:Math.max(30,Math.min(world.h-30,p.y+Math.sin(a)*d)),r:17,hp:3,s:58+Math.random()*35})}
+function spawn(){let a=Math.random()*Math.PI*2,d=500+Math.random()*350;zombies.push({x:Math.max(30,Math.min(world.w-30,p.x+Math.cos(a)*d)),y:Math.max(30,Math.min(world.h-30,p.y+Math.sin(a)*d)),r:17,hp:3,s:58+Math.random()*35,anim:Math.random()*6.28,skin:Math.random()})}
 for(let i=0;i<16;i++)spawn();
 addEventListener('keydown',e=>{keys[e.code]=1;if(e.code==='KeyR'&&!reloading&&ammo<12){reloading=true;document.getElementById('ammo').textContent='YENİLENİYOR';setTimeout(()=>{ammo=12;reloading=false;document.getElementById('ammo').textContent='12 / ∞'},800)}});addEventListener('keyup',e=>keys[e.code]=0);
 addEventListener('mousemove',e=>{mouse.x=e.clientX;mouse.y=e.clientY});
@@ -34,11 +34,11 @@ function camPos(){return{x:Math.max(0,Math.min(world.w-W,p.x-W/2)),y:Math.max(0,
 function circleRect(cx,cy,r,o){let qx=Math.max(o.x,Math.min(cx,o.x+o.w)),qy=Math.max(o.y,Math.min(cy,o.y+o.h));return (cx-qx)**2+(cy-qy)**2<r*r}
 function update(dt){
  if(!running)return;let dx=(keys.KeyD?1:0)-(keys.KeyA?1:0),dy=(keys.KeyS?1:0)-(keys.KeyW?1:0),l=Math.hypot(dx,dy)||1,nx=p.x+dx/l*p.s*dt,ny=p.y+dy/l*p.s*dt;
- if(!houses.some(h=>circleRect(nx,p.y,p.r,h)))p.x=Math.max(p.r,Math.min(world.w-p.r,nx));if(!houses.some(h=>circleRect(p.x,ny,p.r,h)))p.y=Math.max(p.r,Math.min(world.h-p.r,ny));
+ if(!houses.some(h=>circleRect(nx,p.y,p.r,h)))p.x=Math.max(p.r,Math.min(world.w-p.r,nx));if(!houses.some(h=>circleRect(p.x,ny,p.r,h)))p.y=Math.max(p.r,Math.min(world.h-p.r,ny));if(dx||dy)p.anim+=dt*11;
  let cam=camPos();p.ang=Math.atan2(mouse.y+cam.y-p.y,mouse.x+cam.x-p.x);
  for(let b of bullets){b.x+=b.vx*dt;b.y+=b.vy*dt;b.life-=dt}
  bullets=bullets.filter(b=>b.life>0&&b.x>0&&b.y>0&&b.x<world.w&&b.y<world.h);
- for(let z of zombies){let a=Math.atan2(p.y-z.y,p.x-z.x);z.x+=Math.cos(a)*z.s*dt;z.y+=Math.sin(a)*z.s*dt;if(Math.hypot(z.x-p.x,z.y-p.y)<z.r+p.r){p.hp-=25*dt;document.getElementById('hp').textContent=Math.max(0,Math.ceil(p.hp));if(p.hp<=0){running=false;document.getElementById('start').style.display='grid';document.querySelector('.card h1').textContent='ÖLDÜN';document.querySelector('.card p').textContent='Skor: '+kills;document.getElementById('play').textContent='TEKRAR BAŞLA';document.getElementById('play').onclick=()=>location.reload()}}}
+ for(let z of zombies){let a=Math.atan2(p.y-z.y,p.x-z.x);z.anim+=dt*7;z.x+=Math.cos(a)*z.s*dt;z.y+=Math.sin(a)*z.s*dt;if(Math.hypot(z.x-p.x,z.y-p.y)<z.r+p.r){p.hp-=25*dt;document.getElementById('hp').textContent=Math.max(0,Math.ceil(p.hp));if(p.hp<=0){running=false;document.getElementById('start').style.display='grid';document.querySelector('.card h1').textContent='ÖLDÜN';document.querySelector('.card p').textContent='Skor: '+kills;document.getElementById('play').textContent='TEKRAR BAŞLA';document.getElementById('play').onclick=()=>location.reload()}}}
  for(let b of bullets)for(let z of zombies)if(z.hp>0&&Math.hypot(b.x-z.x,b.y-z.y)<z.r+4){z.hp--;b.life=0;if(z.hp<=0){kills++;money+=10;shake=4;corpses.push({x:z.x,y:z.y,a:Math.random()*6.28,life:7});for(let i=0;i<12;i++)particles.push({x:z.x,y:z.y,vx:(Math.random()-.5)*180,vy:(Math.random()-.5)*180,life:.25+Math.random()*.4,size:2+Math.random()*4,c:i%3?'#6e8d58':'#6e2525'});document.getElementById('kills').textContent=kills;document.getElementById('money').textContent=money}}
  for(let q of particles){q.x+=q.vx*dt;q.y+=q.vy*dt;q.vx*=.94;q.vy*=.94;q.life-=dt}particles=particles.filter(q=>q.life>0);for(let q of corpses)q.life-=dt;corpses=corpses.filter(q=>q.life>0);shake*=.84;muzzle=Math.max(0,muzzle-dt);zombies=zombies.filter(z=>z.hp>0);while(zombies.length<16)spawn();
 }
@@ -63,10 +63,35 @@ function draw(){
  for(let q of corpses){x.globalAlpha=Math.min(1,q.life);x.save();x.translate(q.x,q.y);x.rotate(q.a);x.fillStyle='#283529';x.beginPath();x.ellipse(0,0,22,12,0,0,6.28);x.fill();x.fillStyle='#6c2727';x.beginPath();x.ellipse(-5,4,12,5,.3,0,6.28);x.fill();x.restore()}x.globalAlpha=1;
  // bullets with glow/tracer
  x.lineCap='round';for(let b of bullets){let l=Math.hypot(b.vx,b.vy),ux=b.vx/l,uy=b.vy/l;x.strokeStyle='#ffd96899';x.lineWidth=3;x.beginPath();x.moveTo(b.x-ux*17,b.y-uy*17);x.lineTo(b.x,b.y);x.stroke();x.fillStyle='#fff1a3';x.beginPath();x.arc(b.x,b.y,3,0,6.28);x.fill()}
- // zombies with limbs, face, shadow, health
- for(let z of zombies){let a=Math.atan2(p.y-z.y,p.x-z.x);x.fillStyle='#00000033';x.beginPath();x.ellipse(z.x+4,z.y+15,18,8,0,0,6.28);x.fill();x.save();x.translate(z.x,z.y);x.rotate(a);x.strokeStyle='#40573a';x.lineWidth=7;x.beginPath();x.moveTo(-6,9);x.lineTo(-12,25);x.moveTo(6,9);x.lineTo(12,25);x.moveTo(-9,-2);x.lineTo(-20,5);x.moveTo(9,-2);x.lineTo(22,4);x.stroke();x.fillStyle='#334535';x.fillRect(-11,-5,22,25);x.fillStyle='#789567';x.beginPath();x.arc(0,-14,12,0,6.28);x.fill();x.fillStyle='#c9d06b';x.fillRect(3,-18,3,3);x.fillStyle='#40211e';x.fillRect(5,-9,5,2);x.restore();x.fillStyle='#251b1b';x.fillRect(z.x-15,z.y-z.r-15,30,4);x.fillStyle='#b7423d';x.fillRect(z.x-15,z.y-z.r-15,30*(z.hp/3),4)}
- // player body, arms and gun
- x.save();x.translate(p.x,p.y);x.rotate(p.ang);x.fillStyle='#00000035';x.beginPath();x.ellipse(5,15,21,9,0,0,6.28);x.fill();x.fillStyle='#334b3b';x.beginPath();x.arc(0,0,p.r+2,0,6.28);x.fill();x.strokeStyle='#c99773';x.lineWidth=7;x.beginPath();x.moveTo(8,-6);x.lineTo(27,-5);x.moveTo(8,6);x.lineTo(27,5);x.stroke();x.fillStyle='#25292c';x.fillRect(22,-6,31,12);x.fillStyle='#0d0f10';x.fillRect(46,-4,17,8);if(muzzle>0){x.fillStyle='#ffd45c';x.beginPath();x.moveTo(63,0);x.lineTo(78,-8);x.lineTo(73,0);x.lineTo(79,8);x.closePath();x.fill()}x.fillStyle='#d2a07c';x.beginPath();x.arc(-3,-4,10,0,6.28);x.fill();x.restore();
+ // DDNet-inspired rounded zombie avatars: big expressive heads, tiny feet, outlined silhouettes
+ for(let z of zombies){let a=Math.atan2(p.y-z.y,p.x-z.x),step=Math.sin(z.anim)*3;
+   x.fillStyle='#00000038';x.beginPath();x.ellipse(z.x+3,z.y+18,23,9,0,0,6.28);x.fill();
+   x.save();x.translate(z.x,z.y);
+   // feet
+   x.fillStyle='#263328';x.strokeStyle='#172019';x.lineWidth=3;
+   x.beginPath();x.ellipse(-10,-step+17,10,7,-.15,0,6.28);x.ellipse(10,step+17,10,7,.15,0,6.28);x.fill();x.stroke();
+   // round body/head silhouette
+   let zg=x.createRadialGradient(-7,-10,3,0,0,28);zg.addColorStop(0,z.skin>.5?'#91ad72':'#7d9e69');zg.addColorStop(1,z.skin>.5?'#4d6848':'#435d42');
+   x.fillStyle=zg;x.strokeStyle='#233326';x.lineWidth=4;x.beginPath();x.arc(0,-3,25,0,6.28);x.fill();x.stroke();
+   // torn patch
+   x.fillStyle='#43503d';x.beginPath();x.moveTo(-20,5);x.lineTo(-8,2);x.lineTo(-13,14);x.closePath();x.fill();
+   // eyes looking toward player
+   let ex=Math.cos(a)*2.5,ey=Math.sin(a)*2.5;x.fillStyle='#f2f1d5';x.beginPath();x.ellipse(-9,-8,7,9,0,0,6.28);x.ellipse(8,-8,7,9,0,0,6.28);x.fill();
+   x.fillStyle='#293123';x.beginPath();x.arc(-8+ex,-7+ey,3.2,0,6.28);x.arc(9+ex,-7+ey,3.2,0,6.28);x.fill();
+   x.fillStyle='#532929';x.beginPath();x.arc(2,7,7,0.12,Math.PI-.12);x.strokeStyle='#532929';x.lineWidth=3;x.stroke();
+   x.restore();
+   x.fillStyle='#201818';x.fillRect(z.x-18,z.y-36,36,5);x.fillStyle='#c14b45';x.fillRect(z.x-18,z.y-36,36*(z.hp/3),5)
+ }
+ // DDNet-inspired player avatar with expressive eyes, animated feet and weapon held outward
+ x.save();x.translate(p.x,p.y);let step=Math.sin(p.anim)*3;
+ x.fillStyle='#0000003b';x.beginPath();x.ellipse(4,19,25,9,0,0,6.28);x.fill();
+ x.fillStyle='#243b52';x.strokeStyle='#172536';x.lineWidth=3;x.beginPath();x.ellipse(-10,-step+18,11,7,-.15,0,6.28);x.ellipse(10,step+18,11,7,.15,0,6.28);x.fill();x.stroke();
+ let pg=x.createRadialGradient(-8,-10,3,0,0,29);pg.addColorStop(0,'#79b9e8');pg.addColorStop(1,'#315e87');x.fillStyle=pg;x.strokeStyle='#17354f';x.lineWidth=4;x.beginPath();x.arc(0,-3,26,0,6.28);x.fill();x.stroke();
+ // face aims toward cursor
+ let fx=Math.cos(p.ang)*3,fy=Math.sin(p.ang)*3;x.fillStyle='#fff';x.beginPath();x.ellipse(-9,-9,7,10,0,0,6.28);x.ellipse(9,-9,7,10,0,0,6.28);x.fill();x.fillStyle='#162333';x.beginPath();x.arc(-8+fx,-8+fy,3.5,0,6.28);x.arc(10+fx,-8+fy,3.5,0,6.28);x.fill();
+ x.restore();
+ // arms + weapon rotate independently toward aim
+ x.save();x.translate(p.x,p.y);x.rotate(p.ang);x.strokeStyle='#d3a17d';x.lineWidth=8;x.lineCap='round';x.beginPath();x.moveTo(7,-7);x.lineTo(29,-5);x.moveTo(7,7);x.lineTo(29,5);x.stroke();x.fillStyle='#353b40';x.strokeStyle='#101315';x.lineWidth=2;x.fillRect(23,-7,34,14);x.strokeRect(23,-7,34,14);x.fillStyle='#101315';x.fillRect(50,-4,17,8);x.fillRect(30,7,10,12);if(muzzle>0){x.fillStyle='#ffe071';x.beginPath();x.moveTo(67,0);x.lineTo(84,-9);x.lineTo(78,0);x.lineTo(84,9);x.closePath();x.fill()}x.restore();
  // particles
  for(let q of particles){x.globalAlpha=Math.max(0,q.life*3);x.fillStyle=q.c;x.beginPath();x.arc(q.x,q.y,q.size,0,6.28);x.fill()}x.globalAlpha=1;
  x.restore();
