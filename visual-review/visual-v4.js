@@ -6,7 +6,7 @@ const VISUAL_V4 = (() => {
     'vegetation/bush_01','vegetation/bush_02','vegetation/fern_01','props/rock_01',
     'props/rock_02','props/woodpile','props/bench','props/crate','props/barrel',
     'props/military_box','props/logs','props/campfire','vehicles/car_wreck_01',
-    'props/sign_river','props/street_lamp','terrain/forest','terrain/grass',
+    'props/sign_river','props/street_lamp','buildings/cabin_01','terrain/forest','terrain/grass',
     'terrain/mud','terrain/asphalt','terrain/rocky'];
   const images={};
   for(const name of names){const img=new Image();img.src=root+name+'.png';images[name]=img;}

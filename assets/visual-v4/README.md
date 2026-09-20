@@ -8,7 +8,8 @@ removed using the largest connected alpha region. No painted repairs are made.
 ## USABLE (extracted)
 
 - Vegetation: tree_01–04, tree_dead, bush_01–02, fern_01, flowers, stump.
-- Buildings: cabin_01 (requires new roof/door visual mapping before integration).
+- Buildings: cabin_01 (integrated only for matching single-floor, south-facing
+  houses near camp; the remaining house variants require matching artwork).
 - Vehicles: car_wreck_01.
 - Props: campfire, woodpile, bench, crate, barrel, military_box, shelf,
   sign_river, sign_stop, street_lamp, logs, rock_01–02.
@@ -30,6 +31,6 @@ removed using the largest connected alpha region. No painted repairs are made.
 ## Integration boundaries
 
 The camp decorations are visual only; they add no new collision. Trees use the
-existing trunk obstacles. Current render order draws actors after trees, so full
-Y sorting and cabin roof conversion are still needed before using cabin_01 in
-the live world. Lighting remains the existing game lighting pass.
+existing trunk obstacles. Visible trees, roofs and actors are sorted by their
+ground Y coordinate. Camp decorations remain a background layer. Lighting
+remains the existing game lighting pass.
