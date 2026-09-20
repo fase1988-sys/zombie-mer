@@ -30,6 +30,6 @@ removed using the largest connected alpha region. No painted repairs are made.
 ## Integration boundaries
 
 The camp decorations are visual only; they add no new collision. Trees use the
-existing trunk obstacles. Current render order draws trees after actors, so full
+existing trunk obstacles. Current render order draws actors after trees, so full
 Y sorting and cabin roof conversion are still needed before using cabin_01 in
 the live world. Lighting remains the existing game lighting pass.
