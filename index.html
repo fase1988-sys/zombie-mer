@@ -243,7 +243,7 @@ const SUPABASE_KEY = 'sb_publishable_sgFSXGiU72Evp0oVvhUHeA_jZw4qllx';
 
 let net = {
   client:null, channel:null, room:'', id:(crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2)),
-  name:'Oyuncu', host:false, connected:false, peers:new Map(), lastSend:0, lastWorld:0
+  name:'Oyuncu', host:false, connected:false, peers:new Map(), lastSend:0, lastWorld:0, tempAuthority:false
 };
 
 async function loadSupabase() {
@@ -414,6 +414,23 @@ async function connectRoom(code, asHost){
     }
   });
   ch.on('broadcast',{event:'world'},({payload})=>applyWorld(payload));
+  ch.on('broadcast',{event:'host_visibility'},({payload})=>{
+    if(!payload || net.host) return;
+    // Host başka sekmeye/uygulamaya geçtiğinde görünür oyuncu geçici dünya otoritesi olur.
+    if(payload.hidden){
+      const visibleGuests=[net.id,...[...net.peers.values()].filter(p=>p&&!p.host).map(p=>p.id)].sort();
+      net.tempAuthority=visibleGuests[0]===net.id;
+    }else{
+      if(net.tempAuthority && net.channel) net.channel.send({type:'broadcast',event:'world_handoff',payload:worldSnapshot()});
+      net.tempAuthority=false;
+    }
+  });
+  ch.on('broadcast',{event:'world_handoff'},({payload})=>{
+    if(net.host && payload){
+      // Host geri geldiğinde, arka planda ilerlemiş olan dünyayı devral.
+      const wasHost=net.host; net.host=false; applyWorld(payload); net.host=wasHost;
+    }
+  });
   ch.on('broadcast',{event:'world_request'},()=>{if(net.host&&net.channel)net.channel.send({type:'broadcast',event:'world',payload:worldSnapshot()});});
   ch.on('broadcast',{event:'shot'},({payload})=>{
     if(!net.host || !payload) return;
@@ -493,11 +510,21 @@ function netTick(now){
     net.lastSend=now;
     net.channel.send({type:'broadcast',event:'player',payload:{id:net.id,name:net.name,x:player.x,y:player.y,ang:player.ang,hp:player.hp,dead:player.hp<=0,host:net.host,held:(slots()[player.sel]||{}).k||'gun',gun:curGunId(),axeSwing:player.axeSwing||0}});
   }
-  if((net.host||net.hostId===net.id) && now-net.lastWorld>100){
+  if((net.host||net.hostId===net.id||net.tempAuthority) && now-net.lastWorld>100){
     net.lastWorld=now;
     net.channel.send({type:'broadcast',event:'world',payload:worldSnapshot()});
   }
 }
+
+// Multiplayer background-authority handoff: browsers throttle requestAnimationFrame in hidden tabs.
+document.addEventListener('visibilitychange',()=>{
+  if(!net.connected||!net.channel)return;
+  if(net.host){
+    net.channel.send({type:'broadcast',event:'host_visibility',payload:{hidden:document.hidden,id:net.id}});
+    // On return, give the temporary authority a moment to hand back its latest world.
+    if(!document.hidden) net.lastWorld=performance.now()+250;
+  }
+});
 
 function smoothRemotePlayers(dt){
   const frame=Math.max(0,Math.min(0.05,Number(dt)||1/60));
@@ -2473,7 +2500,7 @@ function update(dt) {
   // Zombiler
   // v92: Oda lideri zombi simülasyonunu kesintisiz çalıştırır.
   // İkinci oyuncu katıldığında transient presence/state değişimi AI'ı donduramaz.
-  const zombieAuthority=!net.connected||net.host||net.hostId===net.id;
+  const zombieAuthority=!net.connected||net.host||net.hostId===net.id||net.tempAuthority;
   if (zombieAuthority) {
   for (const z of zombies) if (!z.dead) z.hi = houseAt(z.x, z.y);
   for (const z of zombies) {
@@ -2658,7 +2685,7 @@ function update(dt) {
 
   // Taretler
   // Online oyunda mermi/zombi dünyası host-authoritative; misafir taret simülasyonu çalıştırmaz.
-  if(!net.connected || net.host || net.hostId===net.id) for (const o of built) {
+  if(!net.connected || net.host || net.hostId===net.id || net.tempAuthority) for (const o of built) {
     if (o.t !== 'turret') continue;
     if(!Number.isFinite(o.cd))o.cd=0;
     if(!Number.isFinite(o.ang))o.ang=0;
