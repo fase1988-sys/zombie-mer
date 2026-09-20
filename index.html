@@ -195,7 +195,7 @@ div:has(> #legacyOnlineMarker){display:none!important}
 
 <div id="menuJumpScare" aria-hidden="true"><div class="jsFace"><div class="jsCrack"></div><div class="jsMouth"></div></div></div>
 
-<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v135</b></div></div></div>
+<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v140</b></div></div></div>
 
 <div id="onlinePanel">
   <b><span id="legacyOnlineMarker">ONLINE CO-OP v8 · CLEAN LOBBY</span></b>
@@ -724,9 +724,16 @@ function makeHouse(c, id, roofs) {
   }
   d.w = dw; hs.door = d;
   hs.inner = { x: c.x + T, y: c.y + T, w: c.w - 2 * T, h: c.h - 2 * T };
-  // Tüm evler tam olarak 2 katlıdır.
-  hs.floors = 2;
-  hs.stairs = hs.floors>1 ? {x:hs.inner.x+hs.inner.w-52,y:hs.inner.y+hs.inner.h-76,w:36,h:58} : null;
+  // Evlerin bir kısmı tek katlı, bir kısmı 2 katlıdır.
+  hs.floors = R() < 0.38 ? 2 : 1;
+  hs.stairs = null;
+  if(hs.floors===2){
+    if(side==='N') hs.stairs={x:c.x+c.w-62,y:c.y+c.h+18,w:44,h:72};
+    else if(side==='S') hs.stairs={x:c.x+18,y:c.y-90,w:44,h:72};
+    else if(side==='W') hs.stairs={x:c.x+c.w+18,y:c.y+18,w:72,h:44};
+    else hs.stairs={x:c.x-90,y:c.y+c.h-62,w:72,h:44};
+    hs.stairs.outside=true;
+  }
 
   const x = c.x, y = c.y, w = c.w, h = c.h, segs = [];
   if (side === 'N') segs.push([x, y, d.x - dw / 2 - x, T], [d.x + dw / 2, y, x + w - (d.x + dw / 2), T]); else segs.push([x, y, w, T]);
@@ -778,12 +785,12 @@ function makeHouse(c, id, roofs) {
       hs.chests.push(placed); chests.push(placed); obs.push(placed);
     }
   }
-  // 2. kat sandıkları 1. kattan tamamen bağımsızdır.
-  const downstairs=hs.chests.filter(q=>(q.floor||1)===1).slice();
+  // Yalnızca 2 katlı evlerde bağımsız üst kat sandıkları oluştur.
+  const downstairs=hs.floors===2?hs.chests.filter(q=>(q.floor||1)===1).slice():[];
   for(const q of downstairs){
     const up={x:inn.x+inn.w-(q.x-inn.x)-q.w,y:inn.y+inn.h-(q.y-inn.y)-q.h,w:q.w,h:q.h,t:'k',sb:false,open:false,floor:2,hs};
     // Merdivenin üstüne sandık koyma.
-    if(!hs.stairs||!rectsNear(up,hs.stairs,22)){hs.chests.push(up);chests.push(up);}
+    hs.chests.push(up);chests.push(up);
   }
   return hs;
 }
@@ -881,15 +888,29 @@ function houseAt(x, y) {
   }
   return -1;
 }
-let stairTransitionUntil=0;
-function houseFloor(){return player?clamp(Number(player.houseFloor||1),1,5):1;}
-function nearHouseStairs(){if(!player||player.hi<0)return null;const h=houses[player.hi],s=h&&h.stairs;if(!s)return null;return Math.hypot(player.x-(s.x+s.w/2),player.y-(s.y+s.h/2))<92?h:null;}
-function useHouseStairs(){
- const h=nearHouseStairs();if(!h||performance.now()<stairTransitionUntil)return false;
- const s=h.stairs,cur=houseFloor(),next=cur<h.floors?cur+1:1,up=next>cur;player.houseFloor=next;
- player.x=clamp(s.x+s.w/2+(up?-58:58),h.inner.x+28,h.inner.x+h.inner.w-28);
- player.y=clamp(s.y+s.h/2+(up?-34:34),h.inner.y+28,h.inner.y+h.inner.h-28);
- stairTransitionUntil=performance.now()+700;toast(next===1?'Merdivenden 1. kata indin':next+'. kata çıktın');return true;
+let stairTransitionUntil=0, stairHold=0, stairHoldLatch=false;
+function houseFloor(){return player?clamp(Number(player.houseFloor||1),1,2):1;}
+function nearHouseStairs(){
+  if(!player)return null;
+  let best=null,bd=100;
+  for(const h of houses){
+    const s=h.stairs;if(!s)continue;
+    const d=Math.hypot(player.x-(s.x+s.w/2),player.y-(s.y+s.h/2));
+    if(d<bd){bd=d;best=h;}
+  }
+  return best;
+}
+function useHouseStairs(h=nearHouseStairs()){
+  if(!h||performance.now()<stairTransitionUntil)return false;
+  const s=h.stairs,cur=houseFloor(),next=cur===1?2:1;
+  player.houseFloor=next;
+  // Kat değişiminden sonra oyuncu evin içine alınır; aynı dış merdiven iki kat için kullanılır.
+  player.x=clamp(h.inner.x+h.inner.w/2,h.inner.x+30,h.inner.x+h.inner.w-30);
+  player.y=clamp(h.inner.y+h.inner.h/2,h.inner.y+30,h.inner.y+h.inner.h-30);
+  player.hi=houses.indexOf(h);
+  stairTransitionUntil=performance.now()+800;
+  toast(next===2?'2. kata çıktın':'1. kata indin');
+  return true;
 }
 function houseDoorAt(x, y, r = 0) {
   for (let i = 0; i < houses.length; i++) {
@@ -1082,7 +1103,7 @@ const GUNS = {
   sniper:  { name: 'Keskin nişancı',   price: 900,  mag: 5,   rate: 1.0,  reload: 2.4, dmg: 180, spread: .004, pellets: 1, auto: false, speed: 2800, range: 1900, kick: 10, len: 46, pierce: 4, desc: 'Tek atışta zombileri deler geçer; patronlara karşı çok etkili.' },
   minigun: { name: 'Minigun',          price: 2000, mag: 120, rate: .045, reload: 4.0, dmg: 24,  spread: .11,  pellets: 1, auto: true,  speed: 1500, range: 1000, kick: 3,  len: 38, pierce: 1, desc: 'Kurşun yağmuru. Ağır ve pahalı ama durdurulamaz.' }
 };
-const ADMIN_PASSWORD='zombi42';let adminUnlocked=false,adminGodMode=false,adminInfStamina=false,adminSpeed2=false,adminNoTarget=false,adminInfAmmo=false;
+const ADMIN_PASSWORD='Destur-1453';let adminUnlocked=false,adminGodMode=false,adminInfStamina=false,adminSpeed2=false,adminNoTarget=false,adminInfAmmo=false;
 function giveAdminGun(id){if(!player||!GUNS[id])return;if(!player.guns.includes(id))player.guns.push(id);player.ammo[id]=gunStats(id).mag;toast('Admin: '+GUNS[id].name+' verildi');}
 function adminSpawn(type){if(!player||!ZT[type])return;const a=Math.random()*TAU,d=220;const z=makeZombie(type,clamp(player.x+Math.cos(a)*d,50,WORLD-50),clamp(player.y+Math.sin(a)*d,50,WORLD-50));z.sleep=false;zombies.push(z);}
 function adminWorldBroadcast(){if(net.connected&&net.host&&net.channel)net.channel.send({type:'broadcast',event:'world',payload:worldSnapshot()});}
@@ -1539,7 +1560,7 @@ window.addEventListener('keydown', e => {
   if (state === 'playing' || state === 'intermission') {
     if (e.code === 'Escape') { openEscapeMenu(); return; }
     if (e.code === 'KeyR') startReload();
-    if (e.code === 'KeyE') { if(useHouseStairs()){} else if(nearWorkbench()) openWorkbench(); else { const cf=campfireObject();if(!(cf&&Math.hypot(player.x-(cf.x+cf.w/2),player.y-(cf.y+cf.h/2))<125)) openChest(); } }
+    if (e.code === 'KeyE') { if(!nearHouseStairs()){ if(nearWorkbench()) openWorkbench(); else { const cf=campfireObject();if(!(cf&&Math.hypot(player.x-(cf.x+cf.w/2),player.y-(cf.y+cf.h/2))<125)) openChest(); } } }
     if (e.code === 'KeyF') chopTree();
     if (e.code === 'KeyG') plantTreeSeed();
     if (/^Digit\d$/.test(e.code)) { const n = parseInt(e.code.slice(5), 10); selectSlot(n === 0 ? 9 : n - 1); }
@@ -2343,6 +2364,16 @@ function update(dt) {
     cam.x = clamp(p.x + lookX - W / 2, 0, Math.max(0, WORLD - W));
     cam.y = clamp(p.y + lookY - H / 2, 0, Math.max(0, WORLD - H));
     p.ang = Math.atan2(mouse.y + cam.y - p.y, mouse.x + cam.x - p.x);
+  }
+
+  // Dış merdiven: E tuşunu 2 saniye basılı tutmadan kat değişmez.
+  const stairHouse=nearHouseStairs();
+  if(stairHouse&&keys.KeyE){
+    stairHold=Math.min(2,stairHold+dt);
+    if(stairHold>=2&&!stairHoldLatch){stairHoldLatch=true;useHouseStairs(stairHouse);stairHold=0;}
+  }else{
+    stairHold=0;
+    if(!keys.KeyE)stairHoldLatch=false;
   }
 
   // Çadıra gerçekten gir: içeride evlerden farklı kamp iç mekânı görünür.
@@ -3151,6 +3182,17 @@ function drawRoof(h) {
     ctx.fillStyle='#493a31';ctx.fillRect(ux+uw-48,uy+8,16,25);
     ctx.fillStyle='#826958';ctx.fillRect(ux+uw-50,uy+7,20,5);
   }
+  // Dış merdiven: sandıklardan ve iç mobilyalardan tamamen ayrı.
+  if(h.stairs){
+    const s=h.stairs;
+    ctx.fillStyle='rgba(0,0,0,.34)';ctx.fillRect(s.x+5,s.y+6,s.w,s.h);
+    ctx.fillStyle='#70543a';ctx.fillRect(s.x,s.y,s.w,s.h);
+    ctx.strokeStyle='#c49b62';ctx.lineWidth=2;
+    if(s.h>=s.w){for(let yy=s.y+7;yy<s.y+s.h;yy+=9){ctx.beginPath();ctx.moveTo(s.x+4,yy);ctx.lineTo(s.x+s.w-4,yy);ctx.stroke();}}
+    else{for(let xx=s.x+7;xx<s.x+s.w;xx+=9){ctx.beginPath();ctx.moveTo(xx,s.y+4);ctx.lineTo(xx,s.y+s.h-4);ctx.stroke();}}
+    ctx.strokeStyle='#3a281b';ctx.lineWidth=3;ctx.strokeRect(s.x,s.y,s.w,s.h);
+  }
+
   // kapı işareti
   const d = h.door;
   ctx.fillStyle = '#9a7a4e';
@@ -3173,15 +3215,7 @@ function drawInteriorScene(hs) {
     ctx.fillStyle='rgba(205,165,110,.035)';ctx.fillRect(n.x,yy+2,n.w,2);
   }
   // 1. ve 2. kat aynı temel tasarıma sahiptir.
-  if(hs.stairs){
-    const s=hs.stairs;
-    ctx.fillStyle='rgba(0,0,0,.38)';ctx.fillRect(s.x+6,s.y+7,s.w,s.h);
-    ctx.fillStyle=upper?'#52646c':'#765638';ctx.fillRect(s.x,s.y,s.w,s.h);
-    ctx.strokeStyle=upper?'#b7cdd2':'#3c291b';ctx.lineWidth=2;
-    for(let yy=s.y+6;yy<s.y+s.h;yy+=8){ctx.beginPath();ctx.moveTo(s.x+5,yy);ctx.lineTo(s.x+s.w-5,yy);ctx.stroke();}
-    ctx.strokeStyle='#c79d62';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(s.x-4,s.y+s.h);ctx.lineTo(s.x-4,s.y);ctx.moveTo(s.x+s.w+4,s.y+s.h);ctx.lineTo(s.x+s.w+4,s.y);ctx.stroke();
-    ctx.fillStyle='#f5d995';ctx.font='900 12px '+FONT;ctx.textAlign='center';ctx.fillText(floor===1?'↑ 2. KATA ÇIK':'↓ 1. KATA İN',s.x+s.w/2,s.y-8);
-  }
+
     // Orta halı: çerçeve, desen ve hafif aşınma.
   const rx=n.x+n.w*.27,ry=n.y+n.h*.29,rw=n.w*.46,rh=n.h*.42;
   ctx.fillStyle=upper?'rgba(38,72,88,.72)':'rgba(105,35,32,.62)';ctx.fillRect(rx,ry,rw,rh);
@@ -3278,46 +3312,43 @@ function drawInteriorScene(hs) {
   }
 }
 function drawZombie(z) {
-  const T = ZT[z.type];
-  if (!vis(z.x - z.r * 2, z.y - z.r * 2, z.r * 4, z.r * 4)) return;
-  if (z.tele > 0) {
-    ctx.strokeStyle = 'rgba(230,70,50,' + (0.4 + 0.3 * Math.sin(anim * 20)) + ')'; ctx.lineWidth = 4;
-    ctx.beginPath(); ctx.arc(z.x, z.y, 175, 0, TAU); ctx.stroke();
-    ctx.fillStyle = 'rgba(230,70,50,.12)'; ctx.fill();
-  }
+  const T=ZT[z.type];
+  if(!vis(z.x-z.r*2,z.y-z.r*2,z.r*4,z.r*4))return;
+  if(z.tele>0){ctx.strokeStyle='rgba(230,70,50,'+(0.4+0.3*Math.sin(anim*20))+')';ctx.lineWidth=4;ctx.beginPath();ctx.arc(z.x,z.y,175,0,TAU);ctx.stroke();ctx.fillStyle='rgba(230,70,50,.12)';ctx.fill();}
   ctx.save();
-  const gait=z.sleep?0:Math.sin(anim*7+z.ph)*Math.min(2.2,z.r*.1);
-  ctx.translate(z.x, z.y+gait);
-  ctx.fillStyle = 'rgba(0,0,0,.34)'; ctx.beginPath(); ctx.ellipse(4, 7-gait, z.r*1.05, z.r * .72, 0, 0, TAU); ctx.fill();
-  if (z.boss) { ctx.strokeStyle = z.fireBoss?'rgba(255,45,20,'+(0.6+0.3*Math.sin(anim*9))+')':'rgba(255,80,60,' + (0.35 + 0.2 * Math.sin(anim * 4)) + ')'; ctx.lineWidth = z.fireBoss?8:4; ctx.beginPath(); ctx.arc(0, 0, z.r + 7, 0, TAU); ctx.stroke(); }
+  const step=z.sleep?0:Math.sin(anim*5.2+z.ph),bob=z.sleep?0:Math.abs(Math.sin(anim*5.2+z.ph))*0.55;
+  ctx.translate(z.x,z.y-bob);ctx.rotate(z.a);
+  ctx.save();ctx.rotate(-z.a);ctx.fillStyle='rgba(0,0,0,.30)';ctx.beginPath();ctx.ellipse(2,8+bob,z.r*.78,z.r*.50,0,0,TAU);ctx.fill();ctx.restore();
+  if(z.boss){ctx.strokeStyle=z.fireBoss?'rgba(255,45,20,'+(0.6+0.3*Math.sin(anim*9))+')':'rgba(255,80,60,'+(0.35+0.2*Math.sin(anim*4))+')';ctx.lineWidth=z.fireBoss?8:4;ctx.beginPath();ctx.arc(0,0,z.r+7,0,TAU);ctx.stroke();}
   if(z.fireBoss){ctx.fillStyle='rgba(20,0,0,.48)';ctx.beginPath();ctx.arc(0,0,z.r*1.32,0,TAU);ctx.fill();}
-  ctx.rotate(z.a);
-  const sw = z.sleep ? 0 : Math.sin(anim * 4 + z.ph) * 4;
-  // v94: bacaklar ve yırtık kıyafet silueti zombiyi daire görünümünden çıkarır.
-  const leg=Math.sin(anim*7+z.ph)*z.r*.18;
-  ctx.strokeStyle='#242823';ctx.lineWidth=Math.max(4,z.r*.34);ctx.lineCap='round';
-  ctx.beginPath();ctx.moveTo(-z.r*.35,-z.r*.35);ctx.lineTo(-z.r*.82,-z.r*.48+leg);ctx.moveTo(-z.r*.35,z.r*.35);ctx.lineTo(-z.r*.82,z.r*.48-leg);ctx.stroke();ctx.lineCap='butt';
-  ctx.fillStyle='rgba(38,48,39,.92)';ctx.beginPath();ctx.ellipse(-z.r*.15,0,z.r*.72,z.r*.82,0,0,TAU);ctx.fill();
-  ctx.fillStyle = T.arm;
-  ctx.beginPath(); ctx.arc(z.r * .95 + sw, -z.r * .72, z.r * .3, 0, TAU); ctx.fill();
-  ctx.beginPath(); ctx.arc(z.r * .95 - sw, z.r * .72, z.r * .3, 0, TAU); ctx.fill();
-  ctx.fillStyle = T.col; ctx.beginPath(); ctx.arc(0, 0, z.r, 0, TAU); ctx.fill();
-  if (z.type === 'b3') { ctx.fillStyle = '#2a3540'; for (let i = 0; i < 6; i++) { const a = i / 6 * TAU; ctx.beginPath(); ctx.arc(Math.cos(a) * z.r * .8, Math.sin(a) * z.r * .8, z.r * .16, 0, TAU); ctx.fill(); } }
-  ctx.fillStyle = T.head; ctx.beginPath(); ctx.arc(z.r * .1, 0, z.r * .58, 0, TAU); ctx.fill();
-  ctx.fillStyle = z.type === 'b2' ? '#d6a0ff' : '#d8342a';
-  const er = z.boss ? z.r * .13 : z.r * .11;
-  ctx.beginPath(); ctx.arc(z.r * .38, -z.r * .22, er, 0, TAU); ctx.arc(z.r * .38, z.r * .22, er, 0, TAU); ctx.fill();
-  // yara, ağız ve yırtık kıyafet detayları
-  ctx.strokeStyle='rgba(55,20,18,.72)';ctx.lineWidth=Math.max(1.5,z.r*.08);ctx.beginPath();ctx.moveTo(z.r*.18,-z.r*.38);ctx.lineTo(z.r*.02,-z.r*.12);ctx.stroke();
-  ctx.strokeStyle='rgba(20,12,12,.8)';ctx.beginPath();ctx.moveTo(z.r*.46,-z.r*.05);ctx.lineTo(z.r*.5,z.r*.08);ctx.stroke();
-  ctx.fillStyle='rgba(20,25,20,.22)';ctx.beginPath();ctx.arc(-z.r*.35,z.r*.25,z.r*.22,0,TAU);ctx.fill();
-  if (z.flash > 0) { ctx.fillStyle = 'rgba(255,255,255,.55)'; ctx.beginPath(); ctx.arc(0, 0, z.r, 0, TAU); ctx.fill(); }
+  // Ayakta duran insan oranı: ayaklar gövdenin altında, sürünme hissi yok.
+  const stride=step*z.r*.12;
+  ctx.lineCap='round';ctx.strokeStyle='#20251f';ctx.lineWidth=Math.max(4,z.r*.25);
+  ctx.beginPath();ctx.moveTo(-z.r*.24,-z.r*.20);ctx.lineTo(-z.r*.48,-z.r*.22+stride);ctx.moveTo(-z.r*.24,z.r*.20);ctx.lineTo(-z.r*.48,z.r*.22-stride);ctx.stroke();
+  ctx.strokeStyle='#121512';ctx.lineWidth=Math.max(3,z.r*.16);ctx.beginPath();ctx.moveTo(-z.r*.48,-z.r*.22+stride);ctx.lineTo(-z.r*.58,-z.r*.22+stride);ctx.moveTo(-z.r*.48,z.r*.22-stride);ctx.lineTo(-z.r*.58,z.r*.22-stride);ctx.stroke();
+  // Omuzlu, daha dar ve uzun gövde.
+  ctx.fillStyle=z.type==='b3'?'#303940':'#3b493d';ctx.beginPath();ctx.moveTo(-z.r*.32,-z.r*.46);ctx.quadraticCurveTo(z.r*.06,-z.r*.62,z.r*.42,-z.r*.43);ctx.lineTo(z.r*.42,z.r*.43);ctx.quadraticCurveTo(z.r*.06,z.r*.58,-z.r*.32,z.r*.45);ctx.closePath();ctx.fill();
+  ctx.fillStyle='rgba(18,22,17,.28)';ctx.beginPath();ctx.ellipse(-z.r*.05,z.r*.14,z.r*.24,z.r*.12,.25,0,TAU);ctx.fill();
+  ctx.strokeStyle='rgba(130,110,85,.30)';ctx.lineWidth=Math.max(1,z.r*.045);ctx.beginPath();ctx.moveTo(-z.r*.22,-z.r*.24);ctx.lineTo(z.r*.18,-z.r*.08);ctx.moveTo(-z.r*.18,z.r*.28);ctx.lineTo(z.r*.16,z.r*.20);ctx.stroke();
+  // Kollar vücudun yanında; biri hafif önde, biri düşük. Artık dört ayak görünümü vermez.
+  const as=step*z.r*.07;
+  ctx.strokeStyle=T.arm;ctx.lineWidth=Math.max(4,z.r*.22);ctx.beginPath();
+  ctx.moveTo(z.r*.12,-z.r*.40);ctx.lineTo(z.r*.38,-z.r*.48+as);ctx.lineTo(z.r*.58,-z.r*.34+as);
+  ctx.moveTo(z.r*.10,z.r*.40);ctx.lineTo(z.r*.34,z.r*.48-as);ctx.lineTo(z.r*.50,z.r*.38-as);ctx.stroke();
+  ctx.fillStyle=T.head;ctx.beginPath();ctx.arc(z.r*.58,-z.r*.34+as,z.r*.10,0,TAU);ctx.arc(z.r*.50,z.r*.38-as,z.r*.10,0,TAU);ctx.fill();
+  // Boyun ve kafa.
+  ctx.fillStyle=T.arm;ctx.fillRect(z.r*.30,-z.r*.13,z.r*.18,z.r*.26);
+  const hx=z.r*.56,hy=Math.sin(anim*2.7+z.ph)*z.r*.018;
+  ctx.fillStyle=T.head;ctx.beginPath();ctx.ellipse(hx,hy,z.r*.34,z.r*.31,0,0,TAU);ctx.fill();
+  ctx.fillStyle='rgba(30,28,23,.45)';ctx.beginPath();ctx.arc(hx-z.r*.05,hy-z.r*.07,z.r*.26,Math.PI,TAU);ctx.fill();
+  ctx.fillStyle=z.type==='b2'?'#d6a0ff':'#a9211d';ctx.beginPath();ctx.arc(hx+z.r*.14,hy-z.r*.10,z.r*.045,0,TAU);ctx.arc(hx+z.r*.15,hy+z.r*.10,z.r*.038,0,TAU);ctx.fill();
+  ctx.strokeStyle='rgba(55,16,15,.85)';ctx.lineWidth=Math.max(1,z.r*.05);ctx.beginPath();ctx.moveTo(hx+z.r*.18,hy-z.r*.02);ctx.lineTo(hx+z.r*.23,hy+z.r*.06);ctx.stroke();
+  // Yara ve kurumuş kan.
+  ctx.fillStyle='rgba(92,20,18,.42)';ctx.beginPath();ctx.arc(z.r*.04,-z.r*.24,z.r*.08,0,TAU);ctx.arc(-z.r*.20,z.r*.08,z.r*.06,0,TAU);ctx.fill();
+  if(z.type==='b3'){ctx.fillStyle='#202b31';for(let i=0;i<5;i++){const a=i/5*TAU;ctx.beginPath();ctx.arc(Math.cos(a)*z.r*.48,Math.sin(a)*z.r*.48,z.r*.08,0,TAU);ctx.fill();}}
+  if(z.flash>0){ctx.fillStyle='rgba(255,255,255,.48)';ctx.beginPath();ctx.ellipse(0,0,z.r*.78,z.r*.62,0,0,TAU);ctx.fill();}
   ctx.restore();
-  if (z.hp < z.max && !z.boss && !z.hideHp) {
-    const w = z.r * 2;
-    ctx.fillStyle = 'rgba(0,0,0,.6)'; ctx.fillRect(z.x - w / 2, z.y - z.r - 10, w, 4);
-    ctx.fillStyle = '#c8382b'; ctx.fillRect(z.x - w / 2, z.y - z.r - 10, w * Math.max(0, z.hp / z.max), 4);
-  }
+  if(z.hp<z.max&&!z.boss&&!z.hideHp){const w=z.r*2;ctx.fillStyle='rgba(0,0,0,.6)';ctx.fillRect(z.x-w/2,z.y-z.r-10,w,4);ctx.fillStyle='#c8382b';ctx.fillRect(z.x-w/2,z.y-z.r-10,w*Math.max(0,z.hp/z.max),4);}
 }
 
 function drawPlayer() {
@@ -3468,7 +3499,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v135';
+const GAME_VERSION = 'v140';
 
 function drawHUD() {
   if(player&&abandonedCamps.length&&player.hi<0){let cp=null,bd=1e9;for(const q of abandonedCamps){const d=Math.hypot(q.x-player.x,q.y-player.y);if(d<bd){bd=d;cp=q}}if(cp&&bd>190){ctx.save();ctx.textAlign='center';ctx.font='900 11px '+FONT;ctx.fillStyle='#e3aa45';ctx.fillText('🏕 KAMP  '+Math.round(bd)+'m',W/2,82);ctx.restore();}}
@@ -3514,7 +3545,7 @@ function drawHUD() {
   if(mission){ctx.fillStyle=mission.done?'#7fbf5a':'#d8d0b7';ctx.fillText('Görev: '+mission.name+' '+Math.min(mission.target,Math.floor(mission.progress))+'/'+mission.target,W/2,ty+(runEvent?56:40));}
   ctx.textAlign='left';ctx.fillStyle='#9fb6a4';ctx.fillText('Survivor Lv.'+metaLevel+' · XP '+metaXP,20,112);
   const cf=campfireObject();const nearFire=cf&&Math.hypot(p.x-(cf.x+cf.w/2),p.y-(cf.y+cf.h/2))<125;
-  if(nearHouseStairs()){ctx.fillStyle='#f0d28a';ctx.font='800 14px '+FONT;ctx.fillText('[E] MERDİVEN · '+(houseFloor()<houses[player.hi].floors?(houseFloor()+1)+'. KATA ÇIK':'1. KATA İN'),20,136);}
+  if(nearHouseStairs()){ctx.fillStyle='#f0d28a';ctx.font='800 14px '+FONT;ctx.fillText('[E] 2 SN BASILI TUT · '+(houseFloor()===1?'2. KATA ÇIK':'1. KATA İN'),20,136);if(stairHold>0)bar(20,144,190,8,stairHold/2,'#d2a45e');}
   else if(nearWorkbench()){ctx.fillStyle='#f0d28a';ctx.font='800 14px '+FONT;ctx.fillText('[E] ÇALIŞMA TEZGÂHI · üretim',20,136);}
   else if(nearFire&&!fireBossActive){ctx.fillStyle='#ffb04a';ctx.font='800 14px '+FONT;ctx.fillText('[E] 5 SN BASILI TUT · ATEŞE 3 ODUN',20,136);if(fireHold>0){bar(20,144,190,8,fireHold/5,'#e88724');}}
   const fw=Math.min(280,W-40),fx=W/2-fw/2,fy=ty+76;
