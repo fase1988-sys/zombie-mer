@@ -195,7 +195,7 @@ div:has(> #legacyOnlineMarker){display:none!important}
 
 <div id="menuJumpScare" aria-hidden="true"><div class="jsFace"><div class="jsCrack"></div><div class="jsMouth"></div></div></div>
 
-<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v171</b></div></div></div>
+<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v172</b></div></div></div>
 
 <div id="onlinePanel">
   <b><span id="legacyOnlineMarker">ONLINE CO-OP v8 · CLEAN LOBBY</span></b>
@@ -3817,7 +3817,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v171';
+const GAME_VERSION = 'v172';
 
 /* =====================================================
    Kafa lambası v1 — mevcut UI'dan bağımsız, canvas katmanı
@@ -3839,31 +3839,43 @@ window.addEventListener('keydown', e=>{
   }
 });
 function drawHeadlampWorldReveal(sx=0,sy=0){
-  // v171: no cone/re-render trick. Headlamp behaves like a small portable campfire light.
-}
+  if(!headlampOn||!player||player.hi>=0||currentTent())return;
+  const px=player.x-cam.x+sx,py=player.y-cam.y+sy;
+  const flicker=.98+Math.sin(anim*11)*.018+Math.sin(anim*19)*.012;
+  const inner=95*flicker,outer=330*flicker;
 
-function drawHeadlamp(){
-  if(!headlampOn || !player) return;
-  const px=player.x-cam.x, py=player.y-cam.y;
-  const flicker=.985+Math.sin(anim*11)*.010+Math.sin(anim*19)*.006;
-  const inner=72*flicker, outer=285*flicker;
-
+  // Redraw the REAL scene in a circular portable-light area, exactly like standing near the campfire.
   ctx.save();
-  // Same visual idea as campfire: circular readable area that fades smoothly to zero.
-  ctx.globalCompositeOperation='screen';
-  const light=ctx.createRadialGradient(px,py,inner*.18,px,py,outer);
-  light.addColorStop(0,'rgba(255,246,205,.46)');
-  light.addColorStop(.22,'rgba(255,235,176,.31)');
-  light.addColorStop(.48,'rgba(255,214,132,.17)');
-  light.addColorStop(.74,'rgba(255,190,92,.07)');
-  light.addColorStop(1,'rgba(255,165,65,0)');
-  ctx.fillStyle=light;ctx.fillRect(px-outer,py-outer,outer*2,outer*2);
+  ctx.beginPath();ctx.arc(px,py,outer,0,TAU);ctx.clip();
+  ctx.translate(-cam.x+sx,-cam.y+sy);
+  drawGround();drawUltraEnvironment();drawRealismGroundDetails();drawAbandonedCamps();drawUltraCampDetails();
+  drawDecals();drawDrops();drawCrates();drawBaseDangerCircle();drawBuilt();drawPlantedSeeds();drawTrees();drawTreeFalls();
+  for(const h of houses)drawRoof(h);
+  for(const z of zombies)if(z.hi<0)drawZombie(z);
+  drawBombs();drawPlayer();drawPeers();drawBulletsParts();drawGhost();drawRealismObjectLighting();
+  ctx.restore();
 
-  const core=ctx.createRadialGradient(px,py,0,px,py,105);
-  core.addColorStop(0,'rgba(255,255,228,.30)');
-  core.addColorStop(.42,'rgba(255,237,185,.14)');
-  core.addColorStop(1,'rgba(255,210,130,0)');
-  ctx.fillStyle=core;ctx.beginPath();ctx.arc(px,py,105,0,TAU);ctx.fill();
+  // Campfire-style darkness falloff: clear/readable close to player, smoothly darker outward.
+  ctx.save();
+  const shade=ctx.createRadialGradient(px,py,inner,px,py,outer);
+  shade.addColorStop(0,'rgba(2,5,8,.01)');
+  shade.addColorStop(.34,'rgba(2,5,8,.08)');
+  shade.addColorStop(.68,'rgba(2,5,8,.40)');
+  shade.addColorStop(1,'rgba(1,3,6,.78)');
+  ctx.fillStyle=shade;
+  ctx.beginPath();ctx.arc(px,py,outer,0,TAU);ctx.fill();
+  ctx.restore();
+}
+function drawHeadlamp(){
+  if(!headlampOn||!player)return;
+  const px=player.x-cam.x,py=player.y-cam.y;
+  const flicker=.98+Math.sin(anim*11)*.018+Math.sin(anim*19)*.012,outer=330*flicker;
+  ctx.save();ctx.globalCompositeOperation='screen';
+  const warm=ctx.createRadialGradient(px,py,8,px,py,outer*.58);
+  warm.addColorStop(0,'rgba(255,177,74,.13)');
+  warm.addColorStop(.38,'rgba(255,111,34,.055)');
+  warm.addColorStop(1,'rgba(255,80,20,0)');
+  ctx.fillStyle=warm;ctx.fillRect(px-outer,py-outer,outer*2,outer*2);
   ctx.restore();
 }
 function drawHUD() {
