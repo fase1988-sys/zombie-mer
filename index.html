@@ -195,7 +195,7 @@ div:has(> #legacyOnlineMarker){display:none!important}
 
 <div id="menuJumpScare" aria-hidden="true"><div class="jsFace"><div class="jsCrack"></div><div class="jsMouth"></div></div></div>
 
-<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v161</b></div></div></div>
+<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v162</b></div></div></div>
 
 <div id="onlinePanel">
   <b><span id="legacyOnlineMarker">ONLINE CO-OP v8 · CLEAN LOBBY</span></b>
@@ -3781,7 +3781,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v161';
+const GAME_VERSION = 'v162';
 
 /* =====================================================
    Kafa lambası v1 — mevcut UI'dan bağımsız, canvas katmanı
@@ -3804,36 +3804,29 @@ window.addEventListener('keydown', e=>{
 });
 function drawHeadlamp(){
   if(!headlampOn || !player) return;
-  const px=player.x-cam.x, py=player.y-cam.y;
-  const a=Number.isFinite(player.ang)?player.ang:0;
-  const ux=Math.cos(a), uy=Math.sin(a);
-  const reach=Math.max(250,Math.min(330,Math.min(W,H)*.42));
-  ctx.save();
-  ctx.globalCompositeOperation='screen';
+  const px=player.x-cam.x, py=player.y-cam.y, a=Number.isFinite(player.ang)?player.ang:0;
+  const ux=Math.cos(a), uy=Math.sin(a), reach=Math.max(300,Math.min(390,Math.min(W,H)*.50));
+  ctx.save(); ctx.globalCompositeOperation='screen';
+  const local=ctx.createRadialGradient(px,py,10,px,py,150);
+  local.addColorStop(0,'rgba(255,250,220,.34)'); local.addColorStop(.28,'rgba(255,244,196,.23)');
+  local.addColorStop(.65,'rgba(255,231,165,.10)'); local.addColorStop(1,'rgba(255,220,140,0)');
+  ctx.fillStyle=local; ctx.beginPath(); ctx.arc(px,py,150,0,TAU); ctx.fill();
   ctx.save(); ctx.translate(px,py); ctx.rotate(a);
-  const beam=ctx.createLinearGradient(10,0,reach,0);
-  beam.addColorStop(0,'rgba(255,246,205,.20)');
-  beam.addColorStop(.18,'rgba(255,247,211,.28)');
-  beam.addColorStop(.58,'rgba(255,244,205,.20)');
-  beam.addColorStop(.88,'rgba(255,235,185,.08)');
-  beam.addColorStop(1,'rgba(255,225,165,0)');
-  ctx.fillStyle=beam; ctx.beginPath(); ctx.moveTo(8,-18);
-  ctx.bezierCurveTo(reach*.22,-48,reach*.62,-112,reach,-132);
-  ctx.lineTo(reach,132);
-  ctx.bezierCurveTo(reach*.62,112,reach*.22,48,8,18);
-  ctx.closePath(); ctx.fill(); ctx.restore();
-  const tx=px+ux*reach*.62, ty=py+uy*reach*.62;
-  ctx.save(); ctx.translate(tx,ty); ctx.rotate(a); ctx.scale(1.75,.78);
-  const pool=ctx.createRadialGradient(0,0,0,0,0,reach*.32);
-  pool.addColorStop(0,'rgba(255,250,222,.25)');
-  pool.addColorStop(.45,'rgba(255,244,205,.16)');
-  pool.addColorStop(1,'rgba(255,232,180,0)');
-  ctx.fillStyle=pool; ctx.beginPath(); ctx.arc(0,0,reach*.32,0,TAU); ctx.fill(); ctx.restore();
-  const spill=ctx.createRadialGradient(px,py,8,px,py,82);
-  spill.addColorStop(0,'rgba(255,244,205,.18)');
-  spill.addColorStop(.55,'rgba(255,239,195,.08)');
-  spill.addColorStop(1,'rgba(255,230,175,0)');
-  ctx.fillStyle=spill; ctx.beginPath(); ctx.arc(px,py,82,0,TAU); ctx.fill();
+  const beam=ctx.createLinearGradient(0,0,reach,0);
+  beam.addColorStop(0,'rgba(255,248,211,.30)'); beam.addColorStop(.20,'rgba(255,247,205,.34)');
+  beam.addColorStop(.55,'rgba(255,239,183,.25)'); beam.addColorStop(.82,'rgba(255,226,150,.12)');
+  beam.addColorStop(1,'rgba(255,215,125,0)'); ctx.fillStyle=beam; ctx.beginPath(); ctx.moveTo(6,-26);
+  ctx.bezierCurveTo(reach*.22,-62,reach*.62,-142,reach,-175); ctx.lineTo(reach,175);
+  ctx.bezierCurveTo(reach*.62,142,reach*.22,62,6,26); ctx.closePath(); ctx.fill(); ctx.restore();
+  const fx=px+ux*reach*.52, fy=py+uy*reach*.52;
+  const front=ctx.createRadialGradient(fx,fy,8,fx,fy,reach*.48);
+  front.addColorStop(0,'rgba(255,250,215,.34)'); front.addColorStop(.30,'rgba(255,241,187,.25)');
+  front.addColorStop(.68,'rgba(255,226,150,.11)'); front.addColorStop(1,'rgba(255,215,125,0)');
+  ctx.fillStyle=front; ctx.beginPath(); ctx.arc(fx,fy,reach*.48,0,TAU); ctx.fill();
+  const hx=px+ux*reach*.38, hy=py+uy*reach*.38;
+  const hot=ctx.createRadialGradient(hx,hy,0,hx,hy,78);
+  hot.addColorStop(0,'rgba(255,255,231,.38)'); hot.addColorStop(.45,'rgba(255,244,197,.20)');
+  hot.addColorStop(1,'rgba(255,230,165,0)'); ctx.fillStyle=hot; ctx.beginPath(); ctx.arc(hx,hy,78,0,TAU); ctx.fill();
   ctx.restore();
 }
 
