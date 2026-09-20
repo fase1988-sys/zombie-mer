@@ -2894,6 +2894,49 @@ function drawProceduralGround() {
 
 // v146: High-detail 2D realism pass. Pure rendering only; no gameplay/network state is changed.
 
+// Visual V3: textured terrain painted into cached canvases. No gameplay state changes.
+const ZM_TEX={};
+function zmRand(seed){return seeded(seed>>>0)}
+function zmMakeTexture(name,size,paint){
+  const c=document.createElement('canvas');c.width=c.height=size;const x=c.getContext('2d');paint(x,size);ZM_TEX[name]=ctx.createPattern(c,'repeat');
+}
+function initVisualTexturesV3(){
+  zmMakeTexture('forest',384,(x,s)=>{const r=zmRand(73191);x.fillStyle='#18261a';x.fillRect(0,0,s,s);
+    for(let i=0;i<1500;i++){const px=r()*s,py=r()*s,rr=.4+r()*3.2;x.fillStyle=r()>.62?'rgba(91,106,57,.24)':r()>.28?'rgba(34,57,31,.34)':'rgba(91,69,42,.18)';x.beginPath();x.ellipse(px,py,rr*2,rr,r()*6.28,0,TAU);x.fill();}
+    for(let i=0;i<115;i++){const px=r()*s,py=r()*s;x.strokeStyle='rgba(95,129,66,'+(.18+r()*.22)+')';x.lineWidth=.7+r();x.beginPath();for(let k=0;k<5;k++){const a=-2.2+k*.32,h=5+r()*10;x.moveTo(px,py);x.lineTo(px+Math.cos(a)*h*.55,py+Math.sin(a)*h)}x.stroke();}
+    for(let i=0;i<36;i++){x.fillStyle=r()>.5?'rgba(222,204,125,.38)':'rgba(185,190,158,.28)';x.beginPath();x.arc(r()*s,r()*s,.6+r()*1.3,0,TAU);x.fill();}
+  });
+  zmMakeTexture('road',320,(x,s)=>{const r=zmRand(99107);x.fillStyle='#292b2b';x.fillRect(0,0,s,s);
+    for(let i=0;i<1900;i++){const v=30+Math.floor(r()*42);x.fillStyle='rgba('+v+','+(v+2)+','+(v+1)+','+(.08+r()*.15)+')';const z=.3+r()*1.7;x.fillRect(r()*s,r()*s,z,z);}
+    x.strokeStyle='rgba(8,9,9,.42)';x.lineWidth=1.2;for(let i=0;i<24;i++){let px=r()*s,py=r()*s;x.beginPath();x.moveTo(px,py);for(let k=0;k<4;k++){px+=(r()-.5)*26;py+=9+r()*18;x.lineTo(px,py)}x.stroke();}
+    for(let i=0;i<18;i++){x.fillStyle='rgba(8,10,10,.15)';x.beginPath();x.ellipse(r()*s,r()*s,5+r()*18,2+r()*7,r()*6.28,0,TAU);x.fill();}
+  });
+}
+initVisualTexturesV3();
+function drawTerrainTexturesV3(){
+  const l=Math.max(0,cam.x-40),t=Math.max(0,cam.y-40),r=Math.min(WORLD,cam.x+W+40),b=Math.min(WORLD,cam.y+H+40);
+  ctx.save();
+  if(ZM_TEX.forest){ctx.fillStyle=ZM_TEX.forest;ctx.fillRect(l,t,r-l,b-t);}
+  if(ZM_TEX.road){ctx.fillStyle=ZM_TEX.road;ctx.fillRect(MID-ROAD/2,t,ROAD,b-t);ctx.fillRect(l,MID-ROAD/2,r-l,ROAD);}
+  // worn lane markings, deliberately dirty and partially missing
+  ctx.strokeStyle='rgba(183,145,52,.68)';ctx.lineWidth=4;ctx.setLineDash([34,25]);
+  ctx.beginPath();ctx.moveTo(MID,t);ctx.lineTo(MID,b);ctx.moveTo(l,MID);ctx.lineTo(r,MID);ctx.stroke();ctx.setLineDash([]);
+  const L=MID-ROAD/2,R=MID+ROAD/2;ctx.strokeStyle='rgba(9,12,10,.62)';ctx.lineWidth=8;
+  ctx.beginPath();ctx.moveTo(L,t);ctx.lineTo(L,b);ctx.moveTo(R,t);ctx.lineTo(R,b);ctx.moveTo(l,L);ctx.lineTo(r,L);ctx.moveTo(l,R);ctx.lineTo(r,R);ctx.stroke();
+  ctx.restore();
+}
+function drawForestPropsV3(){
+ const l=cam.x-100,t=cam.y-100,r=cam.x+W+100,b=cam.y+H+100;ctx.save();
+ const sx=Math.floor(l/210)*210,sy=Math.floor(t/210)*210;
+ for(let x=sx;x<r;x+=210)for(let y=sy;y<b;y+=210){
+   const n=((x*73856093)^(y*19349663))>>>0;if(Math.abs(x-MID)<ROAD*.68||Math.abs(y-MID)<ROAD*.68)continue;
+   const px=x+35+n%130,py=y+30+(n>>>8)%135;
+   if(n%3===0){ctx.fillStyle='rgba(0,0,0,.30)';ctx.beginPath();ctx.ellipse(px+7,py+7,22,10,-.25,0,TAU);ctx.fill();const g=ctx.createRadialGradient(px-6,py-8,2,px,py,24);g.addColorStop(0,'#85877b');g.addColorStop(.45,'#555b51');g.addColorStop(1,'#252b27');ctx.fillStyle=g;ctx.beginPath();ctx.ellipse(px,py,20,14,-.35,0,TAU);ctx.fill();}
+   if(n%5===0){ctx.strokeStyle='#493520';ctx.lineWidth=5;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(px-26,py+18);ctx.lineTo(px+27,py-9);ctx.stroke();ctx.strokeStyle='rgba(182,151,103,.28)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(px-24,py+15);ctx.lineTo(px+25,py-11);ctx.stroke();}
+ }
+ ctx.restore();
+}
+
 function drawGround() {
   // Original procedural game map restored. Uploaded map images are no longer used.
   drawProceduralGround();
@@ -3990,7 +4033,7 @@ function drawHeadlampWorldReveal(sx=0,sy=0){
   ctx.quadraticCurveTo(px+ux*reach*.46+Math.cos(a+Math.PI/2)*150,py+uy*reach*.46+Math.sin(a+Math.PI/2)*150,px+ux*18,py+uy*18);
   ctx.closePath();ctx.clip();
   ctx.translate(-cam.x+sx,-cam.y+sy);
-  drawGround();drawUltraEnvironment();drawRealismGroundDetails();drawAbandonedCamps();drawUltraCampDetails();
+  drawGround();drawTerrainTexturesV3();drawUltraEnvironment();drawRealismGroundDetails();drawForestPropsV3();drawAbandonedCamps();drawUltraCampDetails();
   drawDecals();drawDrops();drawCrates();drawBaseDangerCircle();drawBuilt();drawPlantedSeeds();drawTrees();drawTreeFalls();
   for(const h of houses)drawRoof(h);
   for(const z of zombies)if(z.hi<0)drawZombie(z);
@@ -4255,7 +4298,7 @@ function draw() {
   } else {
     ctx.save();
     ctx.translate(-cam.x + sx, -cam.y + sy);
-    drawGround(); drawUltraEnvironment(); drawRealismGroundDetails(); drawCinematicEnvironmentV2(); drawDecals(); drawDrops(); drawCrates(); drawBaseDangerCircle(); drawBuilt(); drawPlantedSeeds(); drawTrees(); drawTreeFalls();
+    drawGround(); drawTerrainTexturesV3(); drawUltraEnvironment(); drawRealismGroundDetails(); drawCinematicEnvironmentV2(); drawForestPropsV3(); drawDecals(); drawDrops(); drawCrates(); drawBaseDangerCircle(); drawBuilt(); drawPlantedSeeds(); drawTrees(); drawTreeFalls();
     for (const h of houses) drawRoof(h);
     for (const z of zombies) if (z.hi < 0) drawZombie(z);
     drawBombs(); drawPlayer(); drawPeers(); drawBulletsParts(); drawGhost(); drawRealismObjectLighting();
