@@ -183,7 +183,7 @@ div:has(> #legacyOnlineMarker){display:none!important}
 <body id="artifacts-component-root-html">
 <canvas id="game" width="580" height="843" class=""></canvas><button id="adminBtn">ADMIN</button><div id="adminPanel"><div class="adminBox"><div class="adminHead"><div><span class="adminEyebrow">ZOMBIE CONTROL SYSTEM</span><h2>ADMIN COMMAND</h2><p>Oyuncu ve oyun akışını yönet</p></div><button id="adminClose" class="adminX">×</button></div><div id="adminLogin" class="adminLogin"><div class="adminLock">🔒</div><b>Yönetici erişimi</b><small>Devam etmek için şifreyi gir</small><input id="adminPass" type="password" placeholder="••••••••"><button id="adminLoginBtn">KİLİDİ AÇ</button><small id="adminLoginMsg"></small></div><div id="adminTools" hidden><div class="adminGrid"><section><div class="adminSectionTitle"><span>💰</span><div><b>EKONOMİ</b><small>Hesabına para ekle</small></div></div><div class="adminInline"><input id="adminMoney" type="number" value="1000"><button id="adminGiveMoney">+$ PARA</button></div></section><section><div class="adminSectionTitle"><span>🔫</span><div><b>CEPHANELİK</b><small>Silah envanterini yönet</small></div></div><select id="adminGun"><option value="shotgun">Pompalı tüfek</option><option value="smg">Hafif makineli</option><option value="rifle">Otomatik tüfek</option><option value="sniper">Keskin nişancı</option><option value="minigun">Minigun</option></select><div class="adminInline"><button id="adminGiveGun">SİLAH VER</button><button id="adminGiveAll">TÜMÜNÜ AÇ</button></div></section><section><div class="adminSectionTitle"><span>❤️</span><div><b>OYUNCU</b><small>Hayatta kalma kontrolleri</small></div></div><div class="adminInline"><button id="adminHeal">CAN DOLDUR</button><button id="adminGod" class="godBtn">GOD MODE: KAPALI</button></div></section><section><div class="adminSectionTitle"><span>☠️</span><div><b>BÖLÜM KONTROLÜ</b><small>İstediğin dalgaya atla</small></div></div><div class="adminInline"><input id="adminLevel" type="number" min="1" max="999" value="2" placeholder="Bölüm"><button id="adminGoLevel">BÖLÜME GEÇ</button></div></section></div><div class="adminWide">
 <section><div class="adminSectionTitle"><span>🧟</span><div><b>ZOMBİ KONTROLÜ</b><small>Spawn ve dalga testleri</small></div></div><select id="adminZombie"><option value="n">Normal zombi</option><option value="f">Hızlı zombi</option><option value="t">Tank</option><option value="a">Zırhlı</option><option value="x">Patlayan</option><option value="p">Zehirli</option><option value="s">Menzilli</option><option value="b1">Boss: Kasap</option><option value="b2">Boss: Çağırıcı</option><option value="b3">Boss: Yıkıcı</option></select><div class="adminInline"><button id="adminSpawnZombie">SPAWN</button><button id="adminKillAll">TÜM ZOMBİLERİ ÖLDÜR</button></div><div class="adminInline"><button id="adminClearZombies">ZOMBİLERİ TEMİZLE</button><button id="adminBoss">BOSS BAŞLAT</button></div></section>
-<section><div class="adminSectionTitle"><span>🎒</span><div><b>ENVANTER</b><small>Kaynak ve savunma eşyaları</small></div></div><div class="adminInline"><button id="adminLogs">+100 KÜTÜK</button><button id="adminItems">TÜM EŞYALAR +25</button></div></section>
+<section><div class="adminSectionTitle"><span>🎒</span><div><b>ENVANTER</b><small>Kaynak ve görüş ekipmanları</small></div></div><div class="adminInline"><button id="adminLogs">+100 KÜTÜK</button><button id="adminItems">TÜM EŞYALAR +25</button></div><div class="adminInline" style="margin-top:7px"><button id="adminHeadlamp">🔦 KAFA LAMBASI VER</button><button id="adminNightVision">🟢 GECE GÖRÜŞÜ: KAPALI</button></div><button id="adminThermal" style="margin-top:7px!important">🌡️ TERMAL KAMERA: KAPALI</button></section>
 <section><div class="adminSectionTitle"><span>⚡</span><div><b>OYUNCU MODLARI</b><small>Test güçleri</small></div></div><div class="adminInline"><button id="adminStamina">SINIRSIZ STAMINA: KAPALI</button><button id="adminSpeed">HIZ ×2: KAPALI</button></div><div class="adminInline"><button id="adminNoTarget">GÖRÜNMEZLİK: KAPALI</button><button id="adminAmmo">SONSUZ MERMİ: KAPALI</button></div><button id="adminMaxGuns">SİLAHLARI MAX LEVEL YAP</button></section>
 <section><div class="adminSectionTitle"><span>🌗</span><div><b>DÜNYA KONTROLÜ</b><small>Gün / gece, ateş ve dalga akışı</small></div></div><div class="adminTriple"><button id="adminMorning">SABAH</button><button id="adminEvening">AKŞAM</button><button id="adminNight">GECE</button></div><div class="adminInline"><button id="adminPrepReset">2 DK HAZIRLIK</button><button id="adminEndWave">DALGAYI BİTİR</button></div><button id="adminExtinguishFire">🔥 ATEŞİ SÖNDÜR · BOSS TESTİ</button></section>
 <section><div class="adminSectionTitle"><span>🏗️</span><div><b>ÜS KONTROLÜ</b><small>Yapıları yönet</small></div></div><div class="adminInline"><button id="adminRepair">TÜMÜNÜ TAMİR ET</button><button id="adminDeleteBuilds">SAVUNMALARI SİL</button></div><button id="adminMaxBase">ÜS / TARET MAX UPGRADE</button></section>
@@ -196,7 +196,7 @@ div:has(> #legacyOnlineMarker){display:none!important}
 
 <div id="menuJumpScare" aria-hidden="true"><div class="jsFace"><div class="jsCrack"></div><div class="jsMouth"></div></div></div>
 
-<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v196</b></div></div></div>
+<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v197</b></div></div></div>
 
 <div id="onlinePanel">
   <b><span id="legacyOnlineMarker">ONLINE CO-OP v8 · CLEAN LOBBY</span></b>
@@ -1202,6 +1202,9 @@ $a('adminClearZombies').onclick=()=>{if(!adminUnlocked)return;zombies=[];queue=[
 $a('adminBoss').onclick=()=>{if(!adminUnlocked)return;adminSpawn(['b1','b2','b3'][Math.floor(Math.random()*3)]);toast('Boss spawn edildi');adminWorldBroadcast()};
 $a('adminLogs').onclick=()=>{if(adminUnlocked){inv.logs+=100;toast('+100 kütük')}};
 $a('adminItems').onclick=()=>{if(!adminUnlocked)return;for(const k of ['block','door','turret','bomb','medkit'])inv[k]+=25;toast('Tüm eşyalar +25')};
+$a('adminHeadlamp').onclick=()=>{if(!adminUnlocked)return;if(!headlampEquipped)inv.headlamp=Math.max(1,inv.headlamp||0);syncMinecraftInventory();toast('Kafa lambası envantere eklendi')};
+$a('adminNightVision').onclick=()=>{if(!adminUnlocked)return;setVisionMode(nightVisionOn?'off':'night');tog($a('adminNightVision'),nightVisionOn,'🟢 GECE GÖRÜŞÜ');tog($a('adminThermal'),thermalVisionOn,'🌡️ TERMAL KAMERA')};
+$a('adminThermal').onclick=()=>{if(!adminUnlocked)return;setVisionMode(thermalVisionOn?'off':'thermal');tog($a('adminNightVision'),nightVisionOn,'🟢 GECE GÖRÜŞÜ');tog($a('adminThermal'),thermalVisionOn,'🌡️ TERMAL KAMERA')};
 function tog(btn,on,label){btn.classList.toggle('adminOn',on);btn.textContent=label+': '+(on?'AÇIK':'KAPALI')}
 $a('adminStamina').onclick=()=>{if(adminUnlocked){adminInfStamina=!adminInfStamina;tog($a('adminStamina'),adminInfStamina,'SINIRSIZ STAMINA')}};
 $a('adminSpeed').onclick=()=>{if(adminUnlocked){adminSpeed2=!adminSpeed2;tog($a('adminSpeed'),adminSpeed2,'HIZ ×2')}};
@@ -3852,20 +3855,33 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v196';
+const GAME_VERSION = 'v197';
 
 /* =====================================================
    Kafa lambası v1 — mevcut UI'dan bağımsız, canvas katmanı
    L ile aç/kapat. UI DOM'una dokunmaz.
    ===================================================== */
 let headlampOn = false;
+let nightVisionOn=false,thermalVisionOn=false;
+function setVisionMode(mode){
+  nightVisionOn=mode==='night';
+  thermalVisionOn=mode==='thermal';
+  if(nightVisionOn)headlampOn=false;
+  toast(mode==='night'?'Gece görüşü açıldı · [N]':mode==='thermal'?'Termal kamera açıldı · [V]':'Görüş modu kapatıldı');
+}
 function toggleHeadlamp(){
   if(!player) return;
   if(!headlampEquipped){toast((inv.headlamp||0)>0?'Önce I ile envanterden kafa lambasını tak':'Kafa lamban yok · sandıklardan bul');return;}
   headlampOn = !headlampOn;
+  if(headlampOn){nightVisionOn=false;thermalVisionOn=false;}
   if(typeof toast==='function') toast('Kafa lambası '+(headlampOn?'açıldı':'kapatıldı')+' · [L]');
 }
 window.addEventListener('keydown', e=>{
+  if((e.code==='KeyN'||e.code==='KeyV')&&!e.repeat){
+    const tag=(e.target&&e.target.tagName)||'';if(tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT')return;
+    if(state==='playing'||state==='intermission'||state==='craft'){e.preventDefault();if(e.code==='KeyN')setVisionMode(nightVisionOn?'off':'night');else setVisionMode(thermalVisionOn?'off':'thermal');}
+    return;
+  }
   if(e.code!=='KeyL' || e.repeat) return;
   const tag=(e.target&&e.target.tagName)||'';
   if(tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT') return;
@@ -3984,6 +4000,22 @@ function drawHeadlampWorldReveal(sx=0,sy=0){
   ctx.fillStyle=veil;
   ctx.beginPath();ctx.moveTo(px,py);ctx.arc(px,py,reach,a-half,a+half);ctx.closePath();ctx.fill();
   ctx.restore();
+}
+function drawVisionMode(){
+  if(!player||(!nightVisionOn&&!thermalVisionOn))return;
+  ctx.save();
+  if(nightVisionOn){
+    ctx.globalCompositeOperation='screen';ctx.fillStyle='rgba(35,150,48,.25)';ctx.fillRect(0,0,W,H);
+    const g=ctx.createRadialGradient(W/2,H/2,20,W/2,H/2,Math.max(W,H)*.7);g.addColorStop(0,'rgba(95,255,110,.15)');g.addColorStop(.65,'rgba(20,95,28,.10)');g.addColorStop(1,'rgba(0,12,0,.42)');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+    ctx.globalCompositeOperation='source-over';ctx.globalAlpha=.10;for(let y=0;y<H;y+=4){ctx.fillStyle=(y%8===0)?'#b9ffc1':'#123a18';ctx.fillRect(0,y,W,1);}
+  }else if(thermalVisionOn){
+    ctx.fillStyle='rgba(4,8,30,.52)';ctx.fillRect(0,0,W,H);
+    ctx.globalCompositeOperation='screen';
+    for(const z of zombies){if(z.dead||z.hi>=0)continue;const x=z.x-cam.x,y=z.y-cam.y,r=Math.max(12,z.r*1.15);const g=ctx.createRadialGradient(x,y,0,x,y,r*1.8);g.addColorStop(0,'rgba(255,255,210,.95)');g.addColorStop(.22,'rgba(255,230,20,.9)');g.addColorStop(.48,'rgba(255,70,0,.72)');g.addColorStop(1,'rgba(120,0,120,0)');ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,r*1.8,0,TAU);ctx.fill();}
+    const px=player.x-cam.x,py=player.y-cam.y,pg=ctx.createRadialGradient(px,py,0,px,py,42);pg.addColorStop(0,'rgba(255,245,150,.75)');pg.addColorStop(.45,'rgba(255,80,0,.5)');pg.addColorStop(1,'rgba(100,0,150,0)');ctx.fillStyle=pg;ctx.beginPath();ctx.arc(px,py,42,0,TAU);ctx.fill();
+  }
+  ctx.restore();
+  ctx.save();ctx.font='900 12px '+FONT;ctx.textAlign='left';ctx.fillStyle=nightVisionOn?'#9cff9c':'#ffb64c';ctx.fillText(nightVisionOn?'● NIGHT VISION [N]':'● THERMAL [V]',18,H-18);ctx.restore();
 }
 function drawHeadlamp(){
   if(!headlampOn||!player)return;
@@ -4273,6 +4305,7 @@ function draw() {
   drawRealismPostFX();
   drawHeadlampWorldReveal(sx,sy);
   drawHeadlamp();
+  drawVisionMode();
 
   drawHUD();
   drawBackpack();
