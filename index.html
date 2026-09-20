@@ -196,7 +196,7 @@ div:has(> #legacyOnlineMarker){display:none!important}
 
 <div id="menuJumpScare" aria-hidden="true"><div class="jsFace"><div class="jsCrack"></div><div class="jsMouth"></div></div></div>
 
-<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v192</b></div></div></div>
+<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v193</b></div></div></div>
 
 <div id="onlinePanel">
   <b><span id="legacyOnlineMarker">ONLINE CO-OP v8 · CLEAN LOBBY</span></b>
@@ -3366,7 +3366,7 @@ function chopTree(){
  const now=performance.now();
  if(now-lastTreeChopAt<TREE_CHOP_COOLDOWN_MS)return false;
  lastTreeChopAt=now;
- player.axeSwing=.22;sfx('hit');floatText(o.x+o.w/2,o.y-10,((o.woodHits||0)+1)+'/5','#d6a45d');
+ player.axeSwing=.34;sfx('hit');floatText(o.x+o.w/2,o.y-10,((o.woodHits||0)+1)+'/5','#d6a45d');
  if(net.connected){
    if(net.host){
      applySharedTreeChop(o.treeId,net.id,true);
@@ -3663,7 +3663,7 @@ function drawZombie(z) {
 
 function drawPlayer() {
   const p=player,g=curGun(),len=g?g.len:14,active=slots()[p.sel],axeOn=active&&active.k==='axe';
-  p.axeSwing=Math.max(0,(p.axeSwing||0)-.016);
+  p.axeSwing=Math.max(0,(p.axeSwing||0)-.010);
   const moving=!!(keys.KeyW||keys.KeyA||keys.KeyS||keys.KeyD||keys.ArrowUp||keys.ArrowDown||keys.ArrowLeft||keys.ArrowRight||touch.stick);
   const stride=moving?Math.sin(anim*10)*3.2:0,bob=moving?Math.abs(Math.sin(anim*10))*.8:0;
   ctx.save();ctx.translate(p.x,p.y-bob);
@@ -3688,11 +3688,22 @@ function drawPlayer() {
   ctx.strokeStyle='#26343c';ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(3,-8);ctx.lineTo(p.r*.62,-6);ctx.moveTo(2,8);ctx.lineTo(p.r*.74,6);ctx.stroke();
   ctx.fillStyle='#c89a73';ctx.beginPath();ctx.arc(p.r*.67,-6,4.4,0,TAU);ctx.arc(p.r*.79,6,4.4,0,TAU);ctx.fill();
   if(axeOn){
-    ctx.save();ctx.translate(p.r*.68,0);ctx.rotate(-.65-(p.axeSwing>0?1.05:0));
-    const hg=ctx.createLinearGradient(0,10,25,-15);hg.addColorStop(0,'#4a2815');hg.addColorStop(.5,'#87562e');hg.addColorStop(1,'#b27b43');
-    ctx.strokeStyle=hg;ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(0,9);ctx.lineTo(24,-15);ctx.stroke();
-    const mg=ctx.createLinearGradient(15,-20,33,-8);mg.addColorStop(0,'#d7dcdb');mg.addColorStop(.5,'#747d80');mg.addColorStop(1,'#2e3436');
-    ctx.fillStyle=mg;ctx.beginPath();ctx.moveTo(16,-20);ctx.lineTo(32,-18);ctx.lineTo(34,-8);ctx.lineTo(19,-6);ctx.closePath();ctx.fill();ctx.restore();
+    const st=clamp((p.axeSwing||0)/.34,0,1),phase=1-st;
+    let swingRot=-.48;
+    if(st>0){if(phase<.28)swingRot=-.48-(phase/.28)*1.05;else if(phase<.66)swingRot=-1.53+((phase-.28)/.38)*2.12;else swingRot=.59-((phase-.66)/.34)*1.07;}
+    ctx.save();ctx.translate(p.r*.66,0);ctx.rotate(swingRot);
+    // two-handed grip moves with the axe instead of a static floating tool
+    ctx.strokeStyle='#26343c';ctx.lineWidth=5;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(-7,-7);ctx.lineTo(4,1);ctx.moveTo(-6,7);ctx.lineTo(10,6);ctx.stroke();
+    ctx.fillStyle='#c89a73';ctx.beginPath();ctx.arc(4,1,4,0,TAU);ctx.arc(10,6,4,0,TAU);ctx.fill();
+    const hg=ctx.createLinearGradient(-5,12,29,-20);hg.addColorStop(0,'#382012');hg.addColorStop(.28,'#68401f');hg.addColorStop(.58,'#a26934');hg.addColorStop(.82,'#7d4d28');hg.addColorStop(1,'#4a2a17');
+    ctx.strokeStyle='#23150d';ctx.lineWidth=7;ctx.beginPath();ctx.moveTo(-3,12);ctx.lineTo(27,-18);ctx.stroke();
+    ctx.strokeStyle=hg;ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(-3,12);ctx.lineTo(27,-18);ctx.stroke();
+    ctx.strokeStyle='rgba(235,190,120,.42)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(0,9);ctx.lineTo(24,-15);ctx.stroke();
+    const mg=ctx.createLinearGradient(17,-25,40,-8);mg.addColorStop(0,'#eef1ef');mg.addColorStop(.22,'#b6bec0');mg.addColorStop(.56,'#626a6d');mg.addColorStop(1,'#282d2f');
+    ctx.fillStyle=mg;ctx.strokeStyle='#202426';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(17,-24);ctx.quadraticCurveTo(31,-28,40,-21);ctx.lineTo(42,-10);ctx.quadraticCurveTo(33,-5,21,-7);ctx.lineTo(15,-14);ctx.closePath();ctx.fill();ctx.stroke();
+    ctx.strokeStyle='rgba(255,255,255,.58)';ctx.beginPath();ctx.moveTo(38,-20);ctx.lineTo(40,-11);ctx.stroke();
+    if(st>0&&phase>.28&&phase<.72){ctx.globalAlpha=.12*(1-Math.abs(phase-.50)/.22);ctx.strokeStyle='#d9dde0';ctx.lineWidth=3;ctx.beginPath();ctx.arc(0,0,34,-1.45,.45);ctx.stroke();}
+    ctx.restore();
   }else if(g){
     const id=curGunId(),gx=p.r*.48;
     const metal=ctx.createLinearGradient(gx,-6,gx,7);metal.addColorStop(0,'#6f7779');metal.addColorStop(.28,'#262b2d');metal.addColorStop(1,'#0b0e0f');
@@ -3788,8 +3799,14 @@ function drawItemIcon(sl, cx, cy, s) {
     else if(id==='sniper'){ctx.fillStyle='#59656b';ctx.fillRect(-s*.43,-s*.06,s*.72,s*.09);ctx.fillStyle='#c7cdd0';ctx.fillRect(s*.25,-s*.04,s*.25,s*.04);ctx.fillStyle='#73a7c7';ctx.fillRect(-s*.10,-s*.21,s*.30,s*.09);ctx.beginPath();ctx.arc(-s*.02,-s*.165,s*.07,0,TAU);ctx.fill();ctx.fillStyle='#4d5559';ctx.fillRect(-s*.12,s*.01,s*.09,s*.22);}
     else {ctx.fillStyle='#444d52';ctx.fillRect(-s*.28,-s*.12,s*.34,s*.22);ctx.beginPath();ctx.arc(-s*.18,s*.13,s*.14,0,TAU);ctx.fill();ctx.fillStyle='#c7cdd0';for(let k=-1;k<=1;k++)ctx.fillRect(s*.02,k*s*.065,s*.43,s*.03);ctx.fillStyle='#596166';ctx.fillRect(-s*.02,s*.05,s*.10,s*.23);}
   } else if (sl.k === 'axe') {
-    ctx.save();ctx.rotate(-.58);ctx.strokeStyle='#7b4b27';ctx.lineWidth=Math.max(4,s*.10);ctx.lineCap='round';ctx.beginPath();ctx.moveTo(-s*.28,s*.31);ctx.lineTo(s*.18,-s*.27);ctx.stroke();
-    ctx.fillStyle='#c6cbcc';ctx.strokeStyle='#50585a';ctx.lineWidth=Math.max(1.5,s*.035);ctx.lineJoin='round';ctx.beginPath();ctx.moveTo(s*.04,-s*.31);ctx.lineTo(s*.30,-s*.33);ctx.lineTo(s*.40,-s*.15);ctx.lineTo(s*.15,-s*.07);ctx.lineTo(s*.03,-s*.13);ctx.closePath();ctx.fill();ctx.stroke();ctx.restore();
+    ctx.save();ctx.rotate(-.66);ctx.lineCap='round';ctx.lineJoin='round';
+    const ah=ctx.createLinearGradient(-s*.30,s*.32,s*.18,-s*.28);ah.addColorStop(0,'#3a2113');ah.addColorStop(.34,'#714422');ah.addColorStop(.68,'#a66b35');ah.addColorStop(1,'#56321b');
+    ctx.strokeStyle='#24150d';ctx.lineWidth=Math.max(6,s*.14);ctx.beginPath();ctx.moveTo(-s*.30,s*.34);ctx.lineTo(s*.15,-s*.25);ctx.stroke();
+    ctx.strokeStyle=ah;ctx.lineWidth=Math.max(4,s*.095);ctx.beginPath();ctx.moveTo(-s*.30,s*.34);ctx.lineTo(s*.15,-s*.25);ctx.stroke();
+    ctx.strokeStyle='rgba(235,185,112,.45)';ctx.lineWidth=Math.max(1,s*.018);ctx.beginPath();ctx.moveTo(-s*.24,s*.27);ctx.lineTo(s*.10,-s*.20);ctx.stroke();
+    const steel=ctx.createLinearGradient(s*.02,-s*.34,s*.40,-s*.08);steel.addColorStop(0,'#eef1ef');steel.addColorStop(.20,'#aeb7b8');steel.addColorStop(.58,'#596164');steel.addColorStop(1,'#252a2c');
+    ctx.fillStyle=steel;ctx.strokeStyle='#202527';ctx.lineWidth=Math.max(1.5,s*.032);ctx.beginPath();ctx.moveTo(s*.03,-s*.31);ctx.quadraticCurveTo(s*.23,-s*.39,s*.39,-s*.29);ctx.lineTo(s*.43,-s*.13);ctx.quadraticCurveTo(s*.29,-s*.04,s*.10,-s*.07);ctx.lineTo(s*.01,-s*.15);ctx.closePath();ctx.fill();ctx.stroke();
+    ctx.strokeStyle='rgba(255,255,255,.65)';ctx.lineWidth=Math.max(1,s*.018);ctx.beginPath();ctx.moveTo(s*.37,-s*.27);ctx.quadraticCurveTo(s*.41,-s*.20,s*.40,-s*.14);ctx.stroke();ctx.restore();
   } else if (sl.k === 'block') {
     ctx.fillStyle = '#a9773f'; ctx.fillRect(-s * .3, -s * .3, s * .6, s * .6);
     ctx.strokeStyle = '#5a3d1e'; ctx.lineWidth = 2; ctx.strokeRect(-s * .3, -s * .3, s * .6, s * .6);
@@ -3826,7 +3843,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v192';
+const GAME_VERSION = 'v193';
 
 /* =====================================================
    Kafa lambası v1 — mevcut UI'dan bağımsız, canvas katmanı
