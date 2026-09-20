@@ -195,7 +195,7 @@ div:has(> #legacyOnlineMarker){display:none!important}
 
 <div id="menuJumpScare" aria-hidden="true"><div class="jsFace"><div class="jsCrack"></div><div class="jsMouth"></div></div></div>
 
-<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v176</b></div></div></div>
+<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v177</b></div></div></div>
 
 <div id="onlinePanel">
   <b><span id="legacyOnlineMarker">ONLINE CO-OP v8 · CLEAN LOBBY</span></b>
@@ -1577,32 +1577,15 @@ function inventoryItems(){
 }
 function openInventory(){
   if(!player||(state!=='playing'&&state!=='intermission'))return;
-  const prev=state;state='inventory';mouse.down=false;
-  const items=inventoryItems();
-  let cells='';
-  for(let i=0;i<27;i++){
-    const it=items[i];
-    if(!it){cells+='<div style="width:62px;height:62px;border:2px solid #555;background:#171717;box-shadow:inset 2px 2px #0a0a0a,inset -2px -2px #333"></div>';continue;}
-    const active=it.id==='headlamp'&&headlampEquipped;
-    cells+='<button data-inv="'+it.id+'" style="position:relative;width:62px;height:62px;border:2px solid '+(active?'#f0b429':'#666')+';background:'+(active?'#493813':'#202020')+';color:#eee;font:700 11px '+FONT+';box-shadow:inset 2px 2px #0b0b0b,inset -2px -2px #3a3a3a;cursor:pointer"><span style="display:block;font-size:27px;line-height:31px">'+it.icon+'</span><span>'+it.name+'</span><b style="position:absolute;right:4px;bottom:2px;color:#fff;text-shadow:1px 1px #000">'+it.count+'</b></button>';
+  if((inv.headlamp||0)>0){
+    headlampEquipped=!headlampEquipped;
+    headlampOn=headlampEquipped;
+    toast(headlampEquipped?'Kafa lambası kafaya takıldı · L ile aç/kapat':'Kafa lambası çıkarıldı');
+  }else{
+    toast('Envanter: Kafa lambası yok · sandıklardan bulabilirsin');
   }
-  const helmet=headlampEquipped?'🔦':'';
-  const extra='<div style="display:flex;gap:22px;align-items:flex-start;justify-content:center"><div><div style="color:#bbb;font-weight:800;margin-bottom:7px">EKİPMAN</div><button id="helmetSlot" style="width:72px;height:72px;border:3px solid #777;background:#202020;color:#fff;font-size:34px;cursor:pointer">'+helmet+'</button><div style="font-size:11px;color:#aaa;margin-top:5px">KAFA</div></div><div><div style="color:#bbb;font-weight:800;margin-bottom:7px;text-align:left">ENVANTER</div><div style="display:grid;grid-template-columns:repeat(9,62px);gap:4px">'+cells+'</div></div></div><div style="margin-top:14px;color:#c9c3b5">Kafa lambasını bulduktan sonra üzerine tıkla → kafaya takılır. Tekrar tıklarsan çıkarılır. <b>I</b> ile kapat.</div>';
-  showOverlay({title:'ENVANTER',text:'Eşyaların ve ekipmanın',extra,btn:'Kapat',onClick:()=>{state=prev;hideOverlay();}});
-  setTimeout(()=>{
-    document.querySelectorAll('[data-inv]').forEach(b=>b.onclick=()=>{
-      if(b.dataset.inv==='headlamp'){
-        if((inv.headlamp||0)<=0){toast('Kafa lamban yok');return;}
-        headlampEquipped=!headlampEquipped;
-        headlampOn=headlampEquipped;
-        toast(headlampEquipped?'Kafa lambası kafaya takıldı':'Kafa lambası çıkarıldı');
-        state=prev;hideOverlay();openInventory();
-      }
-    });
-    const hs=document.getElementById('helmetSlot');
-    if(hs)hs.onclick=()=>{if(headlampEquipped){headlampEquipped=false;headlampOn=false;toast('Kafa lambası çıkarıldı');state=prev;hideOverlay();openInventory();}};
-  },0);
 }
+
 const CRAFT=[
  {id:'block',name:'Tahta duvar',cost:0,logs:3,desc:'3 kütük ile 1 tahta duvar'},
  {id:'door',name:'Tahta kapı',cost:12,desc:'1 adet inşa edilebilir kapı'},
@@ -1681,7 +1664,6 @@ window.addEventListener('keydown', e => {
   if (e.code === 'KeyM') muted = !muted;
   if (e.code === 'Tab') { if (state === 'shop') closeShop(); else openShop(); return; }
   if (state === 'shop') { if (e.code === 'Escape') closeShop(); return; }
-  if(state==='inventory'){ if(e.code==='Escape'||e.code==='KeyI'){ $('ovBtn').click(); } return; }
   if(state==='craft'){
     if(e.code==='Escape'){openEscapeMenu();return;}
     if(/^Digit[1-5]$/.test(e.code)){const it=CRAFT[Number(e.code.slice(5))-1];if(it)craftItem(it.id);}
@@ -3863,7 +3845,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v176';
+const GAME_VERSION = 'v177';
 
 /* =====================================================
    Kafa lambası v1 — mevcut UI'dan bağımsız, canvas katmanı
@@ -3891,7 +3873,7 @@ function drawHeadlampWorldReveal(sx=0,sy=0){
   const a=Number.isFinite(player.ang)?player.ang:0,ux=Math.cos(a),uy=Math.sin(a);
   const reach=560,half=.40;
 
-  // v176 performance: redraw the world ONCE instead of six complete scene redraws.
+  // v177 performance: redraw the world ONCE instead of six complete scene redraws.
   // A wide soft-looking reveal is produced by one curved clip; drawHeadlamp supplies the feathered visual falloff.
   ctx.save();
   ctx.globalAlpha=.78;
@@ -5911,7 +5893,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v176';
+const GAME_VERSION = 'v177';
 
 /* =====================================================
    Kafa lambası v1 — mevcut UI'dan bağımsız, canvas katmanı
@@ -5938,7 +5920,7 @@ function drawHeadlampWorldReveal(sx=0,sy=0){
   const a=Number.isFinite(player.ang)?player.ang:0,ux=Math.cos(a),uy=Math.sin(a);
   const reach=560,half=.40;
 
-  // v176 performance: redraw the world ONCE instead of six complete scene redraws.
+  // v177 performance: redraw the world ONCE instead of six complete scene redraws.
   // A wide soft-looking reveal is produced by one curved clip; drawHeadlamp supplies the feathered visual falloff.
   ctx.save();
   ctx.globalAlpha=.78;
@@ -7958,7 +7940,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v176';
+const GAME_VERSION = 'v177';
 
 /* =====================================================
    Kafa lambası v1 — mevcut UI'dan bağımsız, canvas katmanı
@@ -7985,7 +7967,7 @@ function drawHeadlampWorldReveal(sx=0,sy=0){
   const a=Number.isFinite(player.ang)?player.ang:0,ux=Math.cos(a),uy=Math.sin(a);
   const reach=560,half=.40;
 
-  // v176 performance: redraw the world ONCE instead of six complete scene redraws.
+  // v177 performance: redraw the world ONCE instead of six complete scene redraws.
   // A wide soft-looking reveal is produced by one curved clip; drawHeadlamp supplies the feathered visual falloff.
   ctx.save();
   ctx.globalAlpha=.78;
