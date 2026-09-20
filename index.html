@@ -2,111 +2,56 @@
 <html lang="tr">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Zombie-Mer 3D</title>
+<title>Zombie-Mer 2D</title>
 <style>
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#050806;color:#fff;font-family:system-ui,Arial}
-#game{position:fixed;inset:0}
-#hud{position:fixed;inset:0;pointer-events:none}
-#cross{position:absolute;left:50%;top:50%;width:18px;height:18px;transform:translate(-50%,-50%)}
-#cross:before,#cross:after{content:"";position:absolute;background:#fff;box-shadow:0 0 4px #000}
-#cross:before{width:18px;height:2px;left:0;top:8px}#cross:after{width:2px;height:18px;left:8px;top:0}
-#stats{position:absolute;left:20px;bottom:20px;font-weight:800;text-shadow:0 2px 5px #000}
-#ammo{position:absolute;right:22px;bottom:20px;font-size:25px;font-weight:900;text-shadow:0 2px 5px #000}
-#msg{position:absolute;left:50%;top:24px;transform:translateX(-50%);font-weight:800;text-align:center;text-shadow:0 2px 6px #000}
-#start{position:fixed;inset:0;display:grid;place-items:center;background:rgba(0,0,0,.78);z-index:3}
-.card{text-align:center;max-width:520px;padding:28px}.card h1{font-size:34px;margin:0 0 10px}.card p{line-height:1.5;color:#ddd}
-button{border:0;border-radius:12px;padding:14px 24px;font-weight:900;font-size:17px;cursor:pointer;background:#d7a329;color:#17120a}
-#back{position:fixed;left:14px;top:14px;z-index:5;color:#fff;text-decoration:none;background:#111b;padding:9px 12px;border-radius:9px;font-weight:700}
-</style>
-</head><body>
-<div id="game"></div>
-<div id="hud"><div id="cross"></div><div id="msg">ZOMBIE-MER 3D</div><div id="stats">CAN 100<br>WASD · Mouse · Sol tık ateş</div><div id="ammo">12 / ∞</div></div>
-<div id="start"><div class="card"><h1>ZOMBIE-MER 3D</h1><p>Yeni 3D survival temel sürümü. WASD hareket · Mouse bakış · Sol tık ateş · R şarjör.</p><button id="play">OYUNA BAŞLA</button></div></div>
-<script type="module">
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js';
-class FPSControls{
- constructor(camera,dom){this.camera=camera;this.dom=dom;this.isLocked=false;this.yaw=0;this.pitch=0;this.handlers={lock:[],unlock:[]};
-  document.addEventListener('pointerlockchange',()=>{this.isLocked=document.pointerLockElement===this.dom;for(const fn of this.handlers[this.isLocked?'lock':'unlock'])fn();});
-  document.addEventListener('mousemove',e=>{if(!this.isLocked)return;this.yaw-=e.movementX*.0022;this.pitch=Math.max(-1.48,Math.min(1.48,this.pitch-e.movementY*.0022));gunSwayX=Math.max(-10,Math.min(10,gunSwayX+e.movementX*.018));gunSwayY=Math.max(-7,Math.min(7,gunSwayY+e.movementY*.014));this.camera.rotation.set(this.pitch,this.yaw,0,'YXZ');});
- }
- addEventListener(t,fn){if(this.handlers[t])this.handlers[t].push(fn)}
- lock(){this.dom.requestPointerLock&&this.dom.requestPointerLock()}
- unlock(){document.exitPointerLock&&document.exitPointerLock()}
- moveForward(d){this.camera.position.x-=Math.sin(this.yaw)*d;this.camera.position.z-=Math.cos(this.yaw)*d}
- moveRight(d){this.camera.position.x+=Math.cos(this.yaw)*d;this.camera.position.z-=Math.sin(this.yaw)*d}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#101712;font-family:Arial,sans-serif;color:#fff}
+canvas{display:block;width:100vw;height:100vh;image-rendering:auto}
+#hud{position:fixed;left:18px;top:16px;background:#101510d9;border:1px solid #ffffff24;border-radius:12px;padding:10px 14px;line-height:1.5;font-weight:700;pointer-events:none}
+#ammo{position:fixed;right:20px;bottom:18px;font-size:22px;font-weight:900;text-shadow:0 2px 4px #000}
+#start{position:fixed;inset:0;display:grid;place-items:center;background:#0009}
+.card{background:#151b16;border:1px solid #ffffff30;border-radius:18px;padding:26px;text-align:center;max-width:420px}
+button{border:0;border-radius:12px;padding:13px 24px;font-size:17px;font-weight:800;cursor:pointer}
+small{opacity:.7}
+</style></head>
+<body>
+<canvas id="game"></canvas>
+<div id="hud">❤️ CAN <span id="hp">100</span><br>🧟 ZOMBİ <span id="kills">0</span><br>💰 PARA <span id="money">0</span></div>
+<div id="ammo">12 / ∞</div>
+<div id="start"><div class="card"><h1>Zombie-Mer 2D</h1><p>WASD ile hareket · Mouse ile nişan · Sol tık ateş · R şarjör</p><button id="play">OYUNA BAŞLA</button><p><small>Hayatta kal, zombileri temizle.</small></p></div></div>
+<script>
+const c=document.getElementById('game'),x=c.getContext('2d');let W,H,D=devicePixelRatio||1;
+function resize(){W=innerWidth;H=innerHeight;c.width=W*D;c.height=H*D;x.setTransform(D,0,0,D,0,0)}addEventListener('resize',resize);resize();
+const world={w:2400,h:1800};const p={x:1200,y:900,r:18,s:250,hp:100,ang:0};let keys={},mouse={x:W/2,y:H/2},bullets=[],zombies=[],trees=[],houses=[],kills=0,money=0,ammo=12,reloading=false,running=false,last=performance.now();
+for(let i=0;i<85;i++)trees.push({x:60+Math.random()*(world.w-120),y:60+Math.random()*(world.h-120),r:18+Math.random()*12});
+for(let i=0;i<18;i++){let xx=130+Math.random()*(world.w-360),yy=130+Math.random()*(world.h-300);houses.push({x:xx,y:yy,w:110+Math.random()*70,h:80+Math.random()*55})}
+function spawn(){let a=Math.random()*Math.PI*2,d=500+Math.random()*350;zombies.push({x:Math.max(30,Math.min(world.w-30,p.x+Math.cos(a)*d)),y:Math.max(30,Math.min(world.h-30,p.y+Math.sin(a)*d)),r:17,hp:3,s:58+Math.random()*35})}
+for(let i=0;i<16;i++)spawn();
+addEventListener('keydown',e=>{keys[e.code]=1;if(e.code==='KeyR'&&!reloading&&ammo<12){reloading=true;document.getElementById('ammo').textContent='YENİLENİYOR';setTimeout(()=>{ammo=12;reloading=false;document.getElementById('ammo').textContent='12 / ∞'},800)}});addEventListener('keyup',e=>keys[e.code]=0);
+addEventListener('mousemove',e=>{mouse.x=e.clientX;mouse.y=e.clientY});
+addEventListener('mousedown',e=>{if(e.button||!running||reloading||ammo<=0)return;ammo--;document.getElementById('ammo').textContent=ammo+' / ∞';let cam=camPos();let wx=mouse.x+cam.x,wy=mouse.y+cam.y,a=Math.atan2(wy-p.y,wx-p.x);bullets.push({x:p.x+Math.cos(a)*25,y:p.y+Math.sin(a)*25,vx:Math.cos(a)*700,vy:Math.sin(a)*700,life:1})});
+document.getElementById('play').onclick=()=>{running=true;document.getElementById('start').style.display='none'};
+function camPos(){return{x:Math.max(0,Math.min(world.w-W,p.x-W/2)),y:Math.max(0,Math.min(world.h-H,p.y-H/2))}}
+function circleRect(cx,cy,r,o){let qx=Math.max(o.x,Math.min(cx,o.x+o.w)),qy=Math.max(o.y,Math.min(cy,o.y+o.h));return (cx-qx)**2+(cy-qy)**2<r*r}
+function update(dt){
+ if(!running)return;let dx=(keys.KeyD?1:0)-(keys.KeyA?1:0),dy=(keys.KeyS?1:0)-(keys.KeyW?1:0),l=Math.hypot(dx,dy)||1,nx=p.x+dx/l*p.s*dt,ny=p.y+dy/l*p.s*dt;
+ if(!houses.some(h=>circleRect(nx,p.y,p.r,h)))p.x=Math.max(p.r,Math.min(world.w-p.r,nx));if(!houses.some(h=>circleRect(p.x,ny,p.r,h)))p.y=Math.max(p.r,Math.min(world.h-p.r,ny));
+ let cam=camPos();p.ang=Math.atan2(mouse.y+cam.y-p.y,mouse.x+cam.x-p.x);
+ for(let b of bullets){b.x+=b.vx*dt;b.y+=b.vy*dt;b.life-=dt}
+ bullets=bullets.filter(b=>b.life>0&&b.x>0&&b.y>0&&b.x<world.w&&b.y<world.h);
+ for(let z of zombies){let a=Math.atan2(p.y-z.y,p.x-z.x);z.x+=Math.cos(a)*z.s*dt;z.y+=Math.sin(a)*z.s*dt;if(Math.hypot(z.x-p.x,z.y-p.y)<z.r+p.r){p.hp-=25*dt;document.getElementById('hp').textContent=Math.max(0,Math.ceil(p.hp));if(p.hp<=0){running=false;document.getElementById('start').style.display='grid';document.querySelector('.card h1').textContent='ÖLDÜN';document.querySelector('.card p').textContent='Skor: '+kills;document.getElementById('play').textContent='TEKRAR BAŞLA';document.getElementById('play').onclick=()=>location.reload()}}}
+ for(let b of bullets)for(let z of zombies)if(z.hp>0&&Math.hypot(b.x-z.x,b.y-z.y)<z.r+4){z.hp--;b.life=0;if(z.hp<=0){kills++;money+=10;document.getElementById('kills').textContent=kills;document.getElementById('money').textContent=money}}
+ zombies=zombies.filter(z=>z.hp>0);while(zombies.length<16)spawn();
 }
-const host=document.getElementById('game'),scene=new THREE.Scene();scene.background=new THREE.Color(0x101812);scene.fog=new THREE.Fog(0x101812,35,130);
-const camera=new THREE.PerspectiveCamera(78,innerWidth/innerHeight,.1,240);camera.position.set(0,1.7,8);
-// FPS viewmodel V2: compact pistol, distinct firing/support hands, no overlapping finger stacks.
-const viewModel=new THREE.Group();camera.add(viewModel);scene.add(camera);
-viewModel.position.set(.20,-.34,-.82);viewModel.rotation.set(-.025,-.03,-.015);
-const vmMat=(c,metal=.2,rough=.55)=>new THREE.MeshStandardMaterial({color:c,metalness:metal,roughness:rough,depthTest:false,depthWrite:false});
-function vmMesh(parent,geo,mat,x,y,z,rx=0,ry=0,rz=0){const m=new THREE.Mesh(geo,mat);m.position.set(x,y,z);m.rotation.set(rx,ry,rz);m.renderOrder=40;parent.add(m);return m}
-const gunMat=vmMat(0x343a3e,.7,.28),gunDark=vmMat(0x101315,.5,.4),glove=vmMat(0x1b1e20,.03,.92),skin=vmMat(0xa66f50,.02,.8);
-const pistol=new THREE.Group();viewModel.add(pistol);
-vmMesh(pistol,new THREE.BoxGeometry(.15,.09,.50),gunMat,0,.09,-.20);
-vmMesh(pistol,new THREE.BoxGeometry(.13,.055,.53),gunDark,0,.155,-.20);
-vmMesh(pistol,new THREE.BoxGeometry(.105,.245,.125),gunDark,0,-.09,.015,-.18);
-vmMesh(pistol,new THREE.BoxGeometry(.112,.032,.13),gunDark,0,-.225,.045,-.18);
-vmMesh(pistol,new THREE.BoxGeometry(.016,.038,.022),gunDark,0,.207,-.42);
-vmMesh(pistol,new THREE.BoxGeometry(.04,.023,.023),gunDark,0,.197,.045);
-const triggerGuard=vmMesh(pistol,new THREE.TorusGeometry(.05,.008,8,18,Math.PI*1.5),gunDark,0,-.018,-.03,Math.PI/2,0,.18);
-function limb(parent,r,len,x,y,z,rx,ry,rz,mat=glove){return vmMesh(parent,new THREE.CapsuleGeometry(r,len,5,8),mat,x,y,z,rx,ry,rz)}
-function firingHand(){
- const g=new THREE.Group();
- const palm=vmMesh(g,new THREE.BoxGeometry(.115,.145,.09),glove,.055,-.105,.075,-.08,0,-.08);
- limb(g,.045,.20,.075,-.17,.19,Math.PI/2,0,-.08);
- // four fingers curl around the RIGHT side of grip
- for(let i=0;i<4;i++) limb(g,.013,.070,.078,-.045-i*.035,.005,1.05,0,.20);
- // thumb lies along left/top of grip
- limb(g,.016,.085,-.015,-.045,.025,1.30,0,-.58);
- return g
+function draw(){
+ let cam=camPos();x.clearRect(0,0,W,H);x.save();x.translate(-cam.x,-cam.y);
+ x.fillStyle='#426b39';x.fillRect(0,0,world.w,world.h);
+ x.fillStyle='#b99c72';x.fillRect(0,world.h/2-65,world.w,130);x.fillRect(world.w/2-65,0,130,world.h);
+ for(let t of trees){x.fillStyle='#563b24';x.fillRect(t.x-5,t.y,10,22);x.fillStyle='#1f5128';x.beginPath();x.arc(t.x,t.y,t.r,0,Math.PI*2);x.fill()}
+ for(let h of houses){x.fillStyle='#b8a17d';x.fillRect(h.x,h.y,h.w,h.h);x.fillStyle='#6c3429';x.beginPath();x.moveTo(h.x-12,h.y+8);x.lineTo(h.x+h.w/2,h.y-35);x.lineTo(h.x+h.w+12,h.y+8);x.fill();x.fillStyle='#51382a';x.fillRect(h.x+h.w/2-12,h.y+h.h-30,24,30)}
+ for(let b of bullets){x.fillStyle='#ffd45c';x.beginPath();x.arc(b.x,b.y,4,0,Math.PI*2);x.fill()}
+ for(let z of zombies){x.fillStyle='#688e57';x.beginPath();x.arc(z.x,z.y,z.r,0,Math.PI*2);x.fill();x.fillStyle='#1d261c';x.fillRect(z.x-10,z.y+12,20,20);x.fillStyle='#d33';x.fillRect(z.x-12,z.y-z.r-10,24*(z.hp/3),4)}
+ x.save();x.translate(p.x,p.y);x.rotate(p.ang);x.fillStyle='#d9b08c';x.beginPath();x.arc(0,0,p.r,0,Math.PI*2);x.fill();x.fillStyle='#25292c';x.fillRect(5,-6,32,12);x.fillStyle='#111';x.fillRect(30,-4,18,8);x.restore();
+ x.restore();
 }
-function supportHand(){
- const g=new THREE.Group();
- const palm=vmMesh(g,new THREE.BoxGeometry(.105,.13,.08),glove,-.075,-.11,.105,-.10,0,.10);
- limb(g,.043,.21,-.105,-.18,.215,Math.PI/2,0,.12);
- // support fingers sit OUTSIDE the firing hand, lower and farther left
- for(let i=0;i<4;i++) limb(g,.0125,.066,-.105,-.060-i*.032,.035,1.02,0,-.24);
- limb(g,.015,.082,.005,-.052,.035,1.28,0,.58);
- return g
-}
-const rightHand=firingHand();rightHand.position.set(.015,.005,.015);rightHand.rotation.set(-.03,-.04,-.03);viewModel.add(rightHand);
-const leftHand=supportHand();leftHand.position.set(-.035,-.035,.085);leftHand.rotation.set(-.10,.18,.08);viewModel.add(leftHand);
-const muzzleFlash=new THREE.PointLight(0xffb34d,0,2);muzzleFlash.position.set(0,.13,-.48);pistol.add(muzzleFlash);
-const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;host.appendChild(renderer.domElement);
-scene.add(new THREE.HemisphereLight(0xb7c9b4,0x28301e,1.55));const moon=new THREE.DirectionalLight(0xdbe5ff,2.5);moon.position.set(8,18,6);moon.castShadow=true;scene.add(moon);
-const ground=new THREE.Mesh(new THREE.PlaneGeometry(240,240),new THREE.MeshStandardMaterial({color:0x31422b,roughness:1}));ground.rotation.x=-Math.PI/2;ground.receiveShadow=true;scene.add(ground);
-const roadMat=new THREE.MeshStandardMaterial({color:0x252827,roughness:1});
-for(const [x,z,w,d] of [[0,0,9,120],[0,0,120,9]]){const r=new THREE.Mesh(new THREE.PlaneGeometry(w,d),roadMat);r.rotation.x=-Math.PI/2;r.position.set(x,.012,z);scene.add(r)}
-function box(x,y,z,w,h,d,c){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),new THREE.MeshStandardMaterial({color:c,roughness:.85}));m.position.set(x,y,z);m.castShadow=m.receiveShadow=true;scene.add(m);return m}
-for(let i=0;i<22;i++){const a=i/22*Math.PI*2,r=28+(i%4)*12;const x=Math.cos(a)*r,z=Math.sin(a)*r;box(x,1.6,z,6,3.2,.3,0x5b574e);box(x-2.85,1.6,z+2.8,.3,3.2,5.6,0x5b574e);box(x+2.85,1.6,z+2.8,.3,3.2,5.6,0x5b574e);box(x,1.6,z+5.6,6,3.2,.3,0x5b574e);const roof=new THREE.Mesh(new THREE.ConeGeometry(4.3,1.7,4),new THREE.MeshStandardMaterial({color:0x342b27,roughness:1}));roof.position.set(x,4,z+2.8);roof.rotation.y=Math.PI/4;scene.add(roof)}
-for(let i=0;i<80;i++){const a=Math.random()*Math.PI*2,r=15+Math.random()*90;const x=Math.cos(a)*r,z=Math.sin(a)*r;const trunk=box(x,1,z,.55,2,.55,0x513821);const crown=new THREE.Mesh(new THREE.ConeGeometry(2,5,7),new THREE.MeshStandardMaterial({color:0x243c22}));crown.position.set(x,4,z);scene.add(crown)}
-const zombies=[];
-function zombie(x,z){const g=new THREE.Group(),cloth=new THREE.MeshStandardMaterial({color:0x4d5146}),skin=new THREE.MeshStandardMaterial({color:0x7b8b62});
-const body=new THREE.Mesh(new THREE.BoxGeometry(.75,1.05,.4),cloth);body.position.y=1.35;g.add(body);const head=new THREE.Mesh(new THREE.BoxGeometry(.48,.5,.48),skin);head.position.y=2.12;g.add(head);
-for(const sx of [-.5,.5]){const arm=new THREE.Mesh(new THREE.BoxGeometry(.22,.9,.22),skin);arm.position.set(sx,1.45,-.15);arm.rotation.x=-.8;g.add(arm)}
-g.position.set(x,0,z);g.userData={hp:3,speed:1.25+Math.random()*.65};scene.add(g);zombies.push(g)}
-for(let i=0;i<10;i++){const a=Math.random()*Math.PI*2,r=16+Math.random()*25;zombie(Math.cos(a)*r,Math.sin(a)*r)}
-const controls=new FPSControls(camera,renderer.domElement),keys={};let hp=100,ammo=12,last=performance.now(),dead=false,bob=0,reloading=false,gunKick=0,gunSwayX=0,gunSwayY=0,reloadT=0;
-document.getElementById('play').onclick=()=>{try{controls.lock()}catch(e){document.getElementById('msg').textContent='Mouse kilidi açılamadı · tekrar tıkla'}};controls.addEventListener('lock',()=>document.getElementById('start').style.display='none');controls.addEventListener('unlock',()=>{if(!dead)document.getElementById('start').style.display='grid'});
-addEventListener('keydown',e=>{keys[e.code]=true;if(e.code==='KeyR'&&!reloading&&ammo<12){reloading=true;reloadT=0;document.getElementById('ammo').textContent='YENİLENİYOR';setTimeout(()=>{ammo=12;reloading=false;reloadT=0;document.getElementById('ammo').textContent='12 / ∞'},950)}});addEventListener('keyup',e=>keys[e.code]=false);
-const ray=new THREE.Raycaster();addEventListener('mousedown',e=>{if(e.button!==0||!controls.isLocked||dead||reloading)return;if(ammo<=0)return;ammo--;gunKick=.075;muzzleFlash.intensity=3;setTimeout(()=>muzzleFlash.intensity=0,45);document.getElementById('ammo').textContent=ammo+' / ∞';ray.setFromCamera(new THREE.Vector2(0,0),camera);const hits=ray.intersectObjects(zombies,true);if(hits.length){let g=hits[0].object;while(g.parent&&!zombies.includes(g))g=g.parent;if(zombies.includes(g)){g.userData.hp--;g.position.addScaledVector(ray.ray.direction,.25);if(g.userData.hp<=0){scene.remove(g);zombies.splice(zombies.indexOf(g),1);setTimeout(()=>{const a=Math.random()*Math.PI*2;zombie(camera.position.x+Math.cos(a)*28,camera.position.z+Math.sin(a)*28)},1200)}}}});
-function loop(t){requestAnimationFrame(loop);const dt=Math.min(.04,(t-last)/1000);last=t;if(controls.isLocked&&!dead){const sp=6*dt;if(keys.KeyW)controls.moveForward(sp);if(keys.KeyS)controls.moveForward(-sp);if(keys.KeyA)controls.moveRight(-sp);if(keys.KeyD)controls.moveRight(sp);bob+=dt*10;const moving=keys.KeyW||keys.KeyS||keys.KeyA||keys.KeyD;camera.position.y=1.7+(moving?Math.sin(bob)*.018:0);gunKick*=.70;gunSwayX*=.84;gunSwayY*=.84;
-const breathe=Math.sin(t*.0022)*.003;
-const walkX=moving?Math.sin(bob*.5)*.010:0,walkY=moving?Math.abs(Math.cos(bob))*.012:0;
-if(reloading)reloadT=Math.min(1,reloadT+dt*1.45);
-const reloadWave=reloading?Math.sin(reloadT*Math.PI):0;
-viewModel.position.x=.20+walkX-gunSwayX*.00055-.045*reloadWave;
-viewModel.position.y=-.34-walkY-gunKick+breathe+gunSwayY*.0005-.065*reloadWave;
-viewModel.position.z=-.82+.025*reloadWave;
-viewModel.rotation.x=-.025+gunSwayY*.0003+.28*reloadWave;
-viewModel.rotation.y=-.03-gunSwayX*.0004-.10*reloadWave;
-viewModel.rotation.z=-.015-gunSwayX*.00025-.18*reloadWave;
-camera.position.x=Math.max(-110,Math.min(110,camera.position.x));camera.position.z=Math.max(-110,Math.min(110,camera.position.z));
-for(const z of zombies){const dx=camera.position.x-z.position.x,dz=camera.position.z-z.position.z,d=Math.hypot(dx,dz)||1;z.lookAt(camera.position.x,z.position.y,camera.position.z);z.position.x+=dx/d*z.userData.speed*dt;z.position.z+=dz/d*z.userData.speed*dt;if(d<1.15){hp-=22*dt;document.getElementById('stats').innerHTML='CAN '+Math.max(0,Math.ceil(hp))+'<br>WASD · Mouse · Sol tık ateş';if(hp<=0){dead=true;controls.unlock();document.getElementById('msg').textContent='ÖLDÜN · sayfayı yenile';document.getElementById('start').style.display='none'}}}}
-renderer.render(scene,camera)}
-requestAnimationFrame(loop);addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
-
-window.addEventListener('error',e=>{const m=document.getElementById('msg');if(m)m.textContent='3D HATA: '+(e.message||'Bilinmeyen hata')});
+function loop(t){let dt=Math.min(.04,(t-last)/1000);last=t;update(dt);draw();requestAnimationFrame(loop)}requestAnimationFrame(loop);
 </script></body></html>
