@@ -196,7 +196,7 @@ div:has(> #legacyOnlineMarker){display:none!important}
 
 <div id="menuJumpScare" aria-hidden="true"><div class="jsFace"><div class="jsCrack"></div><div class="jsMouth"></div></div></div>
 
-<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v207</b></div></div></div>
+<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v208</b></div></div></div>
 
 <div id="onlinePanel">
   <b><span id="legacyOnlineMarker">ONLINE CO-OP v8 · CLEAN LOBBY</span></b>
@@ -3855,7 +3855,7 @@ function drawItemIcon(sl, cx, cy, s) {
   ctx.restore();
 }
 
-const GAME_VERSION = 'v207';
+const GAME_VERSION = 'v208';
 
 /* =====================================================
    Kafa lambası v1 — mevcut UI'dan bağımsız, canvas katmanı
@@ -3912,54 +3912,61 @@ function syncMinecraftInventory(){
  return mcOrder.map(k=>k?map.get(k)||null:null);
 }
 function mcLayout(){
- const sz=Math.max(28,Math.min(48,Math.floor((W-70)/9))),gap=3,gridW=9*sz+8*gap,pw=Math.min(W-24,gridW+48);
- const topH=Math.max(126,sz*3),ph=Math.min(H-24,topH+4*sz+3*gap+62),x=(W-pw)/2,y=(H-ph)/2,gx=x+(pw-gridW)/2,gy=y+topH,hotY=gy+3*(sz+gap)+22;
+ const sz=Math.max(34,Math.min(54,Math.floor((W-100)/9))),gap=5,gridW=9*sz+8*gap,pw=Math.min(W-24,gridW+64);
+ const topH=Math.max(154,sz*3),ph=Math.min(H-24,topH+4*sz+3*gap+76),x=(W-pw)/2,y=(H-ph)/2,gx=x+(pw-gridW)/2,gy=y+topH,hotY=gy+3*(sz+gap)+26;
  return {sz,gap,gridW,pw,ph,x,y,gx,gy,hotY};
 }
 function toggleBackpack(){backpackOpen=!backpackOpen;mouse.down=false;cv.style.cursor=backpackOpen?'default':'';if(backpackOpen)syncMinecraftInventory();else{if(mcCursor){let q=mcDragFrom>=0&&mcDragFrom<36&&!mcOrder[mcDragFrom]?mcDragFrom:mcOrder.findIndex(k=>!k);if(q>=0)mcOrder[q]=mcCursor.key;}gameplayHotbarOrder=mcOrder.slice(0,9);mcCursor=null;mcDragFrom=-1;}}
-function mcDrawSlot(x,y,s,it,selected=false){
- ctx.fillStyle='#8b8b8b';ctx.fillRect(x,y,s,s);ctx.fillStyle='#373737';ctx.fillRect(x,y,s,2);ctx.fillRect(x,y,2,s);ctx.fillStyle='#eee';ctx.fillRect(x+2,y+s-2,s-2,2);ctx.fillRect(x+s-2,y+2,2,s-2);ctx.fillStyle=selected?'#777':'#555';ctx.fillRect(x+3,y+3,s-6,s-6);
- if(selected){ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.strokeRect(x-2,y-2,s+4,s+4);}
- if(!it)return;ctx.textAlign='center';ctx.font=Math.floor(s*.46)+'px '+FONT;ctx.fillStyle='#fff';ctx.fillText(it.icon,x+s/2,y+s*.56);
- if(it.count>1){ctx.textAlign='right';ctx.font='900 11px '+FONT;ctx.strokeStyle='#111';ctx.lineWidth=3;ctx.strokeText(it.count,x+s-4,y+s-5);ctx.fillStyle='#fff';ctx.fillText(it.count,x+s-4,y+s-5);}
- if(it.ammo){ctx.textAlign='center';ctx.font='700 8px '+FONT;ctx.fillStyle='#ddd';ctx.fillText(it.ammo,x+s/2,y+s-5);}
+function mcDrawSlot(x,y,s,it,selected=false,hover=false){
+ const grd=ctx.createLinearGradient(x,y,x,y+s);grd.addColorStop(0,hover?'#3c4650':'#2d3339');grd.addColorStop(1,hover?'#252d34':'#181d22');ctx.fillStyle=grd;ctx.fillRect(x,y,s,s);
+ ctx.strokeStyle=selected?'#f4bd35':hover?'#8795a3':'#4b545d';ctx.lineWidth=selected?3:1;ctx.strokeRect(x+.5,y+.5,s-1,s-1);
+ if(selected){ctx.shadowColor='#f4bd35';ctx.shadowBlur=10;ctx.strokeRect(x+2,y+2,s-4,s-4);ctx.shadowBlur=0;}
+ if(!it)return;
+ ctx.textAlign='center';ctx.textBaseline='middle';ctx.font=Math.floor(s*.43)+'px '+FONT;ctx.fillStyle='#fff';ctx.fillText(it.icon,x+s/2,y+s*.48);
+ if(it.count>1){ctx.textAlign='right';ctx.textBaseline='alphabetic';ctx.font='900 12px '+FONT;ctx.strokeStyle='#080a0c';ctx.lineWidth=4;ctx.strokeText(it.count,x+s-5,y+s-5);ctx.fillStyle='#fff';ctx.fillText(it.count,x+s-5,y+s-5);}
+ if(it.ammo){ctx.textAlign='center';ctx.font='800 9px '+FONT;ctx.fillStyle='#cfd6dc';ctx.fillText(it.ammo,x+s/2,y+s-4);}
 }
+function mcHoveredIndex(){return mcIndexAt(mouse.x,mouse.y)}
 function drawBackpack(){
- if(!backpackOpen||!player)return;const items=syncMinecraftInventory(),L=mcLayout(),{sz,gap,pw,ph,x,y,gx,gy,hotY}=L;
- ctx.save();ctx.shadowBlur=0;ctx.fillStyle='rgba(0,0,0,.62)';ctx.fillRect(0,0,W,H);ctx.fillStyle='#c6c6c6';ctx.fillRect(x,y,pw,ph);ctx.strokeStyle='#222';ctx.lineWidth=4;ctx.strokeRect(x,y,pw,ph);ctx.strokeStyle='#eee';ctx.lineWidth=2;ctx.strokeRect(x+4,y+4,pw-8,ph-8);
- ctx.fillStyle='#3d3d3d';ctx.textAlign='left';ctx.font='700 13px '+FONT;ctx.fillText('Envanter',gx,y+22);
- // player preview
- const pvx=x+20,pvy=y+34;ctx.fillStyle='#292929';ctx.fillRect(pvx,pvy,78,82);ctx.fillStyle='#31526b';ctx.fillRect(pvx+28,pvy+37,22,34);ctx.fillStyle='#c89a73';ctx.beginPath();ctx.arc(pvx+39,pvy+25,12,0,TAU);ctx.fill();
- // equipment slots at left of crafting
- const eqs=Math.min(30,sz),eqx=pvx+90,eqy=pvy;for(let q=0;q<4;q++)mcDrawSlot(eqx,eqy+q*(eqs+2),eqs,q===0&&headlampEquipped?{icon:'🔦',count:1}:null);
- ctx.fillStyle='#555';ctx.font='9px '+FONT;ctx.fillText('KAFA',eqx,eqy-3);
- // crafting display, spaced from equipment
- const cs=Math.min(32,sz),cx=x+pw-3*cs-70,cy=pvy+4;for(let r=0;r<2;r++)for(let q=0;q<2;q++)mcDrawSlot(cx+q*(cs+3),cy+r*(cs+3),cs,null);ctx.fillStyle='#555';ctx.font='22px '+FONT;ctx.fillText('→',cx+2*(cs+3)+5,cy+cs+4);mcDrawSlot(cx+2*(cs+3)+30,cy+cs/2,cs,null);
- // 27 storage + 9 functional hotbar
- for(let i=0;i<27;i++){const it=items[i+9]||null;mcDrawSlot(gx+(i%9)*(sz+gap),gy+Math.floor(i/9)*(sz+gap),sz,it);}
- const gameSlots=slots(),selected=gameSlots[player.sel]||null;for(let i=0;i<9;i++){const it=items[i]||null;const active=!!(it&&selected&&((it.k==='gun'&&selected.k==='gun'&&it.id===selected.id)||it.k===selected.k));mcDrawSlot(gx+i*(sz+gap),hotY,sz,it,active);}
- if(mcCursor){ctx.textAlign='center';ctx.font=Math.floor(sz*.46)+'px '+FONT;ctx.fillStyle='#fff';ctx.fillText(mcCursor.icon,mouse.x,mouse.y+8);}
+ if(!backpackOpen||!player)return;
+ const items=syncMinecraftInventory(),L=mcLayout(),{sz,gap,pw,ph,x,y,gx,gy,hotY}=L,hover=mcHoveredIndex();
+ ctx.save();ctx.shadowBlur=0;ctx.fillStyle='rgba(2,5,7,.76)';ctx.fillRect(0,0,W,H);
+ ctx.shadowColor='rgba(0,0,0,.8)';ctx.shadowBlur=24;ctx.fillStyle='#11171c';ctx.fillRect(x,y,pw,ph);ctx.shadowBlur=0;
+ ctx.strokeStyle='#4b5964';ctx.lineWidth=2;ctx.strokeRect(x,y,pw,ph);ctx.fillStyle='#1b242b';ctx.fillRect(x+8,y+8,pw-16,38);
+ ctx.fillStyle='#eef3f5';ctx.textAlign='left';ctx.textBaseline='alphabetic';ctx.font='900 18px '+HEAD;ctx.fillText('ENVANTER',gx,y+34);
+ ctx.textAlign='right';ctx.font='700 10px '+FONT;ctx.fillStyle='#8fa0ad';ctx.fillText('I / ESC · KAPAT   |   TIKLA · TAŞI / DEĞİŞTİR',x+pw-18,y+31);
+ // Survivor / equipment panel
+ const pvx=x+18,pvy=y+58,pvw=118,pvh=80;ctx.fillStyle='#0b1014';ctx.fillRect(pvx,pvy,pvw,pvh);ctx.strokeStyle='#35424c';ctx.strokeRect(pvx,pvy,pvw,pvh);
+ ctx.fillStyle='#8fa0ad';ctx.textAlign='left';ctx.font='800 9px '+FONT;ctx.fillText('EKİPMAN',pvx+8,pvy+13);
+ ctx.fillStyle='#26333d';ctx.fillRect(pvx+10,pvy+22,42,48);ctx.fillStyle='#31526b';ctx.fillRect(pvx+22,pvy+43,18,25);ctx.fillStyle='#c89a73';ctx.beginPath();ctx.arc(pvx+31,pvy+34,9,0,TAU);ctx.fill();
+ const eqs=Math.min(40,sz),eqx=pvx+64,eqy=pvy+24;mcDrawSlot(eqx,eqy,eqs,headlampEquipped?{icon:'🔦',count:1}:null,false,mouse.x>=eqx&&mouse.x<=eqx+eqs&&mouse.y>=eqy&&mouse.y<=eqy+eqs);
+ ctx.fillStyle='#9aabb7';ctx.font='700 8px '+FONT;ctx.fillText('KAFA',eqx,eqy-5);
+ // Quick info panel
+ const ix=pvx+pvw+14,iy=pvy,iw=pw-(ix-x)-18;ctx.fillStyle='#0b1014';ctx.fillRect(ix,iy,iw,pvh);ctx.strokeStyle='#35424c';ctx.strokeRect(ix,iy,iw,pvh);
+ const held=hover>=0?items[hover]:null;ctx.fillStyle='#8fa0ad';ctx.font='800 9px '+FONT;ctx.fillText(held?'SEÇİLİ EŞYA':'HIZLI ERİŞİM',ix+10,iy+15);
+ ctx.fillStyle='#f2f4f5';ctx.font='900 14px '+FONT;ctx.fillText(held?held.name:'1–9 HOTBAR',ix+10,iy+37);
+ ctx.fillStyle='#9eabb3';ctx.font='700 10px '+FONT;
+ const detail=held?(held.k==='gun'?'Mermi: '+held.ammo:(held.count>1?'Adet: '+held.count:'Hazır')):'Alt sıradaki 9 yuva oyun sırasında doğrudan kullanılabilir.';
+ ctx.fillText(detail,ix+10,iy+57);
+ // Storage
+ ctx.fillStyle='#9aabb7';ctx.font='800 10px '+FONT;ctx.fillText('ÇANTA · 27 YUVA',gx,gy-9);
+ for(let i=0;i<27;i++){const idx=i+9,it=items[idx]||null;mcDrawSlot(gx+(i%9)*(sz+gap),gy+Math.floor(i/9)*(sz+gap),sz,it,false,hover===idx);}
+ const gameSlots=slots(),selected=gameSlots[player.sel]||null;ctx.fillStyle='#9aabb7';ctx.fillText('HOTBAR · 1–9',gx,hotY-9);
+ for(let i=0;i<9;i++){const it=items[i]||null,active=!!(it&&selected&&((it.k==='gun'&&selected.k==='gun'&&it.id===selected.id)||it.k===selected.k));mcDrawSlot(gx+i*(sz+gap),hotY,sz,it,active,hover===i);ctx.fillStyle='#71808a';ctx.textAlign='left';ctx.font='700 8px '+FONT;ctx.fillText(String(i+1),gx+i*(sz+gap)+4,hotY+10);}
+ if(mcCursor){ctx.globalAlpha=.92;ctx.textAlign='center';ctx.textBaseline='middle';ctx.font=Math.floor(sz*.48)+'px '+FONT;ctx.fillStyle='#fff';ctx.fillText(mcCursor.icon,mouse.x,mouse.y);ctx.globalAlpha=1;}
  ctx.restore();
 }
 function mcIndexAt(px,py){const L=mcLayout(),{sz,gap,gx,gy,hotY}=L;for(let i=0;i<27;i++){const x=gx+(i%9)*(sz+gap),y=gy+Math.floor(i/9)*(sz+gap);if(px>=x&&px<=x+sz&&py>=y&&py<=y+sz)return i+9;}for(let i=0;i<9;i++){const x=gx+i*(sz+gap);if(px>=x&&px<=x+sz&&py>=hotY&&py<=hotY+sz)return i;}return -1;}
 function backpackClick(px,py){
- if(!backpackOpen)return false;const L=mcLayout(),items=syncMinecraftInventory(),idx=mcIndexAt(px,py),pvx=L.x+20,pvy=L.y+34,eqs=Math.min(30,L.sz),eqx=pvx+90,eqy=pvy;
+ if(!backpackOpen)return false;const L=mcLayout(),items=syncMinecraftInventory(),idx=mcIndexAt(px,py),pvx=L.x+18,pvy=L.y+58,eqs=Math.min(40,L.sz),eqx=pvx+64,eqy=pvy+24;
  if(px>=eqx&&px<=eqx+eqs&&py>=eqy&&py<=eqy+eqs){
    if(mcCursor&&mcCursor.k==='headlamp'&&!headlampEquipped){headlampEquipped=true;mcCursor=null;mcDragFrom=-1;gameplayHotbarOrder=mcOrder.slice(0,9);toast('Kafa lambası kafaya takıldı · L ile aç');return true;}
    if(headlampEquipped&&!mcCursor){headlampEquipped=false;headlampOn=false;const q=mcOrder.findIndex(k=>!k);if(q>=0)mcOrder[q]='headlamp';syncMinecraftInventory();toast('Kafa lambası çıkarıldı');}return true;
  }
  if(idx>=0){
    const it=items[idx]||null;
-   if(!mcCursor&&it){
-     mcCursor=it;mcDragFrom=idx;mcOrder[idx]=null;gameplayHotbarOrder=mcOrder.slice(0,9);
-   }
-   else if(mcCursor&&mcDragFrom>=0){
-     const held=mcCursor.key,target=mcOrder[idx]||null;
-     mcOrder[idx]=held;
-     if(target){mcCursor=items.find(x=>x&&x.key===target)||mcItemDef(target.startsWith('gun:')?'gun':target,target.startsWith('gun:')?target.slice(4):undefined);mcDragFrom=idx;}
-     else{mcCursor=null;mcDragFrom=-1;}
-     gameplayHotbarOrder=mcOrder.slice(0,9);
-   }
+   if(!mcCursor&&it){mcCursor=it;mcDragFrom=idx;mcOrder[idx]=null;gameplayHotbarOrder=mcOrder.slice(0,9);}
+   else if(mcCursor&&mcDragFrom>=0){const held=mcCursor.key,target=mcOrder[idx]||null;mcOrder[idx]=held;if(target){mcCursor=items.find(x=>x&&x.key===target)||mcItemDef(target.startsWith('gun:')?'gun':target,target.startsWith('gun:')?target.slice(4):undefined);mcDragFrom=idx;}else{mcCursor=null;mcDragFrom=-1;}gameplayHotbarOrder=mcOrder.slice(0,9);}
    return true;
  }
  return px>=L.x&&px<=L.x+L.pw&&py>=L.y&&py<=L.y+L.ph;
