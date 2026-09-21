@@ -6,8 +6,8 @@
 html, body, #artifacts-component-root-html {
   width: 100%;
   height: 100%;
-  min-width: 100vw;
-  min-height: 100vh;
+  min-width: 100%;
+  min-height: 100dvh;
   margin: 0;
   padding: 0;
   overflow: hidden;
@@ -15,8 +15,8 @@ html, body, #artifacts-component-root-html {
 #game {
   position: fixed !important;
   inset: 0 !important;
-  width: 100vw !important;
-  height: 100vh !important;
+  width: var(--game-vw, 100dvw) !important;
+  height: var(--game-vh, 100dvh) !important;
 }
 
 /* Shop weapon previews: real photographic assets, isolated from game canvas. */
@@ -198,7 +198,7 @@ div:has(> #legacyOnlineMarker){display:none!important}
 
 <div id="menuJumpScare" aria-hidden="true"><div class="jsFace"><div class="jsCrack"></div><div class="jsMouth"></div></div></div>
 
-<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v192</b></div></div></div>
+<div id="mainGameMenu" class="mainGameMenu"><div class="mainMenuShell"><div class="mainMenuBrand"><span>SURVIVE THE NIGHT</span><h1>ZOMBİ İSTİLASI</h1><p>Üssünü kur. Geceyi atlat. Hayatta kal.</p></div><div class="modeCards"><button id="singleMode" class="modeCard"><span class="modeIcon">👤</span><span><b>TEK OYUNCULU</b><small>Tek başına hayatta kal</small></span><i>OYNA ›</i></button><button id="multiMode" class="modeCard multi"><span class="modeIcon">👥</span><span><b>ÇOK OYUNCULU</b><small>Arkadaşlarınla online co-op</small></span><i>ODA SEÇ ›</i></button></div><div id="multiSetup" class="multiSetup" hidden><div class="multiTitle"><b>ONLINE CO-OP</b><button id="multiBack">← Geri</button></div><label>OYUNCU ADI</label><input id="menuPlayerName" maxlength="14" value="Oyuncu" placeholder="Oyuncu adı"><div class="multiActions"><button id="menuCreateRoom">YENİ ODA OLUŞTUR</button><span>VEYA</span><div class="joinBox"><input id="menuRoomCode" maxlength="6" placeholder="ODA KODU"><button id="menuJoinRoom">KATIL</button></div></div><div id="menuNetStatus">Arkadaşınla oynamak için oda oluştur veya 6 haneli kodla katıl.</div><div id="roomLobby" class="roomLobby" hidden><div class="lobbyCode"><small>ODA KODU</small><strong id="lobbyCodeText">------</strong></div><div class="lobbyPlayers"><b>OYUNCULAR</b><div id="lobbyPlayerList"></div></div><button id="menuStartGame" class="startGameBtn" hidden>OYUNU BAŞLAT</button><small id="lobbyWait">Oda liderinin oyunu başlatması bekleniyor…</small></div></div><div class="mapProgress"><span>1–5<br><b>🌲 ORMAN</b></span><i>›</i><span>6–10<br><b>🏚️ KASABA</b></span><i>›</i><span>11–15<br><b>🏥 HASTANE</b></span><i>›</i><span>16–20<br><b>🪖 ASKERÎ ÜS</b></span><i>›</i><span>21+<br><b>🏙️ ŞEHİR</b></span></div><div class="mainMenuFoot"><span>WASD · Nişan al · Üs kur · Hayatta kal</span><b id="menuVersion">v206</b></div></div></div>
 
 <div id="onlinePanel">
   <b><span id="legacyOnlineMarker">ONLINE CO-OP v8 · CLEAN LOBBY</span></b>
@@ -760,13 +760,48 @@ const FONT = 'system-ui,-apple-system,"Segoe UI",Roboto,sans-serif';
 const HEAD = 'Impact,"Arial Black",' + FONT;
 let W = 0, H = 0, DPR = 1;
 
-function resize() {
-  DPR = Math.min(window.devicePixelRatio || 1, 2);
-  W = window.innerWidth; H = window.innerHeight;
-  cv.width = W * DPR; cv.height = H * DPR;
-  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+// v206: responsive mobile viewport + adaptive render scale.
+// CSS/game coordinates follow the REAL visible viewport instead of a fixed 1920x1080 surface.
+// On phones DPR is capped dynamically to reduce GPU fill-rate and prevent stutter/overheating.
+function gameViewport() {
+  const vv = window.visualViewport;
+  const w = Math.max(1, Math.round(vv ? vv.width : document.documentElement.clientWidth || window.innerWidth));
+  const h = Math.max(1, Math.round(vv ? vv.height : document.documentElement.clientHeight || window.innerHeight));
+  return { w, h };
 }
-window.addEventListener('resize', resize);
+function adaptiveDPR(w, h) {
+  const native = Math.max(1, window.devicePixelRatio || 1);
+  const coarse = matchMedia('(pointer:coarse)').matches;
+  if (!coarse) return Math.min(native, 2);
+  const pixels = w * h;
+  // Keep mobile rendering sharp without wasting performance on 3x/4x physical pixels.
+  const budget = pixels > 1000000 ? 1.15 : pixels > 600000 ? 1.35 : 1.5;
+  return Math.min(native, budget);
+}
+let resizeRAF = 0;
+function resize() {
+  const vp = gameViewport();
+  W = vp.w; H = vp.h; DPR = adaptiveDPR(W, H);
+  cv.style.width = W + 'px';
+  cv.style.height = H + 'px';
+  const rw = Math.max(1, Math.round(W * DPR));
+  const rh = Math.max(1, Math.round(H * DPR));
+  if (cv.width !== rw) cv.width = rw;
+  if (cv.height !== rh) cv.height = rh;
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  document.documentElement.style.setProperty('--game-vw', W + 'px');
+  document.documentElement.style.setProperty('--game-vh', H + 'px');
+}
+function queueResize() {
+  cancelAnimationFrame(resizeRAF);
+  resizeRAF = requestAnimationFrame(resize);
+}
+window.addEventListener('resize', queueResize, {passive:true});
+window.addEventListener('orientationchange', queueResize, {passive:true});
+if (window.visualViewport) {
+  window.visualViewport.addEventListener('resize', queueResize, {passive:true});
+  window.visualViewport.addEventListener('scroll', queueResize, {passive:true});
+}
 resize();
 
 function seeded(seed) {
